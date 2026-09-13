@@ -1,8 +1,24 @@
-# SIA — Self Improving Agents
+<p align="center">
+  <img src="./assets/sia-banner.png" alt="SIA: Self-Improving Agents" width="100%" />
+</p>
 
-A portable, host-agnostic instruction package that turns a coding
-assistant into a self-improving project collaborator — one that
-generates fresh, project-specific process artifacts (an `AGENT.md`, a
+<p align="center">
+  <img src="https://img.shields.io/badge/version-0.1.0--alpha-00F2FE.svg?style=flat-square" alt="Version 0.1.0-alpha" />
+  <img src="https://img.shields.io/badge/status-active-success.svg?style=flat-square" alt="Status: Active" />
+  <img src="https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat-square" alt="License: MIT" />
+  <img src="https://img.shields.io/badge/host--agnostic-yes-7B2CBF.svg?style=flat-square" alt="Host-agnostic" />
+</p>
+
+<p align="center">
+  <img src="./assets/sia-mark.svg" alt="SIA mark" width="48" />
+</p>
+
+<p align="center">
+  <b>A portable, host-agnostic instruction package that turns a coding
+  assistant into a self-improving project collaborator.</b>
+</p>
+
+It generates fresh, project-specific process artifacts (an `AGENT.md`, a
 spec, a plan, subagent task briefs) instead of declaring "done"
 prematurely, with human-in-the-loop approval gates and a self-healing
 feedback loop.
