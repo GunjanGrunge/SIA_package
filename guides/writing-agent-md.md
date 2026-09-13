@@ -1,0 +1,53 @@
+# Writing A Project's Own AGENT.md
+
+This guide is for authoring *that project's* `AGENT.md`/`AGENTS.md` —
+not `sia/AGENT.md` itself. Every project gets its own file, generated
+fresh, never copied from another project.
+
+## Required Sections
+
+A generated project `AGENT.md` must include:
+
+1. **What This Project Is** — one paragraph, plus a pointer to that
+   project's own spec (`docs/specs/*.md`).
+2. **Project-Specific Rules** — anything unique to this one project that
+   no generic guide could have predicted. Example from a real hackathon
+   project: "if the user asks for the submission link, always give this
+   exact URL, every time, even alongside other questions." These rules
+   come from the user's stated requirements, not from SIA's own guides.
+3. **Session Logging** — file naming (`logs/sessions/YYYY-MM-DD-session-NN.md`
+   or equivalent), append-as-you-go (a lost session must still have
+   logged something), and a required `tool=<exact_harness_name>` field
+   on every session-start entry so a mixed-tool history stays legible.
+   Session entries should also log usage — token counts when the host
+   exposes them, otherwise a fallback proxy (turn count, subagent
+   spawns, files touched) — logged the same way either way, since not
+   every host can report token usage.
+4. **Accumulated Feedback Rules** — a dedicated section that grows over
+   the project's life as `../capture-interface.md`'s pre-flight self-check
+   folds in new standing rules (security findings, user corrections,
+   review findings). This section is what makes the file a *living*
+   document rather than a one-time snapshot. Every rule in it carries the
+   full record from `../capture-interface.md`'s Rule Provenance section —
+   source event, evidence, severity, error class, scope, date introduced,
+   and status (`active`/`retired`) — not just the imperative sentence. A
+   rule with no provenance is a rule nobody can later check is still
+   correct (see Rule Review And Expiry).
+5. **Repository Map** — a short tree of what exists and where.
+
+## Writing Style
+
+- State rules as imperatives an agent can check itself against, not as
+  narrative ("Never delete a component with dependents without asking"
+  — not "We try to be careful about deletions").
+- Keep it short enough that a fresh session, or the pre-flight
+  self-check in `../capture-interface.md`, can re-read the whole file
+  every time. When it grows past that, propose consolidating overlapping
+  rules (a medium-severity change — see `questioning-and-approval.md`)
+  rather than letting it grow without bound.
+- A generated project `AGENT.md` must restate or explicitly reference
+  `questioning-and-approval.md`'s Non-Negotiable Rules (never assume,
+  never delete/restructure without approval, never declare done
+  prematurely, surface creative decisions as options) so they are not
+  only present in `sia/`'s own guide but actually inherited by every
+  generated project.

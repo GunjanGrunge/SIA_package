@@ -1,0 +1,72 @@
+# Changelog
+
+All notable changes to the SIA package itself (not to any project that
+uses it) are recorded here.
+
+## [0.1.0] - 2026-09-13
+
+Initial package, implementing `docs/superpowers/specs/2026-09-13-sia-design.md`:
+
+- `AGENT.md` — bootstrap and pipeline.
+- `guides/security-gate.md` — fixed threat-class checklist.
+- `guides/questioning-and-approval.md` — batching and severity gates.
+- `guides/writing-agent-md.md` — project AGENT.md authoring guide.
+- `guides/writing-spec.md` — project spec authoring guide.
+- `guides/writing-plan.md` — project plan authoring guide.
+- `guides/subagent-task-brief.md` — task brief/report/progress formats.
+- `capture-interface.md` — feedback schema and self-healing loop
+  engineering (PASS/DEVIATION, pre-flight self-check, convergence
+  signal, rule hygiene).
+- `VALIDATION.md` — manual dogfood validation checklist (5 scenarios).
+- `tests/validate_sia.py` — the structure-test harness (dev tooling for
+  building the package, not something copied into a target project).
+
+## [Unreleased]
+
+- `banner.py` — terminal launch-screen banner (Hexagonal Prism mark, Electric
+  Cyan), run at Bootstrap when the host can execute shell commands.
+- `BANNER.txt` — pre-rendered plain-text fallback of the same banner, for
+  hosts that cannot execute shell commands.
+- `AGENT.md` — added a "Launch Screen" section wiring both into the
+  Bootstrap pipeline step; added a pointer to `INSTALL.md` for first-time
+  setup.
+- `INSTALL.md` — how to add SIA to a project: gitignoring the vendored
+  `sia/` folder while keeping generated artifacts (that project's own
+  `AGENT.md`, specs, plans, session logs) committed — mirroring how BMAD's
+  `.claude/`/`_bmad/` are gitignored but `_bmad-output/` is kept.
+- `integrations/claude-code/SKILL.md` — optional, thin Claude Code
+  discovery shim; defers entirely to `AGENT.md` as the source of truth.
+- `AGENT.md` — added an Authority Order section (user instructions >
+  project AGENT.md > approved spec/plan > SIA guides > subagent brief)
+  and an Integration phase at the end of pipeline step 6 (Execution).
+- `guides/writing-plan.md` — added Owned Files: each task's Files block
+  is now an exclusive ownership boundary; overlapping file changes
+  require a dedicated integration task rather than silent overlap.
+- `guides/subagent-task-brief.md` — added an Effort Budget field and a
+  fixed escalation list to the Task Brief Format (stop and report rather
+  than improvise past an unexpected dependency, conflicting file,
+  ambiguous requirement, missing tool, or unrelated failing test); added
+  an Integration Report Format.
+- `guides/writing-spec.md` — resolved a tension between this guide's
+  "confirm section by section" and `questioning-and-approval.md`'s
+  batching rule: one approved pattern now applies (batch every question,
+  draft the complete spec, one structured approval round — except a
+  High-severity decision surfaced mid-draft, confirmed before
+  continuing).
+- `capture-interface.md` — `capture()` gained a fourth field,
+  `error_class` (a reusable label for the *kind* of mistake, e.g.
+  `unsafe-edit-target`, `missing-approval`, `interface-assumption`,
+  `unverified-claim`); added a Rule Provenance section (source event,
+  evidence, severity, error class, scope, date, active/retired status —
+  every rule carries these, not just its sentence); Convergence Signal
+  now tracks deviation rate per error class, not only overall; added
+  Rule Review And Expiry (a periodic check that retires stale/superseded
+  rules rather than leaving them to silently accumulate).
+- `guides/writing-agent-md.md` — Accumulated Feedback Rules now require
+  the full provenance record per rule.
+- `guides/subagent-task-brief.md` — Task Brief Format gained a Relevant
+  Standing Rules field (rules travel *with* a subagent's brief, since a
+  scoped subagent has no reason to read the whole project AGENT.md);
+  reviewers (task-level and Integration) must now state which standing
+  rules were checked and their per-rule verdict, not just whether the
+  code works.

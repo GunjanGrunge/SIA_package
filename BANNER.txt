@@ -1,0 +1,20 @@
+                 ⣠⣴⣶⣄       
+              ⢀⣴⣾⣿⣿⣿⣿⣿⣦⣄    
+            ⣠⣾⣿⣿⡿⠋⠁ ⠙⠿⣿⣿⣷⣦⡀  
+          ⣴⣿⣿⣿⠟⠉ ⢀⣠⣄  ⠈⠛⣿⣿⣿⡗ 
+          ⣿⣿⣯⡀  ⠐⢿⣿⣿⣷⣤⡀⠐⢿⣿⡟ 
+          ⠙⢿⣿⣿⣷⣄  ⠈⠻⣿⣿⣿⣦⣀⠉   
+            ⠙⠻⣿⣿⣷⣦⡀  ⠙⢿⣿⣿⣷⣄⡀ 
+           ⢠⣷⣄⠈⠻⢿⣿⣿⣶⣄  ⠉⠻⣿⣿⣿ 
+          ⢠⣿⣿⣿⠃  ⠙⠿⡿⠟⠁ ⢀⣤⣾⣿⣿ 
+          ⠘⠻⣿⣿⣿⣦⣄    ⣠⣶⣿⣿⡿⠛⠁ 
+             ⠙⠿⣿⣿⣷⣦⣴⣾⣿⣿⠟⠋     
+               ⠈⠛⢿⣿⣿⡿⠋⠁      
+
+              SIA v0.1.0-alpha
+         Self-Improving Agents
+
+      • Loop Engineering : active
+      • Security Gate    : armed
+      • Human Gates      : questioning & approval
+      • Directory        : <current project directory>
