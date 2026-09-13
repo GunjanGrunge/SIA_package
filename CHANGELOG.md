@@ -5,7 +5,9 @@ uses it) are recorded here.
 
 ## [0.1.0] - 2026-09-13
 
-Initial package, implementing `docs/superpowers/specs/2026-09-13-sia-design.md`:
+Initial package, implementing the design specified in
+`docs/superpowers/specs/2026-09-13-sia-design.md` (a design doc from
+SIA's own development history — not a file shipped in this package):
 
 - `AGENT.md` — bootstrap and pipeline.
 - `guides/security-gate.md` — fixed threat-class checklist.

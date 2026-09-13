@@ -106,11 +106,11 @@ on it if neither option is available.
    between tasks actually match up in the combined code (not just each
    task's own diff in isolation), and review the whole plan's combined
    diff as one unit — a defect that only exists at the seam between two
-   tasks is invisible to both tasks' own reviews individually. SIA's own
-   package build found real defects exactly this way (see
-   `../docs/superpowers/plans/2026-09-13-sia-package.md`'s final
-   whole-branch review) — this step is not theoretical caution, it is a
-   generalization of what already happened once.
+   tasks is invisible to both tasks' own reviews individually. This step
+   is not theoretical caution: SIA's own package was built this way, and
+   its final whole-branch review found real defects that no individual
+   task's own review had caught — the generalization here is of
+   something that already happened once, not a hypothetical.
 7. **Feedback loop** — capture corrections, review findings, and (for
    software projects) security-gate findings via
    `capture(signal_type, context, severity)` (see `capture-interface.md`),
