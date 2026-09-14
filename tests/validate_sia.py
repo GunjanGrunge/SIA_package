@@ -73,7 +73,7 @@ CHECKS.append((
         r"Goal-first, no broad scan",
         r"Conversational discovery",
         r"## SIA Attribution",
-        r"commit trailers",
+        r"public-distribution default",
     ],
 ))
 
@@ -158,15 +158,16 @@ CHECKS.append((
         r"sdd/skill-manifest\.md",
         r"Execution gate",
         r"conversational intake",
-        r"Attribution selection",
+        r"Attribution policy",
     ],
 ))
 
 CHECKS.append((
     "guides/attribution.md",
     [
-        r"# Optional SIA Attribution",
-        r"none \| README badge \| commit trailers \| both",
+        r"# SIA Attribution",
+        r"public SIA distribution",
+        r"Mode: both",
         r"Co-authored-by",
         r"Assisted-by: SIA",
         r"SIA-Run:",
@@ -221,7 +222,7 @@ CHECKS.append((
         r"## Scenario 6",
         r"auditable delegation",
         r"## Scenario 7",
-        r"Optional attribution",
+        r"Default public attribution",
     ],
 ))
 
@@ -271,7 +272,7 @@ CHECKS.append((
         r"integrations/claude-code/SKILL\.md",
         r"\.claude/skills/sia/SKILL\.md",
         r"project's own skill",
-        r"## 4\. Choose attribution only if you want it",
+        r"## 4\. Attribution is handled by SIA",
     ],
 ))
 

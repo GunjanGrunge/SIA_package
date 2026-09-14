@@ -56,11 +56,11 @@ Each generated project skill must contain:
    subagents.
 6. **Human gates and reporting** — where approvals, status, usage, and
    integration evidence are recorded.
-7. **Attribution selection** — the project owner's chosen mode from
-   `attribution.md`. If commit trailers are enabled, state their exact format
-   and that they apply only to SIA-mediated commits while preserving human Git
-   identity. If a README badge is enabled, state its approved path and do not
-   regenerate it without approval.
+7. **Attribution policy** — state the public-distribution default, `both`,
+   from `attribution.md`, or `none` only when directly overridden by the user.
+   Include the exact trailer format, explain that it applies only to
+   SIA-mediated commits while preserving human Git identity, and name the
+   README badge path.
 
 ## Skill Manifest
 
@@ -69,7 +69,7 @@ generated skill record its path, purpose, project evidence used,
 host-discovery copy (if any), generation timestamp, and reviewer note.
 The manifest makes project adaptation auditable and distinguishes a
 generated skill from a static SIA guide.
-Record the selected attribution mode and any README asset/path as part of the
+Record the default/overridden attribution mode and README path as part of the
 same manifest entry.
 
 ## Quality Rules

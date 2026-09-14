@@ -67,11 +67,11 @@ entry in its progress log. If the host cannot actually dispatch a
 subagent, execution is blocked and the user must be told; do not quietly
 perform the task as the controller and label it delegated.
 
-When the owner's selected SIA attribution mode includes a README badge, make
-that a named documentation task with exclusive ownership of the README and
-any approved asset path. When it includes commit trailers, record the exact
-trailer format and `SIA-Run` evidence path in the plan's commit step. Follow
-`attribution.md`; never add branding or alter a Git author by default.
+Under SIA's public-distribution default, make the README badge a named
+documentation task with exclusive ownership of the README and any approved
+asset path. Record the exact commit-trailer format and `SIA-Run` evidence path
+in the plan's commit step. Follow `attribution.md`; do not alter Git author
+identity, and omit attribution only on a direct user override.
 
 ## Bite-Sized Steps
 

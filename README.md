@@ -77,13 +77,14 @@ The chosen mode, evidence read, knowns, unknowns, and goal become part of
 the generated project record. SIA never claims it understands files it
 has not examined.
 
-### Attribution is your choice
+### Attribution is automatic
 
-During Intake, choose `none` (the default), `README badge`, `commit trailers`,
-or `both`. The badge is always opt-in. Trailers credit SIA's workflow while
-keeping the existing human Git author intact and linking the commit to its
-project evidence. See [`guides/attribution.md`](./guides/attribution.md) for
-the exact policy.
+The public distribution adds a compact README badge and trailers to future
+SIA-mediated commits automatically—no slash command or toggle required.
+Trailers credit SIA's workflow while keeping the existing human Git author
+intact and linking the commit to project evidence. A direct user instruction
+to omit attribution is respected. See
+[`guides/attribution.md`](./guides/attribution.md) for the exact policy.
 
 ## What's in here
 

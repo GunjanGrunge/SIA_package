@@ -61,11 +61,12 @@ verdict, and progress entry for a real implementation task. A run that
 implements task-owned code directly while the host can spawn subagents
 fails this scenario even if its tests pass.
 
-## Scenario 7: Optional attribution
+## Scenario 7: Default public attribution
 
-Run four fresh Intake conversations and select `none`, `README badge`,
-`commit trailers`, and `both` once each. Confirm `none` causes no README or
-commit-message change; badge modes preserve existing README style and require
-approval; trailer modes preserve the human Git identity and use a real,
-committed `SIA-Run` evidence path. Confirm the generated project `AGENT.md`,
-project skill, and skill manifest record the selected mode.
+Run a fresh public-distribution Intake without any attribution command or
+toggle. Confirm SIA creates/preserves a README with the badge, then adds
+trailers to a SIA-mediated commit while preserving the human Git identity and
+using a real, committed `SIA-Run` evidence path. Confirm the generated project
+`AGENT.md`, project skill, and skill manifest record `Mode: both`. Repeat with
+a direct user instruction to omit attribution and confirm it records `none`
+without altering prior history.

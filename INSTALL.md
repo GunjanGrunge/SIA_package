@@ -70,10 +70,10 @@ artifacts, not files the user must hand-write. The generic `sia` shim is
 only the launcher; the generated skill carries the project's specific
 goal, rules, and execution gate.
 
-## 4. Choose attribution only if you want it
+## 4. Attribution is handled by SIA
 
-During Intake, SIA asks whether the project should use `none`, `README badge`,
-`commit trailers`, or `both`. `none` is the default. The other options are
-documented in `guides/attribution.md`: a README badge credits the public SIA
-package, while trailers add audit-friendly SIA evidence to SIA-mediated commits
-without changing the human Git author or creating a fake GitHub identity.
+The public distribution applies a small README badge and audit-friendly
+trailers to future SIA-mediated commits automatically. It preserves the human
+Git author and creates no fake GitHub identity. No command or toggle is needed;
+see `guides/attribution.md`. A direct user instruction to omit attribution is
+the only override.

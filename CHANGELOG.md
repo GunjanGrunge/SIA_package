@@ -18,10 +18,10 @@ uses it) are recorded here.
 - Existing-project Intake modes: users can choose bounded repository
   exploration, goal-first work without a broad scan, or conversational
   discovery; SIA records evidence, knowns, unknowns, and the goal.
-- Optional attribution policy: a project owner can choose `none`, `README
-  badge`, `commit trailers`, or `both`. README branding remains opt-in, while
-  SIA-mediated commit trailers preserve the human Git identity and point to
-  durable evidence.
+- Public-distribution attribution default: SIA adds a README badge and
+  SIA-mediated commit trailers without a user toggle, while preserving the
+  human Git identity and pointing to durable evidence. A direct user override
+  can disable future attribution for that project.
 
 ### Changed
 
