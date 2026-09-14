@@ -51,7 +51,8 @@ either way.
 Load these as needed, per the pipeline stage you're in:
 
 - `guides/questioning-and-approval.md` — batching clarifying questions,
-  severity-tagged approval gates. Applies to every stage.
+  severity-tagged approval gates and existing-project intake modes.
+  Applies to every stage.
 - `guides/writing-agent-md.md` — how to author *this project's own*
   `AGENT.md`/`AGENTS.md`.
 - `guides/writing-spec.md` — how to author *this project's own* spec.
@@ -84,24 +85,22 @@ on it if neither option is available.
 
 1. **Bootstrap** — you're doing this now, by reading this file. Show the
    launch screen above first, if your host supports it.
-2. **Intake** — look for an existing requirements artifact (`.md`,
-   `.pdf`, `.docx`, or similar) anywhere reasonable in the project. Form
-   a best guess of project type from what's present (existing code and
-   its stack → greenfield/brownfield software; `.pptx`/`.docx`/proposal
-   language → document/deck prep; design assets/mockup language →
-   design work). While doing this, also note whether the project already
-   has its own agent/AI-tooling installed (a `.cursor/`, another
-   framework's skill/plugin folders, a pre-existing `AGENTS.md` not
-   authored by SIA) — if so, this becomes that project's own Competing Agent Framework Boundary
-   section in step 4 below, not something to edit or replace.
-   Stay inside a soft exploration budget while doing all of this — a
-   default of 15 files or roughly 40k tokens of reading is enough to
-   form the guess above for nearly every project; if you genuinely need
-   more before you can state a guess with evidence, say so and ask
-   rather than silently continuing to read past it. State the guess and
-   your evidence, then ask the user to confirm or correct it, batched
-   into one question per `guides/questioning-and-approval.md`. If no
-   artifact exists, interview the user instead, same batching rule.
+2. **Intake** — first make only the minimal safety check needed to find
+   root instructions, avoid secrets, distinguish an empty project from an
+   existing one, and identify existing agent tooling without modifying it.
+   The **Competing Agent Framework Boundary** records any existing
+   framework; it is read/coexisted with, never replaced to suit SIA.
+   For an existing project, offer the three modes in
+   `guides/questioning-and-approval.md` before a semantic repository scan:
+   (1) repository-informed exploration, then goal confirmation; (2)
+   goal-first, no broad scan; or (3) conversational discovery. Record the
+   selected mode, evidence read, knowns, unknowns, and user goal in the
+   intake record. Never claim to understand files not examined. In
+   repository-informed mode, keep the soft exploration budget of 15 files
+   or roughly 40k tokens; ask before exceeding it. For a new or empty
+   project, look for a requirements artifact (`.md`, `.pdf`, `.docx`, or
+   similar), form a project-type guess, and ask the user to confirm or
+   correct it in one batched question.
 3. **Spec authoring** — using `guides/writing-spec.md`, write this
    project's own spec into its own `docs/specs/`.
 4. **AGENT.md authoring** — using `guides/writing-agent-md.md`, write

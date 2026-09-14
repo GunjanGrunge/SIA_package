@@ -13,6 +13,27 @@ exists to eliminate.
   batch point rather than interrupting again immediately, unless
   continuing without an answer risks an irreversible action.
 
+## Existing Project Intake Modes
+
+When SIA is installed into an existing repository, do not silently read
+the whole codebase. After the minimal safety check (root instructions,
+repository shape, and secret avoidance), offer these three choices in one
+message:
+
+1. **Repository-informed exploration (recommended)** — inspect a bounded
+   set of relevant project artifacts, summarize what SIA knows and does
+   not know, then ask what the user wants to change or build.
+2. **Goal-first, no broad scan** — ask what the user wants immediately.
+   Read only files needed to scope that stated request after the user
+   answers.
+3. **Conversational discovery** — do not perform a semantic scan. Let the
+   user describe the project and desired work over conversation, then
+   inspect only the evidence needed to verify those descriptions.
+
+Record the chosen mode, files actually read, knowns, unknowns, and the
+user's stated goal in the project intake record. A directory listing or
+file name is not evidence of file contents; never present it as such.
+
 ## Severity Table
 
 Every proposed action is tagged with a severity before it is presented:

@@ -15,6 +15,9 @@ authoring. Once the implementation plan is approved, generate or extend
 an execution skill that names the plan's delegation and evidence gate.
 Regenerate only when the approved spec, plan, or active standing rules
 change materially; record why rather than silently overwriting a skill.
+For an existing repository, derive the skill only from the selected
+intake mode's actual evidence. A goal-first or conversational intake
+must preserve unknowns rather than inventing a repository model.
 
 ## Output Locations
 

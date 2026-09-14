@@ -58,6 +58,22 @@ No API keys, no account, no cloud dependency. It's plain markdown
 instructions plus a small Python structure-test harness
 (`tests/validate_sia.py`) used only when developing this package itself.
 
+### Existing project? You choose the starting mode
+
+After the minimal safety check, SIA asks which way you want to begin:
+
+1. **Repository-informed exploration** — SIA reads a bounded set of
+   relevant artifacts, explains what it knows and does not know, then
+   asks what you want to build or change.
+2. **Goal-first** — SIA skips the broad repository scan and asks what you
+   want immediately, reading only what is needed for that request.
+3. **Conversational discovery** — you describe the project first; SIA
+   verifies only the evidence needed for the work that emerges.
+
+The chosen mode, evidence read, knowns, unknowns, and goal become part of
+the generated project record. SIA never claims it understands files it
+has not examined.
+
 ## What's in here
 
 ```

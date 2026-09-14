@@ -39,6 +39,8 @@ CHECKS.append((
         r"capture-interface\.md",
         r"Project-skill synthesis",
         r"must not implement a task-owned file itself",
+        r"three modes",
+        r"knowns, unknowns, and user goal",
     ],
 ))
 
@@ -66,6 +68,9 @@ CHECKS.append((
         r"\| *High",
         r"## Non-Negotiable Rules",
         r"[Nn]ever assume",
+        r"## Existing Project Intake Modes",
+        r"Goal-first, no broad scan",
+        r"Conversational discovery",
     ],
 ))
 
@@ -83,6 +88,7 @@ CHECKS.append((
         r"coexist",
         r"Generated Project Skills",
         r"Execution Evidence Gate",
+        r"Intake Record",
     ],
 ))
 
@@ -147,6 +153,7 @@ CHECKS.append((
         r"project-specific",
         r"sdd/skill-manifest\.md",
         r"Execution gate",
+        r"conversational intake",
     ],
 ))
 
@@ -187,6 +194,7 @@ CHECKS.append((
         r"buyorwait",
         r"## Scenario 2",
         r"brownfield",
+        r"existing-project modes",
         r"## Scenario 3",
         r"## Scenario 4",
         r"second host",

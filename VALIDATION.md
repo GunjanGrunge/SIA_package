@@ -24,7 +24,10 @@ Run against an existing repo with a bug-fix-shaped ask. Confirm intake
 correctly classifies it as brownfield software, `guides/security-gate.md`
 loads, and the approval-gate severity table in
 `guides/questioning-and-approval.md` is respected for anything at or
-above medium severity.
+above medium severity. Repeat Intake once for each of the three
+existing-project modes: bounded repository exploration, goal-first with
+no broad scan, and conversational discovery. In every case verify that
+the recorded knowns and unknowns match files actually read.
 
 ## Scenario 3: Non-software project
 

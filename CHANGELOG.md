@@ -13,6 +13,9 @@ uses it) are recorded here.
 - Execution evidence gate: implementation tasks require durable brief,
   host-dispatch, subagent-report, reviewer, progress, and integration
   evidence.
+- Existing-project Intake modes: users can choose bounded repository
+  exploration, goal-first work without a broad scan, or conversational
+  discovery; SIA records evidence, knowns, unknowns, and the goal.
 
 ### Changed
 

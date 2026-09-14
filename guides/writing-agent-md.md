@@ -43,6 +43,10 @@ A generated project `AGENT.md` must include:
    task briefs, dispatch records, subagent reports, reviewer verdicts,
    progress log, and integration report. State that the controller may
    not implement task-owned files when the host supports subagents.
+8. **Intake Record** — the chosen existing-project intake mode (if
+   applicable), files actually read, what is known, what remains unknown,
+   and the user's goal. This prevents a generated project contract from
+   presenting an unscanned repository as understood.
 6. **Competing Agent Framework Boundary** — required only if Intake
    found existing agent/AI-tooling already installed in this project
    (e.g. a `.cursor/`, another framework's own skill/plugin folders, a
