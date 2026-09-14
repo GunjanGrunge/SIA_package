@@ -60,3 +60,12 @@ creates a task brief, host dispatch record, subagent report, reviewer
 verdict, and progress entry for a real implementation task. A run that
 implements task-owned code directly while the host can spawn subagents
 fails this scenario even if its tests pass.
+
+## Scenario 7: Optional attribution
+
+Run four fresh Intake conversations and select `none`, `README badge`,
+`commit trailers`, and `both` once each. Confirm `none` causes no README or
+commit-message change; badge modes preserve existing README style and require
+approval; trailer modes preserve the human Git identity and use a real,
+committed `SIA-Run` evidence path. Confirm the generated project `AGENT.md`,
+project skill, and skill manifest record the selected mode.

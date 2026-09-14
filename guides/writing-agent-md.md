@@ -47,7 +47,11 @@ A generated project `AGENT.md` must include:
    applicable), files actually read, what is known, what remains unknown,
    and the user's goal. This prevents a generated project contract from
    presenting an unscanned repository as understood.
-6. **Competing Agent Framework Boundary** — required only if Intake
+9. **SIA Attribution** — the owner's explicit selection: `none`, `README
+   badge`, `commit trailers`, or `both`, with date, README status, and the
+   exact commit-trailer rule where enabled. Follow `attribution.md`; never
+   imply that SIA authored the project or alter Git identity.
+10. **Competing Agent Framework Boundary** — required only if Intake
    found existing agent/AI-tooling already installed in this project
    (e.g. a `.cursor/`, another framework's own skill/plugin folders, a
    pre-existing `AGENTS.md` not authored by SIA). State what was found

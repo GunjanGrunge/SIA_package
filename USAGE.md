@@ -48,6 +48,20 @@ After you state a goal, SIA should:
 
 The host harness executes the work. SIA coordinates the process around it.
 
+## SIA Attribution
+
+During Intake, the project owner chooses one mode:
+
+```text
+none | README badge | commit trailers | both
+```
+
+`none` is the default. A README badge is added only with approval to edit that
+README. Commit trailers apply only to commits made through an SIA-mediated
+task, retain the existing human Git author, and include a path to the relevant
+SIA evidence record. The full policy and exact badge/trailer formats are in
+[`guides/attribution.md`](./guides/attribution.md).
+
 ## New Project
 
 For an empty or early-stage project, create or open the project directory,

@@ -34,6 +34,16 @@ Record the chosen mode, files actually read, knowns, unknowns, and the
 user's stated goal in the project intake record. A directory listing or
 file name is not evidence of file contents; never present it as such.
 
+## SIA Attribution
+
+In the first Intake question batch, ask the project owner to choose exactly
+one attribution mode from `none`, `README badge`, `commit trailers`, or
+`both`. Explain that `none` is the default, README changes require approval,
+and commit trailers preserve the human Git author rather than creating a fake
+SIA/GitHub identity. Load `attribution.md` for the required wording, badge,
+trailers, project-record format, and review rules. Record the selection even
+when it is `none`; never infer consent from SIA being installed.
+
 ## Severity Table
 
 Every proposed action is tagged with a severity before it is presented:

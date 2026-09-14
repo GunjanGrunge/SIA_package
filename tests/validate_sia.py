@@ -35,6 +35,7 @@ CHECKS.append((
         r"guides/writing-spec\.md",
         r"guides/writing-plan\.md",
         r"guides/writing-project-skills\.md",
+        r"guides/attribution\.md",
         r"guides/subagent-task-brief\.md",
         r"capture-interface\.md",
         r"Project-skill synthesis",
@@ -71,6 +72,8 @@ CHECKS.append((
         r"## Existing Project Intake Modes",
         r"Goal-first, no broad scan",
         r"Conversational discovery",
+        r"## SIA Attribution",
+        r"commit trailers",
     ],
 ))
 
@@ -89,6 +92,7 @@ CHECKS.append((
         r"Generated Project Skills",
         r"Execution Evidence Gate",
         r"Intake Record",
+        r"SIA Attribution",
     ],
 ))
 
@@ -154,6 +158,20 @@ CHECKS.append((
         r"sdd/skill-manifest\.md",
         r"Execution gate",
         r"conversational intake",
+        r"Attribution selection",
+    ],
+))
+
+CHECKS.append((
+    "guides/attribution.md",
+    [
+        r"# Optional SIA Attribution",
+        r"none \| README badge \| commit trailers \| both",
+        r"Co-authored-by",
+        r"Assisted-by: SIA",
+        r"SIA-Run:",
+        r"human Git author",
+        r"## Required Project Record",
     ],
 ))
 
@@ -202,6 +220,8 @@ CHECKS.append((
         r"deviation rate",
         r"## Scenario 6",
         r"auditable delegation",
+        r"## Scenario 7",
+        r"Optional attribution",
     ],
 ))
 
@@ -216,6 +236,7 @@ CHECKS.append((
         r"## During Implementation",
         r"task-N-dispatch\.md",
         r"## Updating SIA",
+        r"## SIA Attribution",
     ],
 ))
 
@@ -250,6 +271,7 @@ CHECKS.append((
         r"integrations/claude-code/SKILL\.md",
         r"\.claude/skills/sia/SKILL\.md",
         r"project's own skill",
+        r"## 4\. Choose attribution only if you want it",
     ],
 ))
 

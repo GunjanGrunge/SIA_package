@@ -69,3 +69,11 @@ project's own skill(s) under `skills/` and, for Claude Code,
 artifacts, not files the user must hand-write. The generic `sia` shim is
 only the launcher; the generated skill carries the project's specific
 goal, rules, and execution gate.
+
+## 4. Choose attribution only if you want it
+
+During Intake, SIA asks whether the project should use `none`, `README badge`,
+`commit trailers`, or `both`. `none` is the default. The other options are
+documented in `guides/attribution.md`: a README badge credits the public SIA
+package, while trailers add audit-friendly SIA evidence to SIA-mediated commits
+without changing the human Git author or creating a fake GitHub identity.
