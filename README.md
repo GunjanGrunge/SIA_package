@@ -18,10 +18,11 @@
   assistant into a self-improving project collaborator.</b>
 </p>
 
-It generates fresh, project-specific process artifacts (an `AGENT.md`, a
-spec, a plan, subagent task briefs) instead of declaring "done"
-prematurely, with human-in-the-loop approval gates and a self-healing
-feedback loop.
+It generates fresh, project-specific process artifacts: an `AGENT.md`, a
+spec, a plan, **host-discoverable project skills**, and auditable
+subagent task records. You install SIA and state the goal; SIA derives
+the needed skills, delegates implementation through the host harness,
+reviews the results, and reports the integrated outcome.
 
 This repo **is** the package. Clone it directly into a project as
 `sia/` and you're set up.
@@ -49,7 +50,9 @@ Then, in `your-project/`:
 2. **Tell your assistant once:** *"Read `sia/AGENT.md` and follow it."*
    That's the one mandatory entry point — from there it runs Intake,
    asks what it needs to, and generates your project's own `AGENT.md`,
-   spec, and plan using the guides under `sia/guides/`.
+   spec, project skill(s), and plan using the guides under `sia/guides/`.
+   During execution it requires a brief, dispatch record, subagent report,
+   reviewer verdict, and integration report for each planned task.
 
 No API keys, no account, no cloud dependency. It's plain markdown
 instructions plus a small Python structure-test harness
@@ -64,6 +67,7 @@ guides/
 ├── writing-agent-md.md           # how to author a project's own AGENT.md
 ├── writing-spec.md               # how to author a project spec
 ├── writing-plan.md               # how to break a spec into a plan (file ownership, integration phase)
+├── writing-project-skills.md     # how SIA derives host-discoverable project skills
 ├── subagent-task-brief.md        # task brief / report / progress-log / integration-report formats
 └── security-gate.md              # fixed threat-class checklist (software projects only)
 capture-interface.md              # feedback capture + the self-healing loop-engineering mechanism
@@ -77,10 +81,16 @@ tests/                            # structure-test harness (dev tooling, not nee
 ## Core idea
 
 SIA is a *generator*, not a library of pre-built templates. Every
-project gets its own fresh `AGENT.md`, spec, and plan — never copied
+project gets its own fresh `AGENT.md`, spec, plan, and skill pack — never copied
 from another project — authored using the guides here. The one
 exception is `guides/security-gate.md`, a fixed, reused checklist for
 software projects.
+
+When a host supports subagents, SIA's controller is not allowed to
+silently replace a delegated implementation task with direct coding. A
+task is complete only with durable dispatch, implementation, review, and
+integration evidence; otherwise SIA reports the execution limitation to
+the user.
 
 The feedback loop (`capture-interface.md`) turns verified mistakes into
 project-specific standing rules with full provenance (source, evidence,

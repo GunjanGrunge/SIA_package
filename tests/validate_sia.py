@@ -22,7 +22,7 @@ CHECKS.append((
         r"INSTALL\.md",
         r"## Authority Order",
         r"User instructions",
-        r"Integration phase",
+        r"Integration\s+phase",
         r"Competing Agent Framework Boundary",
         r"exploration budget",
         r"## Launch Screen",
@@ -34,8 +34,11 @@ CHECKS.append((
         r"guides/writing-agent-md\.md",
         r"guides/writing-spec\.md",
         r"guides/writing-plan\.md",
+        r"guides/writing-project-skills\.md",
         r"guides/subagent-task-brief\.md",
         r"capture-interface\.md",
+        r"Project-skill synthesis",
+        r"must not implement a task-owned file itself",
     ],
 ))
 
@@ -78,6 +81,8 @@ CHECKS.append((
         r"active.*retired|retired.*active",
         r"Competing Agent Framework Boundary",
         r"coexist",
+        r"Generated Project Skills",
+        r"Execution Evidence Gate",
     ],
 ))
 
@@ -107,6 +112,8 @@ CHECKS.append((
         r"## Owned Files",
         r"ownership boundary",
         r"integration task",
+        r"## Delegation And Evidence",
+        r"task-N-dispatch\.md",
     ],
 ))
 
@@ -124,6 +131,22 @@ CHECKS.append((
         r"Relevant Standing Rules",
         r"Standing rules checked",
         r"did this repeat a known mistake",
+        r"## Execution Gate",
+        r"Host Evidence",
+        r"does not implement task-owned files itself",
+    ],
+))
+
+CHECKS.append((
+    "guides/writing-project-skills.md",
+    [
+        r"## When To Generate",
+        r"## Output Locations",
+        r"## Required Contents",
+        r"## Skill Manifest",
+        r"project-specific",
+        r"sdd/skill-manifest\.md",
+        r"Execution gate",
     ],
 ))
 
@@ -142,6 +165,8 @@ CHECKS.append((
         r"deviation rate",
         r"error class",
         r"retired",
+        r"Process And Framework Deviations",
+        r"framework-default-override",
     ],
 ))
 
@@ -167,6 +192,8 @@ CHECKS.append((
         r"second host",
         r"## Scenario 5",
         r"deviation rate",
+        r"## Scenario 6",
+        r"auditable delegation",
     ],
 ))
 
@@ -200,6 +227,7 @@ CHECKS.append((
         r"## 3\. Give your host a way to find `sia/AGENT\.md`",
         r"integrations/claude-code/SKILL\.md",
         r"\.claude/skills/sia/SKILL\.md",
+        r"project's own skill",
     ],
 ))
 
@@ -209,7 +237,8 @@ CHECKS.append((
         r"^name: sia$",
         r"^description:",
         r"sia/AGENT\.md",
-        r"has no logic of its own",
+        r"has no .*logic of its own",
+        r"generated project operating skill",
     ],
 ))
 

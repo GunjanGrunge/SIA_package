@@ -30,7 +30,8 @@ sia/
 
 Do **not** gitignore what SIA *generates* for this project — that
 project's own `AGENT.md`, `docs/specs/`, `docs/plans/`, `logs/sessions/`,
-and any `sdd/`-style subagent task-brief folders are real project history
+generated `skills/`, host-discovery skill copies, and any `sdd/`-style
+subagent task-brief folders are real project history
 and should be committed, the same way BMAD's `_bmad-output/` (a project's
 own generated brainstorm/intent record, not vendored tooling) is kept and
 committed rather than ignored.
@@ -58,3 +59,10 @@ Other hosts may grow their own equivalent shims over time
 (e.g. a `.cursor/rules/sia.md`, or an `AGENTS.md`-style pointer) — each
 would be a similarly thin, static file added under
 `sia/integrations/<host>/`, never a fork of SIA's actual guidance.
+
+After Intake and project `AGENT.md` authoring, SIA generates the
+project's own skill(s) under `skills/` and, for Claude Code,
+`.claude/skills/<project-slug>-sia/SKILL.md`. Those are committed project
+artifacts, not files the user must hand-write. The generic `sia` shim is
+only the launcher; the generated skill carries the project's specific
+goal, rules, and execution gate.

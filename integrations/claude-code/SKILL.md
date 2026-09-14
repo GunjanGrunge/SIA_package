@@ -6,9 +6,14 @@ description: Load SIA (Self Improving Agents) at the start of any work in this p
 # SIA (Claude Code discovery shim)
 
 This file exists only so Claude Code finds SIA without being told to. It
-has no logic of its own and must never duplicate SIA's actual guidance.
+has no project logic of its own and must never duplicate SIA's actual
+guidance.
 
 **Read `sia/AGENT.md`, in the project root, in full, right now, and follow
 it exactly.** If this file and `sia/AGENT.md` ever disagree about
 anything, `sia/AGENT.md` is correct — update this file to match it, not
 the other way around.
+
+If `.claude/skills/<project-slug>-sia/SKILL.md` exists, load it after
+`sia/AGENT.md`. It is the generated project operating skill and still
+defers to the project's own `AGENT.md`.

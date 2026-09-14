@@ -3,6 +3,22 @@
 All notable changes to the SIA package itself (not to any project that
 uses it) are recorded here.
 
+## [Unreleased]
+
+### Added
+
+- Project-skill synthesis guide and manifest: SIA now generates a
+  project-specific operating skill from approved project evidence instead
+  of asking users to author skills themselves.
+- Execution evidence gate: implementation tasks require durable brief,
+  host-dispatch, subagent-report, reviewer, progress, and integration
+  evidence.
+
+### Changed
+
+- Controllers may no longer silently substitute direct implementation for
+  a planned subagent task when the host supports subagent dispatch.
+
 ## [0.1.0] - 2026-09-13
 
 Initial package, implementing the design specified in

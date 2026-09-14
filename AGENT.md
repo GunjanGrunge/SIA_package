@@ -11,7 +11,8 @@ authors its own project-specific process artifacts instead of declaring
 **Read this file in full before taking any other action in this project.**
 
 SIA is a *generator*, not a library of pre-built domain packs. Every
-project gets its own fresh `AGENT.md`, spec, plan, and subagent task
+project gets its own fresh `AGENT.md`, spec, plan, project-specific skill
+files, and subagent task
 briefs, authored using the guides below — never copied from another
 project. The one exception is `guides/security-gate.md`, a fixed,
 reused checklist loaded only for software projects.
@@ -56,6 +57,8 @@ Load these as needed, per the pipeline stage you're in:
 - `guides/writing-spec.md` — how to author *this project's own* spec.
 - `guides/writing-plan.md` — how to break a spec into an implementation
   plan.
+- `guides/writing-project-skills.md` — how to synthesize the project's
+  own host-discoverable skills from its goals, contract, and plan.
 - `guides/subagent-task-brief.md` — task brief / report / progress-log
   formats for subagent-driven execution.
 - `guides/security-gate.md` — fixed threat-class checklist. Load only
@@ -103,24 +106,28 @@ on it if neither option is available.
    project's own spec into its own `docs/specs/`.
 4. **AGENT.md authoring** — using `guides/writing-agent-md.md`, write
    this project's own `AGENT.md`/`AGENTS.md`.
-5. **Plan authoring** — using `guides/writing-plan.md`, break the spec
+5. **Project-skill synthesis** — using
+   `guides/writing-project-skills.md`, generate the host-discoverable,
+   project-specific skills required for this project. Record their
+   provenance in a skill manifest. The user never has to design this
+   skill pack manually.
+6. **Plan authoring** — using `guides/writing-plan.md`, break the spec
    into an implementation plan, saved into this project's own
    `docs/plans/`.
-6. **Execution** — using `guides/subagent-task-brief.md`, spawn scoped
-   subagents per task, each with a brief and a report, diffed and
-   reviewed before being marked complete. After every task in the plan
-   is individually reviewed and complete, run one **Integration phase**
-   before declaring the plan done: run the project's full test/build
-   suite (not just each task's own check), verify the named Interfaces
-   between tasks actually match up in the combined code (not just each
-   task's own diff in isolation), and review the whole plan's combined
-   diff as one unit — a defect that only exists at the seam between two
-   tasks is invisible to both tasks' own reviews individually. This step
-   is not theoretical caution: SIA's own package was built this way, and
-   its final whole-branch review found real defects that no individual
-   task's own review had caught — the generalization here is of
-   something that already happened once, not a hypothetical.
-7. **Feedback loop** — capture corrections, review findings, and (for
+7. **Execution** — using `guides/subagent-task-brief.md`, materialize a
+   brief, host-dispatch record, subagent report, and reviewer verdict for
+   every implementation task. If the host can spawn subagents, the
+   controller **must not implement a task-owned file itself**: it briefs,
+   dispatches, reviews, integrates, and escalates. If the host cannot
+   spawn subagents, stop and tell the user before implementation rather
+   than silently substituting single-agent work. After every task in the
+   plan is individually reviewed and complete, run one **Integration
+   phase** before declaring the plan done: run the project's full
+   test/build suite (not just each task's own check), verify the named
+   Interfaces between tasks actually match up in the combined code (not
+   just each task's own diff in isolation), and review the whole plan's
+   combined diff as one unit.
+8. **Feedback loop** — capture corrections, review findings, and (for
    software projects) security-gate findings via
    `capture(signal_type, context, severity)` (see `capture-interface.md`),
    fold them into this project's own `AGENT.md` as standing rules, and

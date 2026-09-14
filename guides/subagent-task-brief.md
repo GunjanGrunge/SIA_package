@@ -6,6 +6,21 @@ your host provides — SIA does not assume a specific tool call or API,
 only that the host can hand a subagent a self-contained brief and get a
 report back.
 
+## Execution Gate
+
+This is a completion gate, not a suggestion. Before changing files owned
+by an implementation task, the controller must persist that task's brief
+and a dispatch record under `sdd/` (or the plan's declared equivalent).
+When the host supports subagents, the controller delegates the task and
+does not implement task-owned files itself. Its role is to brief,
+dispatch, review, integrate, and escalate.
+
+If the host lacks a subagent mechanism, or the controller cannot capture
+host evidence, stop as `blocked` and explain that limitation to the user.
+A fast direct-controller implementation is not a substitute for a
+delegated task. Only a plan's explicitly controller-owned integration or
+review task is exempt.
+
 ## Task Brief Format
 
 Give the subagent only what its task needs, not the whole plan:
@@ -41,6 +56,9 @@ Relevant Standing Rules: <any Accumulated Feedback Rules from the
                            task's files") rather than leaving the field
                            blank — a blank field looks skipped, not
                            checked.>
+Host Evidence: <host/harness name, dispatched subagent identifier or
+                name, and dispatch timestamp; write the same information
+                to `sdd/task-N-dispatch.md`>
 Escalate, don't improvise, when: <the fixed list below>
 ```
 
@@ -65,12 +83,16 @@ The subagent returns, after completing (or getting stuck on) its task:
 # Task Report: <task name>
 
 Status: complete | blocked | partial
+Host Evidence: <subagent identifier/name and host mechanism, copied from
+                the dispatch record; never claim delegation without it>
 What changed: <files touched, one line each>
 Verification evidence: <the actual command run and its output, not a
                          claim that it passed>
 Deviations from the brief: <anything done differently than specified,
                              and why>
 Open questions: <anything the reviewer needs to decide>
+Reviewer verdict: complete | blocked | reverted — <reviewer identity and
+                  reason, after inspecting the diff and evidence>
 ```
 
 A report claiming "done" without verification evidence is incomplete —
@@ -84,6 +106,7 @@ each task's report is reviewed:
 ```text
 ## Task N: <name> — <complete|blocked|reverted> — <ISO-8601 timestamp>
 Report: <path to task-N-report.md>
+Dispatch: <path to task-N-dispatch.md; host/subagent identifier>
 Reviewer notes: <anything the reviewer added beyond the report itself>
 Usage: <token counts if the host exposes them, else turns/spawns/files-touched>
 ```

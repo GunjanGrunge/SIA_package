@@ -2,7 +2,7 @@
 
 SIA is instructions, not executable application code — `tests/validate_sia.py`
 only proves no required section is missing, never that the guidance
-actually works on a real project. Run all five scenarios below against
+actually works on a real project. Run all six scenarios below against
 a version before calling it stable; record the outcome of each in this
 project's own session log.
 
@@ -47,3 +47,13 @@ Confirm the deviation rate (`capture-interface.md`'s Convergence
 Signal) actually falls across phases — not just that DEVIATIONs get
 logged, but that the same class of mistake stops recurring once a rule
 for it exists in that project's `AGENT.md`.
+
+## Scenario 6: Generated skills and auditable delegation
+
+In a fresh project, install SIA and give the assistant only the standard
+entry instruction. Verify that it asks for or finds the project goal,
+generates a project operating skill and `sdd/skill-manifest.md`, then
+creates a task brief, host dispatch record, subagent report, reviewer
+verdict, and progress entry for a real implementation task. A run that
+implements task-owned code directly while the host can spawn subagents
+fails this scenario even if its tests pass.

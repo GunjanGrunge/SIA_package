@@ -34,6 +34,15 @@ A generated project `AGENT.md` must include:
    rule with no provenance is a rule nobody can later check is still
    correct (see Rule Review And Expiry).
 5. **Repository Map** — a short tree of what exists and where.
+6. **Generated Project Skills** — the path of the project-skill manifest,
+   every generated skill, what project evidence produced it, and a rule
+   that those skills defer to this `AGENT.md` when they conflict. Use
+   `writing-project-skills.md`; do not ask the user to hand-author skill
+   files that SIA can derive from approved project artifacts.
+7. **Execution Evidence Gate** — the `sdd/` (or equivalent) location for
+   task briefs, dispatch records, subagent reports, reviewer verdicts,
+   progress log, and integration report. State that the controller may
+   not implement task-owned files when the host supports subagents.
 6. **Competing Agent Framework Boundary** — required only if Intake
    found existing agent/AI-tooling already installed in this project
    (e.g. a `.cursor/`, another framework's own skill/plugin folders, a

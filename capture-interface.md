@@ -72,6 +72,15 @@ Classify every stage outcome as one of:
 Only DEVIATIONs are captured via the interface above. PASSes aren't
 logged for their own sake, but they feed the Convergence Signal below.
 
+### Process And Framework Deviations
+
+Capture process failures as seriously as code failures. Examples include
+skipping project-skill synthesis, a controller implementing a task that
+should have been delegated, a missing dispatch record, or claiming token
+budget compliance without host telemetry. Use a specific error class such
+as `framework-default-override`, record the evidence, and turn the
+correction into an active project rule before the next task.
+
 ## Pre-Flight Self-Check
 
 Logging a DEVIATION is necessary but not sufficient — this step is what
