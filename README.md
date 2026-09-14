@@ -26,6 +26,15 @@ feedback loop.
 This repo **is** the package. Clone it directly into a project as
 `sia/` and you're set up.
 
+## Architecture
+
+<p align="center">
+  <img src="./assets/architecture-flowchart.png" alt="SIA full pipeline diagram: Entry Point, Intake &amp; Classification, Planning &amp; Approval, Execution Layer, Validation &amp; Delivery, Learning &amp; Continuous Improvement" width="100%" />
+</p>
+
+The full six-stage pipeline this package implements — see `AGENT.md` for
+the authoritative step-by-step version this diagram summarizes.
+
 ## Install
 
 ```bash
