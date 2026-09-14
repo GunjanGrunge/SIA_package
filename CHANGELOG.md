@@ -7,6 +7,8 @@ uses it) are recorded here.
 
 ### Added
 
+- `USAGE.md` — complete new-project, existing-project, Claude Code, and
+  Codex instructions for users of the package.
 - Project-skill synthesis guide and manifest: SIA now generates a
   project-specific operating skill from approved project evidence instead
   of asking users to author skills themselves.

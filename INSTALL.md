@@ -16,6 +16,9 @@ project root — either way, the folder you end up with must be named
 `sia/`, since every guide in this package refers to itself by that
 relative path.)
 
+For the full user guide, including new and existing project workflows,
+Claude Code, Codex, reporting, and updates, read `USAGE.md`.
+
 ## 2. Gitignore the vendored package, keep the generated artifacts
 
 `sia/` is vendored tooling — it is not part of the target project's own

@@ -206,6 +206,20 @@ CHECKS.append((
 ))
 
 CHECKS.append((
+    "USAGE.md",
+    [
+        r"## Quick Start",
+        r"## New Project",
+        r"## Existing Project",
+        r"## Claude Code",
+        r"## Codex",
+        r"## During Implementation",
+        r"task-N-dispatch\.md",
+        r"## Updating SIA",
+    ],
+))
+
+CHECKS.append((
     "BANNER.txt",
     [
         r"SIA v",

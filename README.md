@@ -58,6 +58,9 @@ No API keys, no account, no cloud dependency. It's plain markdown
 instructions plus a small Python structure-test harness
 (`tests/validate_sia.py`) used only when developing this package itself.
 
+For the complete new-project, existing-project, Claude Code, Codex,
+subagent, reporting, and update workflow, read [USAGE.md](./USAGE.md).
+
 ### Existing project? You choose the starting mode
 
 After the minimal safety check, SIA asks which way you want to begin:
@@ -90,6 +93,7 @@ capture-interface.md              # feedback capture + the self-healing loop-eng
 integrations/claude-code/SKILL.md # optional Claude Code auto-discovery shim
 INSTALL.md                        # how to add this to a project (gitignore policy, discovery)
 VALIDATION.md                     # the dogfood checklist this package is tested against
+USAGE.md                          # complete user guide for new and existing projects
 CHANGELOG.md
 tests/                            # structure-test harness (dev tooling, not needed to use SIA)
 ```
