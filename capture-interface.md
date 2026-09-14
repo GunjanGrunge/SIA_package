@@ -111,6 +111,41 @@ low deviation rates across every class — the strongest version of this
 signal comes from real, independently-authored requests over real
 elapsed sessions, not a single sitting's worth of self-designed probes.
 
+## Token / Cost Tracking
+
+Effort Budgets (`guides/subagent-task-brief.md`) bound a single task in
+isolation; nothing before this section bounded the *project's* running
+total across a whole session or plan, and an unbounded loop can get
+expensive without anyone noticing until the bill arrives. Close that
+gap with a simple running counter, not a new subsystem:
+
+- Maintain a running total of usage (token counts when the host exposes
+  them, otherwise the same fallback proxy the Progress Log's Usage field
+  already uses — turns, subagent spawns, files touched) across the
+  current session or plan run, updated after every subagent report and
+  every major proposal.
+- The project's own `AGENT.md` states a ceiling for this running total
+  (a number the user sets when the project is generated — there is no
+  sane universal default, since a one-file script and a full plan
+  execution have nothing in common). If the user hasn't stated one,
+  ask once during Plan authoring rather than assuming.
+- **On approaching the ceiling** (a good default: 80% of it), say so
+  explicitly before continuing — this is itself worth a low-severity
+  note, not a silent continuation.
+- **On hitting the ceiling**, stop and do one of, in order of
+  preference: (1) propose a scope reduction for the remaining work
+  (fewer tasks, a narrower Files list, deferring something to a follow-up
+  plan), or (2) propose switching the remaining work to a cheaper model
+  if the host supports per-task model selection. Either way this goes
+  through the normal approval gate — spending past a ceiling the user
+  set is itself a high-severity action, not something to push through
+  on the assumption "just this once."
+- Log every ceiling-approach and ceiling-hit event via `capture()` with
+  `error_class: cost-overrun` — a project that keeps approaching its own
+  ceiling is itself a signal the ceiling, or the plan's scope, needs
+  revisiting, and this is what makes that trackable instead of
+  anecdotal.
+
 ## Rule Hygiene
 
 Accumulated rules must stay small enough to actually be re-read at every

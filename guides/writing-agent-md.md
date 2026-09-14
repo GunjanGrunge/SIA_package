@@ -34,6 +34,15 @@ A generated project `AGENT.md` must include:
    rule with no provenance is a rule nobody can later check is still
    correct (see Rule Review And Expiry).
 5. **Repository Map** — a short tree of what exists and where.
+6. **Competing Agent Framework Boundary** — required only if Intake
+   found existing agent/AI-tooling already installed in this project
+   (e.g. a `.cursor/`, another framework's own skill/plugin folders, a
+   pre-existing `AGENTS.md` not authored by SIA). State what was found
+   and one explicit rule: *coexist with it, never edit or delete its
+   files, and document the boundary* — which files/folders belong to
+   the other tooling and are therefore off-limits to SIA-driven changes.
+   Omit this section entirely when Intake found nothing of the kind;
+   don't manufacture a boundary where there's nothing to bound.
 
 ## Writing Style
 

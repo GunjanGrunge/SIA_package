@@ -72,3 +72,17 @@ SIA's own development history — not a file shipped in this package):
   reviewers (task-level and Integration) must now state which standing
   rules were checked and their per-rule verdict, not just whether the
   code works.
+- `capture-interface.md` — added a Token / Cost Tracking section: a
+  running usage total across a session/plan run, checked against a
+  project-stated ceiling, with an explicit approval-gated response
+  (scope reduction or cheaper model) on hitting it, logged via
+  `capture()` with `error_class: cost-overrun`.
+- `guides/writing-agent-md.md` — added an optional Competing Agent
+  Framework Boundary required section, for projects where Intake found
+  pre-existing agent/AI-tooling already installed: coexist, never edit
+  it, document the boundary.
+- `AGENT.md` — Intake step now also flags any pre-existing agent/AI
+  tooling for the Competing Agent Framework Boundary section, and adds
+  a soft exploration budget (15 files / ~40k tokens by default) during
+  Intake, with an explicit ask-rather-than-continue path if more is
+  genuinely needed.

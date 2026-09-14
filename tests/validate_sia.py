@@ -23,6 +23,8 @@ CHECKS.append((
         r"## Authority Order",
         r"User instructions",
         r"Integration phase",
+        r"Competing Agent Framework Boundary",
+        r"exploration budget",
         r"## Launch Screen",
         r"banner\.py",
         r"BANNER\.txt",
@@ -74,6 +76,8 @@ CHECKS.append((
         r"tool=",
         r"Rule Provenance",
         r"active.*retired|retired.*active",
+        r"Competing Agent Framework Boundary",
+        r"coexist",
     ],
 ))
 
@@ -130,6 +134,8 @@ CHECKS.append((
         r"## Rule Provenance",
         r"## PASS / DEVIATION",
         r"## Pre-Flight Self-Check",
+        r"## Token / Cost Tracking",
+        r"cost-overrun",
         r"## Convergence Signal",
         r"## Rule Hygiene",
         r"### Rule Review And Expiry",
