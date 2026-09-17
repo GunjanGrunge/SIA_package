@@ -1,44 +1,47 @@
-<p align="center">
-  <img src="./assets/sia-banner.png" alt="SIA: Self-Improving Agents" width="100%" />
-</p>
+# SIA (Self-Improving Agents)
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.1.0--alpha-00F2FE.svg?style=flat-square" alt="Version 0.1.0-alpha" />
+  <img src="https://img.shields.io/badge/version-0.2.0--alpha-00F2FE.svg?style=flat-square" alt="Version 0.2.0-alpha" />
   <img src="https://img.shields.io/badge/status-active-success.svg?style=flat-square" alt="Status: Active" />
   <img src="https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat-square" alt="License: MIT" />
   <img src="https://img.shields.io/badge/host--agnostic-yes-7B2CBF.svg?style=flat-square" alt="Host-agnostic" />
 </p>
 
-<p align="center">
-  <img src="./assets/sia-mark.svg" alt="SIA mark" width="48" />
-</p>
+> **A portable, host-agnostic instruction package that turns any coding assistant into a self-improving project collaborator.**
 
-<p align="center">
-  <b>A portable, host-agnostic instruction package that turns a coding
-  assistant into a self-improving project collaborator.</b>
-</p>
+It generates fresh, project-specific process artifacts: a project `AGENT.md`, a spec, an implementation plan, **modular feature-based project skills**, token savings metrics, and auditable subagent task records. You install SIA and state the goal; SIA derives the needed feature skills, delegates implementation through the host harness (Claude Code, Antigravity, Codex, etc.), reviews the results in your project root directory, and reports the integrated outcome with clear token savings metrics.
 
-It generates fresh, project-specific process artifacts: an `AGENT.md`, a
-spec, a plan, **host-discoverable project skills**, and auditable
-subagent task records. You install SIA and state the goal; SIA derives
-the needed skills, delegates implementation through the host harness,
-reviews the results, and reports the integrated outcome.
-
-This repo **is** the package. Clone it directly into a project as
-`sia/` and you're set up.
+This repo **is** the package. Clone it directly into a project as `sia/` and you're set up.
 
 ## Architecture
 
-<p align="center">
-  <img src="./assets/architecture-flowchart.png" alt="SIA full pipeline diagram: Entry Point, Intake &amp; Classification, Planning &amp; Approval, Execution Layer, Validation &amp; Delivery, Learning &amp; Continuous Improvement" width="100%" />
-</p>
+```text
+┌────────────────┐      ┌──────────────────────────┐      ┌─────────────────────────┐
+│  1. BOOTSTRAP  │ ---> │ 2. INTAKE & CLASSIFY     │ ---> │ 3. SPEC & AGENT.MD      │
+│  banner & mode │      │ Repo exploration/Goal    │      │ Specs & Standing Rules  │
+└────────────────┘      └──────────────────────────┘      └─────────────────────────┘
+                                                                       │
+┌────────────────┐      ┌──────────────────────────┐                   ▼
+│ 6. FEEDBACK    │ <--- │ 5. EXECUTION & AUDIT     │ <--- ┌─────────────────────────┐
+│ Loop & rules   │      │ Root Dir & Subagents     │      │ 4. MODULAR SKILL SYNTH  │
+└────────────────┘      └──────────────────────────┘      │ Feature Domain Skills   │
+                                                          └─────────────────────────┘
+```
 
-The full six-stage pipeline this package implements — see `AGENT.md` for
-the authoritative step-by-step version this diagram summarizes.
+The full pipeline this package implements — see `AGENT.md` for the authoritative step-by-step version this diagram summarizes.
 
 ## Install
 
+Initialize SIA in any project with your preferred package manager:
+
 ```bash
+# Option A: npm / npx (Zero-install launcher)
+npx sia-agent init
+
+# Option B: Python / PyPI
+pip install sia-agent && sia init
+
+# Option C: Direct Git Clone
 git clone https://github.com/GunjanGrunge/SIA_package.git /path/to/your-project/sia
 ```
 

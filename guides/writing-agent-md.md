@@ -51,13 +51,14 @@ A generated project `AGENT.md` must include:
    date, README status, and the exact commit-trailer rule. Use `none` only on
    a direct user override. Follow `attribution.md`; never imply that SIA
    authored the project or alter Git identity.
-10. **Competing Agent Framework Boundary** — required only if Intake
-   found existing agent/AI-tooling already installed in this project
-   (e.g. a `.cursor/`, another framework's own skill/plugin folders, a
-   pre-existing `AGENTS.md` not authored by SIA). State what was found
-   and one explicit rule: *coexist with it, never edit or delete its
-   files, and document the boundary* — which files/folders belong to
-   the other tooling and are therefore off-limits to SIA-driven changes.
+10. **Competing Agent Framework Boundary & Plugin Collaboration Protocol** — required only if Intake
+   found existing agent/AI-tooling, native skills, or plugins installed in this project
+   (e.g. `BMAD` files in `_bmad/` or `.claude/skills/bmad-*`, `Superpowers` skills, `.cursor/`,
+   another framework's own skill/plugin folders, or a pre-existing `AGENTS.md`). State what was found
+   and the explicit rules:
+   - *Coexist & Collaborate*: State how SIA will coexist with it, never edit or delete its files, and read native skills/plugins as domain authority and tool capability providers. Incorporate their instructions into subagent task briefs.
+   - *Protect Integrity*: Never edit, delete, or overwrite native plugin files or skill definitions.
+   - *Multi-Agent Alignment*: When spawning subagents, provide relevant native plugin context so subagents execute seamlessly alongside native skills (`/bmad`, `/superpowers`, etc.) and refine execution using SIA's feedback loop.
    Omit this section entirely when Intake found nothing of the kind;
    don't manufacture a boundary where there's nothing to bound.
 

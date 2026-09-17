@@ -1,0 +1,35 @@
+{
+  "name": "sia-agent",
+  "version": "0.2.0-alpha",
+  "description": "Self-Improving Agents (SIA) - A portable, host-agnostic instruction package that turns any coding assistant into a self-improving project collaborator.",
+  "main": "bin/sia.js",
+  "bin": {
+    "sia": "bin/sia.js",
+    "sia-agent": "bin/sia.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GunjanGrunge/SIA_package.git"
+  },
+  "keywords": [
+    "sia",
+    "ai-agent",
+    "claude-code",
+    "antigravity",
+    "codex",
+    "bmad",
+    "superpowers",
+    "self-improving-agents",
+    "prompts",
+    "skills"
+  ],
+  "author": "GunjanGrunge",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GunjanGrunge/SIA_package/issues"
+  },
+  "homepage": "https://github.com/GunjanGrunge/SIA_package#readme",
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

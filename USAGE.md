@@ -146,6 +146,15 @@ Keep existing `AGENTS.md` instructions. SIA's generated project
 `AGENT.md` records how those instructions interact instead of silently
 overwriting them.
 
+## Collaborating with Native Skills & Plugins (`BMAD`, `Superpowers`, MCP)
+
+If your project already uses native skill packs or plugins such as `BMAD` (`_bmad/` or `.claude/skills/bmad-*`), `Superpowers`, `.cursor/rules/`, or MCP tools:
+
+1. **Coexistence**: SIA detects existing skills/plugins during Intake and records them in the project `AGENT.md`. SIA never overwrites or deletes native plugin files.
+2. **Reading Native Context**: SIA reads discovered native skills as domain authority and tool capability providers.
+3. **Multi-Agent Spawning & Delegation**: When SIA breaks work into tasks and dispatches subagents, it injects relevant native skill context into each subagent's task brief. Subagents execute using native tools/skills (e.g. running `/bmad` workflows or `/superpowers` tools).
+4. **Process Refinement**: SIA's feedback loop (`capture-interface.md`) monitors subagent results, captures any process failures or corrections, and refines future task briefing so multi-agent execution improves over time.
+
 ## During Implementation
 
 When the approved plan is ready, a compliant SIA run leaves an auditable
@@ -205,10 +214,56 @@ Review SIA release notes before resuming a plan. Existing project
 artifacts remain yours; an update should not replace them. SIA should
 record any material generated-skill change in `sdd/skill-manifest.md`.
 
+## Checking Backend Status & Token Savings
+
+You can check whether SIA is active, verify working directory safety, inspect active modular skills, and view token savings at any time:
+
+- **Via Terminal Command**:
+  ```bash
+  python sia/banner.py --status
+  ```
+- **Via Chat Prompt**:
+  ```text
+  SIA status
+  ```
+
+SIA will audit your current session and print:
+- Active Host Engine (`Claude Code`, `Antigravity IDE`, `Codex CLI`, etc.)
+- Working Directory verification (confirming execution in Project Root, not `.claude/workingtree`)
+- Current Pipeline Stage (`Intake`, `Spec`, `Plan`, `Execution`, `Feedback Loop`)
+- Active Modular Feature Skills Pack
+- Token Savings Accounting (`Tokens Used`, `Baseline Context Cost`, `Tokens Saved`, `% Reduction`)
+- Active Standing Feedback Rules count
+
+## Invoking SIA Mid-Project (Brownfield)
+
+If you have an existing project already in development and want to invoke SIA mid-way:
+
+1. Clone or copy SIA into `sia/` at your project root.
+2. Send this instruction to your assistant:
+   ```text
+   Read `sia/AGENT.md` in full and follow it. This is an existing ongoing project.
+   I want to initialize SIA mid-project to help me add [Feature Name].
+   Mode: Brownfield Intake. Inspect existing code and instructions without modifying them.
+   ```
+3. SIA will perform a safe Intake check, identify existing architecture and instructions, derive modular feature skills, and present an implementation plan before writing any code.
+
+## Modular Feature Skills & Multi-Engine Collaboration
+
+SIA does not dump your project into one giant monolithic skill file. Instead, it analyzes your project architecture and generates a **Modular Skill Pack** containing focused, feature-specific skills (e.g. `skills/<project>-theme-manager/SKILL.md`, `skills/<project>-product-search/SKILL.md`).
+
+Because these skill files are saved in standard host-neutral formats (`skills/`) and discoverable host paths (`.claude/skills/`, `.agents/skills/`), different AI coding assistants (Claude Code, Codex, Antigravity IDE, Cursor) can collaborate seamlessly on the exact same project using the same feature-specific skill rules.
+
+## Working Directory Execution Safety
+
+All SIA subagent tasks, commands (`python main.py`, `npm test`), and generated files MUST run in your **Project Root Directory**. SIA explicitly prevents execution inside hidden sandbox folders like `.claude/workingtree/` so your project files stay cleanly organized in your workspace.
+
 ## Troubleshooting
 
 - **No banner appeared:** the host may have hidden shell output. This is
   cosmetic; the workflow starts when `sia/AGENT.md` is read.
+- **Project files running in `.claude/workingtree`:** run `python sia/banner.py --status` to check working directory isolation. SIA strictly enforces project root execution.
+- **No token savings shown:** run `python sia/banner.py --status` or ask for `SIA status` to view cumulative token savings and percentage reductions.
 - **No subagents were used:** inspect `sdd/`. Missing dispatch and report
   artifacts mean the run is not compliant with the execution gate.
 - **SIA conflicts with existing instructions:** user instructions win,

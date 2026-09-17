@@ -28,6 +28,8 @@ Give the subagent only what its task needs, not the whole plan:
 ```text
 # Task Brief: <task name>
 
+Engine Header: [SIA Engine: <Engine Name> | Harness: <Terminal/IDE> | WorkingDir: <Project Root>]
+Working Directory: <User Root Project Directory — MUST NOT be .claude/workingtree or sandbox temp dir>
 Goal: <one sentence>
 Files: <exact paths to create/modify, from the plan's Files block — this
         is the task's exclusive ownership boundary; touching any file
@@ -82,12 +84,15 @@ The subagent returns, after completing (or getting stuck on) its task:
 ```text
 # Task Report: <task name>
 
+Engine Header: [SIA Engine: <Engine Name> | Harness: <Terminal/IDE> | WorkingDir: <Project Root>]
 Status: complete | blocked | partial
 Host Evidence: <subagent identifier/name and host mechanism, copied from
                 the dispatch record; never claim delegation without it>
+Working Directory Verified: <yes/no — confirmed executed in project root>
 What changed: <files touched, one line each>
 Verification evidence: <the actual command run and its output, not a
                          claim that it passed>
+Token Accounting: <Tokens Used: X | Baseline Cost: Y | Tokens Saved: Z (P% Reduction)>
 Deviations from the brief: <anything done differently than specified,
                              and why>
 Open questions: <anything the reviewer needs to decide>
@@ -108,7 +113,7 @@ each task's report is reviewed:
 Report: <path to task-N-report.md>
 Dispatch: <path to task-N-dispatch.md; host/subagent identifier>
 Reviewer notes: <anything the reviewer added beyond the report itself>
-Usage: <token counts if the host exposes them, else turns/spawns/files-touched>
+Usage & Token Savings: <Tokens Used: X | Baseline Cost: Y | Tokens Saved: Z (P% Reduction)>
 ```
 
 ## Integration Report Format
@@ -129,6 +134,7 @@ Standing rules checked: <every Accumulated Feedback Rule whose scope
                           diff, with a per-rule verdict — a task-level
                           check can miss a rule that only becomes
                           relevant once every task's code coexists>
+Cumulative Token Savings: <Total Tokens Used: X | Baseline Unoptimized Cost: Y | Total Saved: Z (P% Reduction)>
 Issues found: <anything only visible once every task's code coexists>
 ```
 

@@ -1,0 +1,18 @@
+# Python cache & build outputs
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+build/
+dist/
+*.egg-info/
+
+# Node outputs
+node_modules/
+package-lock.json
+*.tgz
+
+# OS temp files
+.DS_Store
+Thumbs.db

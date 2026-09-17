@@ -287,6 +287,42 @@ CHECKS.append((
     ],
 ))
 
+CHECKS.append((
+    "package.json",
+    [
+        r'"name": *"sia-agent"',
+        r'"bin":',
+        r'"bin/sia\.js"',
+    ],
+))
+
+CHECKS.append((
+    "bin/sia.js",
+    [
+        r"#!/usr/bin/env node",
+        r"initSia",
+        r"runStatus",
+    ],
+))
+
+CHECKS.append((
+    "pyproject.toml",
+    [
+        r'name *= *"sia-agent"',
+        r'\[project\.scripts\]',
+        r'sia *= *"cli:main"',
+    ],
+))
+
+CHECKS.append((
+    "cli.py",
+    [
+        r"def init_sia",
+        r"def print_help",
+        r"def main",
+    ],
+))
+
 
 def assert_contains(rel_path: str, patterns: list[str]) -> None:
     path = SIA_ROOT / rel_path

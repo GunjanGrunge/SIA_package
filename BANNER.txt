@@ -11,9 +11,10 @@
              ⠙⠿⣿⣿⣷⣦⣴⣾⣿⣿⠟⠋     
                ⠈⠛⢿⣿⣿⡿⠋⠁      
 
-              SIA v0.1.0-alpha
+              SIA v0.2.0-alpha
          Self-Improving Agents
 
+      • Engine           : Generic Host Engine (Claude/Codex/Antigravity)
       • Loop Engineering : active
       • Security Gate    : armed
       • Human Gates      : questioning & approval

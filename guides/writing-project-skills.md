@@ -62,6 +62,20 @@ Each generated project skill must contain:
    SIA-mediated commits while preserving human Git identity, and name the
    README badge path.
 
+## Modular Feature Skill Decomposition
+
+SIA derives a **Modular Skill Pack** composed of focused, feature-specific skill files rather than a single monolithic dump. During intake and spec analysis, SIA identifies the distinct functional modules and domain components of the project.
+
+For example, a web project with theme settings and product search is decomposed into:
+
+1. **Core Operating Skill** (`skills/<project-slug>-core/SKILL.md`) — project authority, main workflow contract, and execution safety gate.
+2. **Feature/Domain Skills** (`skills/<project-slug>-<feature>/SKILL.md`), such as:
+   - `skills/<project-slug>-theme-manager/SKILL.md` (color schemes, theme state rules, UI tokens)
+   - `skills/<project-slug>-product-search/SKILL.md` (search queries, indexing, product schema rules)
+   - `skills/<project-slug>-auth-handler/SKILL.md` (authentication, session limits, security constraints)
+
+These modular skills enable **Cross-Engine Collaboration**: because skills follow standard markdown formats placed in `skills/` and host discovery folders (`.claude/skills/`, `.agents/skills/`), the exact same feature skills can be loaded and shared across Claude Code, Codex, Antigravity IDE, Cursor, and other AI coding assistants working on the project.
+
 ## Skill Manifest
 
 Create `sdd/skill-manifest.md` alongside the execution records. For each
@@ -74,10 +88,9 @@ same manifest entry.
 
 ## Quality Rules
 
-- Generate the smallest useful skill set. One project operating skill is
-  required; add focused skills only when a distinct workflow needs one.
-- Do not duplicate the full `AGENT.md`. Link to it as the authority and
-  include only the task-relevant derived instructions.
+- Synthesize focused, modular feature skills for every distinct domain component identified in the spec.
+- Do not dump everything into a single monolithic skill file; decompose feature-specific operating rules so subagents and multi-engine collaborators load only the relevant feature context.
+- Do not duplicate the full `AGENT.md`. Link to it as the authority and include only the task-relevant derived instructions.
 - Never place secrets, tokens, or copied `.env` values in a skill.
 - A missing project-skill manifest or missing execution gate is a
   DEVIATION, not cosmetic documentation debt.

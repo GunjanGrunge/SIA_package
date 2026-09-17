@@ -133,6 +133,11 @@ gap with a simple running counter, not a new subsystem:
   already uses — turns, subagent spawns, files touched) across the
   current session or plan run, updated after every subagent report and
   every major proposal.
+- **Token Savings Accounting**: In addition to tracking usage, calculate and report the **Estimated Tokens Saved**:
+  - `Baseline Unoptimized Context` = The estimated tokens required if the entire codebase or unguided full-dump context were loaded (e.g. 150,000 tokens).
+  - `Actual Tokens Used` = Telemetry or proxy token count used by SIA's bounded intake, task isolation, and modular feature skill loading.
+  - `Tokens Saved` = `Baseline Unoptimized Context - Actual Tokens Used` (e.g., `Saved ~110,000 tokens (73.3% reduction)`).
+  - Report this savings metric in Intake summary, Progress log (`sdd/progress.md`), Integration Report, and CLI status output (`python sia/banner.py --status`).
 - The project's own `AGENT.md` states a ceiling for this running total
   (a number the user sets when the project is generated — there is no
   sane universal default, since a one-file script and a full plan

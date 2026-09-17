@@ -3,6 +3,17 @@
 All notable changes to the SIA package itself (not to any project that
 uses it) are recorded here.
 
+## [0.2.0] - 2026-09-17
+
+### Fixed & Enhanced
+
+- **Asset Directory Clean-up**: Removed heavy `assets/` directory (including 1.8MB flowchart) from release package for clean, lightweight user distribution. README updated with portable ASCII/markdown pipeline architecture.
+- **Working Directory Execution Safety**: Enforced project root execution across `AGENT.md`, `guides/subagent-task-brief.md`, and `USAGE.md`. Project files (`main.py`, `main.js`, tests, subagents) MUST execute in the user project root, never inside `.claude/workingtree/` or temporary sandboxes.
+- **Host Engine & Harness Visibility**: Added automatic host engine detection (`Claude Code`, `Antigravity IDE`, `Codex CLI`, etc.) and status headers to launch screens, task dispatches, and reports.
+- **Token Savings Accounting**: Added `Tokens Used`, `Baseline Context Cost`, `Tokens Saved`, and `% Reduction` tracking and reporting across Intake, Task Reports, Progress Log (`sdd/progress.md`), Integration Report, and CLI status check.
+- **Modular Feature Skill Decomposition**: Upgraded `guides/writing-project-skills.md` from single-skill generation to synthesizing **Modular Feature Skill Packs** (`skills/<project>-<feature>/SKILL.md`), enabling cross-engine collaboration across Claude, Codex, Antigravity, Cursor, etc.
+- **Status Check CLI & Mid-Project Invocation**: Added `python sia/banner.py --status` CLI tool to audit active SIA phase, modular skills, token savings, and working directory safety. Added explicit brownfield mid-project invocation guide to `USAGE.md`.
+
 ## [Unreleased]
 
 ### Added

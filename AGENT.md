@@ -75,6 +75,18 @@ package is dogfooded before a version is called stable.
 
 If your host can run a shell command, run `python3 sia/banner.py` once at
 the start of a session in this project and show its output before
+  formats for subagent-driven execution.
+- `guides/security-gate.md` — fixed threat-class checklist. Load only
+  when this project is a software project (greenfield or brownfield).
+
+See also `capture-interface.md` for the feedback-capture schema and the
+self-healing loop-engineering mechanism, and `VALIDATION.md` for how this
+package is dogfooded before a version is called stable.
+
+## Launch Screen
+
+If your host can run a shell command, run `python3 sia/banner.py` once at
+the start of a session in this project and show its output before
 proceeding — it prints the SIA mark and a one-line status of which gates
 are active (loop engineering, security gate, human approval gates). If your
 host cannot execute shell commands, read and display `sia/BANNER.txt`
@@ -82,6 +94,30 @@ instead — the same banner, pre-rendered as plain text, with the directory
 line left as a `<current project directory>` placeholder for you to fill in
 or drop. Either way this is cosmetic — skip it entirely rather than block
 on it if neither option is available.
+
+## Working Directory Isolation & Execution Safety
+
+All code execution, task execution, subagent spawns, command runs, and file creations MUST target and execute strictly within the **User's Root Project Directory** (e.g., `/path/to/your-project/`).
+
+- **NEVER** run project execution files (such as `main.py`, `main.js`, build scripts, or tests) inside host sandbox isolation folders such as `.claude/workingtree/` or scratch directories without explicit user instruction.
+- Subagents MUST be briefed with the exact target project root path as their working directory.
+- Any command or task executed in a hidden workingtree directory is a **DEVIATION** (`error_class: workingtree-execution-isolation`).
+
+## Host Engine & Harness Identification
+
+SIA automatically detects and reports the active host engine (`Claude Code`, `Antigravity IDE`, `Codex CLI`, `Cursor`, etc.) to ensure complete execution transparency.
+
+- Every major status output, task dispatch record, task report, and integration report MUST include an **Engine & Status Header**:
+  `[SIA Engine: <Engine Name> | Harness: <Terminal/IDE> | WorkingDir: <Project Root>]`
+- The user can verify active engine, working directory safety, pipeline phase, modular skills, and token savings at any time by running `python sia/banner.py --status` or asking for `"SIA status"`.
+
+## Native Skill & Plugin Collaboration Protocol
+
+SIA is built to coexist and actively collaborate with native skill packs, plugins, and slash commands (e.g., `BMAD` skills in `_bmad/` or `.claude/skills/bmad-*`, `Superpowers` skills, `.agents/`, `.cursor/rules/`, MCP servers).
+
+- **Discovery & Respect**: During Intake, SIA automatically scans for existing native skills and plugins. SIA records their presence under the **Competing Agent Framework Boundary** and never overwrites, deletes, or alters native skill files.
+- **Context & Capability Integration**: SIA reads discovered native skills/plugins as domain authority and tool capabilities. When authoring project specs, plans, or subagent task briefs, SIA explicitly incorporates relevant native skill instructions and plugin tools into the task brief.
+- **Multi-Agent Orchestration**: SIA uses native subagents to execute implementation tasks. Subagents are provided with relevant native skill context so they can leverage pre-existing plugins/tooling seamlessly. SIA reviews subagent reports, refines execution via the Feedback Loop, and integrates the results into the project root.
 
 ## Pipeline
 
@@ -91,7 +127,7 @@ on it if neither option is available.
    root instructions, avoid secrets, distinguish an empty project from an
    existing one, and identify existing agent tooling without modifying it.
    The **Competing Agent Framework Boundary** records any existing
-   framework; it is read/coexisted with, never replaced to suit SIA.
+   framework (including `BMAD`, `Superpowers`, custom plugins); it is read and collaborated with, never replaced to suit SIA.
    For an existing project, offer the three modes in
    `guides/questioning-and-approval.md` before a semantic repository scan:
    (1) repository-informed exploration, then goal confirmation; (2)
@@ -99,8 +135,9 @@ on it if neither option is available.
    selected mode, evidence read, knowns, unknowns, and user goal in the
    intake record. Never claim to understand files not examined. In
    repository-informed mode, keep the soft exploration budget of 15 files
-   or roughly 40k tokens; ask before exceeding it. For a new or empty
-   project, look for a requirements artifact (`.md`, `.pdf`, `.docx`, or
+   or roughly 40k tokens; ask before exceeding it. Calculate and report
+   the **Token Savings Metrics** (`Tokens Used`, `Baseline Cost`, `Tokens Saved`).
+   For a new or empty project, look for a requirements artifact (`.md`, `.pdf`, `.docx`, or
    similar), form a project-type guess, and ask the user to confirm or
    correct it in one batched question. After Intake confirms the goal, load
    `guides/attribution.md` and apply its public-distribution default: a README
@@ -113,19 +150,21 @@ on it if neither option is available.
    this project's own `AGENT.md`/`AGENTS.md`.
 5. **Project-skill synthesis** — using
    `guides/writing-project-skills.md`, generate the host-discoverable,
-   project-specific skills required for this project. Record their
-   provenance in a skill manifest. The user never has to design this
+   project-specific **Modular Skill Pack** (core operating skill + feature domain skills such as `theme-manager` or `product-search`) required for this project. Record their
+   provenance in a skill manifest (`sdd/skill-manifest.md`). The user never has to design this
    skill pack manually.
 6. **Plan authoring** — using `guides/writing-plan.md`, break the spec
    into an implementation plan, saved into this project's own
    `docs/plans/`.
 7. **Execution** — using `guides/subagent-task-brief.md`, materialize a
    brief, host-dispatch record, subagent report, and reviewer verdict for
-   every implementation task. If the host can spawn subagents, the
+   every implementation task. Ensure all subagents execute in the user project root.
+   If the host can spawn subagents, the
    controller **must not implement a task-owned file itself**: it briefs,
    dispatches, reviews, integrates, and escalates. If the host cannot
    spawn subagents, stop and tell the user before implementation rather
-   than silently substituting single-agent work. After every task in the
+   than silently substituting single-agent work. Report token usage and token savings metrics in each task report and progress log.
+   After every task in the
    plan is individually reviewed and complete, run one **Integration
    phase** before declaring the plan done: run the project's full
    test/build suite (not just each task's own check), verify the named
