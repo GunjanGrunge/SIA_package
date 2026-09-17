@@ -4,6 +4,7 @@
   "description": "Portable, host-agnostic instruction package & workflow engine for VS Code, Cursor, Windsurf, Kiro, and AI coding assistants.",
   "version": "0.2.0",
   "publisher": "GunjanGrunge",
+  "icon": "icon.png",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -22,6 +23,24 @@
     "watch": "tsc -watch -p ./"
   },
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "sia-activity-bar",
+          "title": "SIA Dashboard",
+          "icon": "icon.png"
+        }
+      ]
+    },
+    "views": {
+      "sia-activity-bar": [
+        {
+          "type": "webview",
+          "id": "sia.sidebarView",
+          "name": "SIA Self-Improving Dashboard"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "sia.init",
