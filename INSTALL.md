@@ -7,16 +7,13 @@ than installed centrally.
 
 ## 1. Copy the package
 
-You can initialize SIA automatically via **npm** or **PyPI**, or clone directly:
+You can initialize SIA automatically via **PyPI**, or clone directly:
 
 ```bash
-# Option A: npm / npx (Zero-install launcher)
-npx sia-agent init
+# Option A: Python / PyPI (Instant CLI Installer)
+pip install sia-package && sia init
 
-# Option B: Python / PyPI
-pip install sia-agent && sia init
-
-# Option C: Direct Git Clone
+# Option B: Direct Git Clone
 git clone https://github.com/GunjanGrunge/SIA_package.git /path/to/your-project/sia
 ```
 
