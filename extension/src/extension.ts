@@ -131,6 +131,12 @@ class SiaSidebarWebviewProvider implements vscode.WebviewViewProvider {
             costSavedUsd = ((tokensSaved / 1000000) * 3.00).toFixed(2);
         }
 
+        const formattedTokens = tokensSaved >= 1000000 
+            ? `~${(tokensSaved / 1000000).toFixed(2)}M` 
+            : tokensSaved >= 1000 
+            ? `~${(tokensSaved / 1000).toFixed(0)}k` 
+            : `~${tokensSaved}`;
+
         return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -139,316 +145,502 @@ class SiaSidebarWebviewProvider implements vscode.WebviewViewProvider {
     <title>SIA Control Center</title>
     <style>
         :root {
-            --bg-color: #0b0f19;
-            --card-bg: #111827;
+            --bg-color: #0c1017;
+            --card-bg: #121824;
             --card-border: rgba(255, 255, 255, 0.08);
-            --accent-cyan: #00f2fe;
-            --accent-blue: #007bff;
-            --accent-green: #00e5a3;
-            --text-primary: #f3f4f6;
-            --text-secondary: #9ca3af;
+            --cyan-accent: #38bdf8;
+            --purple-accent: #c084fc;
+            --green-accent: #34d399;
+            --text-main: #f3f4f6;
+            --text-sub: #9ca3af;
             --text-muted: #6b7280;
         }
 
-        body {
-            font-family: var(--vscode-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
-            background-color: var(--vscode-sideBar-background, var(--bg-color));
-            color: var(--vscode-foreground, var(--text-primary));
-            padding: 14px;
-            margin: 0;
+        * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--vscode-sideBar-background, var(--bg-color));
+            color: var(--vscode-foreground, var(--text-main));
+            padding: 16px 14px;
+            font-size: 13px;
+            line-height: 1.4;
             -webkit-font-smoothing: antialiased;
         }
 
-        .header-container {
+        /* Top Header Area */
+        .header {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: space-between;
-            padding-bottom: 12px;
-            margin-bottom: 16px;
-            border-bottom: 1px solid var(--card-border);
+            margin-bottom: 20px;
         }
 
-        .brand-box {
+        .brand-left {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
-        .brand-logo {
-            width: 24px;
-            height: 24px;
+        .sia-logo-svg {
+            width: 44px;
+            height: 32px;
             flex-shrink: 0;
         }
 
-        .brand-title {
-            font-size: 14px;
+        .header-titles {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .engine-title {
+            font-size: 17px;
             font-weight: 700;
-            letter-spacing: 0.5px;
-            color: var(--text-primary);
-            margin: 0;
-        }
-
-        .brand-subtitle {
-            font-size: 10px;
-            color: var(--accent-cyan);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-        }
-
-        .version-tag {
-            font-size: 10px;
-            font-family: monospace;
-            background: rgba(0, 242, 254, 0.1);
-            color: var(--accent-cyan);
-            border: 1px solid rgba(0, 242, 254, 0.25);
-            padding: 2px 6px;
-            border-radius: 4px;
-        }
-
-        .btn-primary {
-            width: 100%;
-            background: linear-gradient(135deg, #00f2fe 0%, #007bff 100%);
             color: #ffffff;
-            border: none;
-            border-radius: 6px;
-            padding: 10px 14px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 4px 12px rgba(0, 242, 254, 0.2);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-            margin-bottom: 12px;
+            letter-spacing: -0.2px;
+            line-height: 1.2;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(0, 242, 254, 0.3);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
-        .btn-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-
-        .btn-subtle {
-            background-color: var(--card-bg);
-            color: var(--text-secondary);
-            border: 1px solid var(--card-border);
-            border-radius: 6px;
-            padding: 8px 10px;
-            font-size: 11px;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: background 0.15s ease, color 0.15s ease;
-        }
-
-        .btn-subtle:hover {
-            background-color: rgba(255, 255, 255, 0.06);
-            color: var(--text-primary);
-        }
-
-        .section-label {
-            font-size: 10px;
+        .engine-subtitle {
+            font-size: 9.5px;
             font-weight: 700;
+            color: #94a3b8;
+            letter-spacing: 1px;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
+            margin-top: 1px;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 14px;
-        }
-
-        .stat-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 6px;
-            padding: 10px;
-        }
-
-        .stat-val {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--accent-green);
-        }
-
-        .stat-lbl {
-            font-size: 10px;
-            color: var(--text-muted);
+        .engine-motto {
+            font-size: 8.5px;
+            font-weight: 600;
+            color: #64748b;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
             margin-top: 2px;
         }
 
-        .panel-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--card-border);
+        .version-badge {
+            font-size: 10px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            color: #94a3b8;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 3px 8px;
             border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 14px;
         }
 
-        .status-item {
+        /* Primary Action Button */
+        .btn-primary-prompt {
+            width: 100%;
+            background: linear-gradient(135deg, #0284c7 0%, #4f46e5 50%, #7c3aed 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 11px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+            transition: all 0.15s ease;
+            margin-bottom: 12px;
+        }
+
+        .btn-primary-prompt:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(79, 70, 229, 0.45);
+        }
+
+        /* 2-Column Action Cards */
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 22px;
+        }
+
+        .action-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            transition: all 0.15s ease;
+        }
+
+        .action-card:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.16);
+        }
+
+        .action-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .action-arrow {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        /* Section Dividers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #64748b;
+            white-space: nowrap;
+        }
+
+        .section-line {
+            flex-grow: 1;
+            height: 1px;
+            background-color: var(--card-border);
+        }
+
+        .section-icon {
+            color: #64748b;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Metrics Cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 22px;
+        }
+
+        .metric-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .metric-icon-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .metric-number {
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .metric-label {
             font-size: 11px;
-            padding: 4px 0;
+            color: var(--text-sub);
+            margin-top: 2px;
         }
 
-        .status-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 6px;
+        /* Feature Skills Pills */
+        .skills-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 22px;
         }
 
-        .dot-green { background-color: var(--accent-green); box-shadow: 0 0 6px rgba(0, 229, 163, 0.4); }
-        .dot-muted { background-color: var(--text-muted); }
-
-        .skills-container {
+        .skills-wrapper {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
-            margin-top: 6px;
         }
 
-        .skill-chip {
-            background: rgba(0, 242, 254, 0.08);
-            border: 1px solid rgba(0, 242, 254, 0.2);
-            color: var(--accent-cyan);
-            font-size: 10px;
-            font-family: monospace;
-            padding: 3px 8px;
-            border-radius: 12px;
+        .skill-pill {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            font-size: 11px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            padding: 4px 10px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .skill-icon {
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+        }
+
+        /* System Health Panel */
+        .health-panel {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .health-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            font-size: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .health-row:last-child {
+            border-bottom: none;
+        }
+
+        .health-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-main);
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .ind-active {
+            background-color: var(--green-accent);
+            box-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+        }
+
+        .ind-muted {
+            background-color: #475569;
+        }
+
+        .health-val-active {
+            color: var(--green-accent);
+            font-weight: 500;
+        }
+
+        .health-val-muted {
+            color: #64748b;
+        }
+
+        /* Footer */
+        .footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #64748b;
+            padding-top: 4px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .footer-refresh {
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
             display: flex;
             align-items: center;
             gap: 4px;
-        }
-
-        .footer-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 8px;
-            border-top: 1px solid var(--card-border);
-            font-size: 10px;
-            color: var(--text-muted);
-        }
-
-        .icon-btn {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
             font-size: 11px;
-            padding: 2px 4px;
+            transition: color 0.15s ease;
         }
 
-        .icon-btn:hover {
-            color: var(--accent-cyan);
+        .footer-refresh:hover {
+            color: var(--cyan-accent);
         }
     </style>
 </head>
 <body>
-    <div class="header-container">
-        <div class="brand-box">
-            <svg class="brand-logo" viewBox="0 0 500 700">
+    <!-- Top Header -->
+    <div class="header">
+        <div class="brand-left">
+            <svg class="sia-logo-svg" viewBox="0 0 450 200">
+                <g fill="url(#brandGrad)">
+                    <path d="M 120 180 L 10 140 L 35 110 L 70 135 L 60 145 L 125 170 L 210 125 L 90 75 L 125 60 L 240 115 L 240 140 L 130 180 Z"/>
+                    <path d="M 125 15 L 235 60 L 240 65 L 215 95 L 185 80 L 195 70 L 130 45 L 45 80 L 160 130 L 130 145 L 10 95 L 10 70 L 125 15 Z"/>
+                </g>
                 <defs>
-                    <linearGradient id="siaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" stop-color="#00F2FE"/>
                         <stop offset="50%" stop-color="#007BFF"/>
                         <stop offset="100%" stop-color="#7B2CBF"/>
                     </linearGradient>
                 </defs>
-                <g fill="url(#siaGrad)">
-                    <path d="M 236.8 650.0 L 23.9 501.2 L 71.2 398.0 L 74.4 393.5 L 136.2 443.7 L 119.6 480.3 L 249.3 570.8 L 415.9 446.3 L 416.4 444.7 L 182.0 259.7 L 245.4 214.8 L 476.5 398.4 L 477.1 490.7 L 263.0 650.0 L 236.8 650.0 Z"/>
-                    <path d="M 249.3 50.0 L 252.0 50.5 L 464.7 199.1 L 476.3 208.8 L 427.2 314.5 L 425.6 315.3 L 364.2 266.2 L 380.4 228.3 L 250.6 138.0 L 83.5 262.3 L 318.0 449.0 L 254.6 494.0 L 22.9 309.3 L 24.1 216.6 L 249.3 50.0 Z"/>
-                </g>
+                <text x="260" y="130" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="120" font-weight="900" letter-spacing="4" fill="#ffffff">SIA</text>
             </svg>
-            <div>
-                <h1 class="brand-title">SIA Engine</h1>
-                <div class="brand-subtitle">Self-Improving System</div>
+            <div class="header-titles">
+                <h1 class="engine-title">SIA Engine</h1>
+                <div class="engine-subtitle">SELF-IMPROVING SYSTEM</div>
+                <div class="engine-motto">ASK | VERIFY | PROTECT | IMPROVE</div>
             </div>
         </div>
-        <span class="version-tag">v${VERSION}</span>
+        <span class="version-badge">v${VERSION}</span>
     </div>
 
-    <button class="btn-primary" onclick="postMessage('copyPrompt')">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+    <!-- Main Copy Prompt CTA -->
+    <button class="btn-primary-prompt" onclick="postMessage('copyPrompt')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
         Copy Assistant Prompt
     </button>
 
-    <div class="btn-group">
-        <button class="btn-subtle" onclick="postMessage('init')">⚡ Init Root</button>
-        <button class="btn-subtle" onclick="postMessage('status')">📊 Audit Log</button>
+    <!-- 2-Column Action Grid -->
+    <div class="action-grid">
+        <div class="action-card" onclick="postMessage('init')">
+            <div class="action-left">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <span>Init Root</span>
+            </div>
+            <span class="action-arrow">›</span>
+        </div>
+        <div class="action-card" onclick="postMessage('status')">
+            <div class="action-left">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                <span>Audit Log</span>
+            </div>
+            <span class="action-arrow">›</span>
+        </div>
     </div>
 
-    <div class="section-label">Metrics & Savings</div>
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-val">~${tokensSaved > 0 ? (tokensSaved / 1000).toFixed(0) + 'k' : '0'}</div>
-            <div class="stat-lbl">Tokens Saved</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-val">$${costSavedUsd}</div>
-            <div class="stat-lbl">Est. USD Reduced</div>
+    <!-- Metrics & Savings -->
+    <div class="section-header">
+        <span class="section-title">METRICS & SAVINGS</span>
+        <div class="section-line"></div>
+        <div class="section-icon">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
         </div>
     </div>
 
-    <div class="section-label">Active Feature Skills (${skillsList.length})</div>
-    <div class="panel-card" style="padding: 10px;">
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-icon-box">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+            </div>
+            <div>
+                <div class="metric-number" style="color: #38bdf8;">${formattedTokens}</div>
+                <div class="metric-label">Tokens Saved</div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon-box">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/></svg>
+            </div>
+            <div>
+                <div class="metric-number" style="color: #c084fc;">$${costSavedUsd}</div>
+                <div class="metric-label">Est. USD Reduced</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Feature Skills -->
+    <div class="section-header">
+        <span class="section-title">ACTIVE FEATURE SKILLS (${skillsList.length})</span>
+        <div class="section-line"></div>
+        <div class="section-icon">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+    </div>
+
+    <div class="skills-box">
         ${skillsList.length > 0 ? `
-            <div class="skills-container">
-                ${skillsList.slice(0, 6).map(s => `<span class="skill-chip"><span>🧩</span> ${s}</span>`).join('')}
+            <div class="skills-wrapper">
+                ${skillsList.slice(0, 8).map(s => `
+                    <div class="skill-pill">
+                        <span class="skill-icon">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        </span>
+                        <span>${s}</span>
+                    </div>
+                `).join('')}
             </div>
         ` : `
             <div style="font-size: 11px; color: var(--text-muted); font-style: italic;">No custom feature skills generated yet. Run SIA Intake.</div>
         `}
     </div>
 
-    <div class="section-label">System Health & Gates</div>
-    <div class="panel-card">
-        <div class="status-item">
-            <span><span class="status-dot ${hasSia ? 'dot-green' : 'dot-muted'}"></span>Vendored ./sia</span>
-            <span style="color: ${hasSia ? 'var(--text-primary)' : 'var(--text-muted)'}">${hasSia ? 'Active' : 'Missing'}</span>
-        </div>
-        <div class="status-item">
-            <span><span class="status-dot ${hasAgent ? 'dot-green' : 'dot-muted'}"></span>Project AGENT.md</span>
-            <span style="color: ${hasAgent ? 'var(--text-primary)' : 'var(--text-muted)'}">${hasAgent ? 'Active' : 'Pending'}</span>
-        </div>
-        <div class="status-item">
-            <span><span class="status-dot ${hasSpecs ? 'dot-green' : 'dot-muted'}"></span>Specs & Specs Folders</span>
-            <span style="color: ${hasSpecs ? 'var(--text-primary)' : 'var(--text-muted)'}">${hasSpecs ? 'Ready' : 'None'}</span>
-        </div>
-        <div class="status-item">
-            <span><span class="status-dot ${hasSdd ? 'dot-green' : 'dot-muted'}"></span>Subagent Dispatches</span>
-            <span style="color: ${hasSdd ? 'var(--text-primary)' : 'var(--text-muted)'}">${subagentCount} task(s)</span>
+    <!-- System Health & Gates -->
+    <div class="section-header">
+        <span class="section-title">SYSTEM HEALTH & GATES</span>
+        <div class="section-line"></div>
+        <div class="section-icon">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
     </div>
 
-    <div class="footer-bar">
-        <span>Host: VS Code / IDE</span>
-        <button class="icon-btn" onclick="postMessage('refresh')">🔄 Refresh</button>
+    <div class="health-panel">
+        <div class="health-row">
+            <div class="health-left">
+                <span class="status-indicator ${hasSia ? 'ind-active' : 'ind-muted'}"></span>
+                <span>Vendored ./.sia</span>
+            </div>
+            <span class="${hasSia ? 'health-val-active' : 'health-val-muted'}">${hasSia ? 'Active' : 'Missing'}</span>
+        </div>
+        <div class="health-row">
+            <div class="health-left">
+                <span class="status-indicator ${hasAgent ? 'ind-active' : 'ind-muted'}"></span>
+                <span>Project AGENT.md</span>
+            </div>
+            <span class="${hasAgent ? 'health-val-active' : 'health-val-muted'}">${hasAgent ? 'Active' : 'Pending'}</span>
+        </div>
+        <div class="health-row">
+            <div class="health-left">
+                <span class="status-indicator ${hasSpecs ? 'ind-active' : 'ind-muted'}"></span>
+                <span>Specs & Specs Folders</span>
+            </div>
+            <span class="${hasSpecs ? 'health-val-active' : 'health-val-muted'}">${hasSpecs ? 'Ready' : 'None'}</span>
+        </div>
+        <div class="health-row">
+            <div class="health-left">
+                <span class="status-indicator ${hasSdd ? 'ind-active' : 'ind-muted'}"></span>
+                <span>Subagent Dispatches</span>
+            </div>
+            <span class="${hasSdd ? 'health-val-active' : 'health-val-muted'}">${subagentCount} task(s)</span>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-left">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <span>Host: VS Code / IDE</span>
+        </div>
+        <button class="footer-refresh" onclick="postMessage('refresh')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Refresh
+        </button>
     </div>
 
     <script>
