@@ -488,22 +488,21 @@ class SiaSidebarWebviewProvider implements vscode.WebviewViewProvider {
     <!-- Top Header -->
     <div class="header">
         <div class="brand-left">
-            <svg class="sia-logo-svg" viewBox="0 0 450 200">
-                <g fill="url(#brandGrad)">
-                    <path d="M 120 180 L 10 140 L 35 110 L 70 135 L 60 145 L 125 170 L 210 125 L 90 75 L 125 60 L 240 115 L 240 140 L 130 180 Z"/>
-                    <path d="M 125 15 L 235 60 L 240 65 L 215 95 L 185 80 L 195 70 L 130 45 L 45 80 L 160 130 L 130 145 L 10 95 L 10 70 L 125 15 Z"/>
-                </g>
+            <svg class="brand-logo" viewBox="0 0 500 700" style="width: 34px; height: 44px; flex-shrink: 0;">
                 <defs>
-                    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <linearGradient id="siaMarkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" stop-color="#00F2FE"/>
                         <stop offset="50%" stop-color="#007BFF"/>
                         <stop offset="100%" stop-color="#7B2CBF"/>
                     </linearGradient>
                 </defs>
-                <text x="260" y="130" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="120" font-weight="900" letter-spacing="4" fill="#ffffff">SIA</text>
+                <g fill="url(#siaMarkGrad)">
+                    <path d="M 236.8 650.0 L 23.9 501.2 L 71.2 398.0 L 74.4 393.5 L 136.2 443.7 L 119.6 480.3 L 249.3 570.8 L 415.9 446.3 L 416.4 444.7 L 182.0 259.7 L 245.4 214.8 L 476.5 398.4 L 477.1 490.7 L 263.0 650.0 L 236.8 650.0 Z"/>
+                    <path d="M 249.3 50.0 L 252.0 50.5 L 464.7 199.1 L 476.3 208.8 L 427.2 314.5 L 425.6 315.3 L 364.2 266.2 L 380.4 228.3 L 250.6 138.0 L 83.5 262.3 L 318.0 449.0 L 254.6 494.0 L 22.9 309.3 L 24.1 216.6 L 249.3 50.0 Z"/>
+                </g>
             </svg>
             <div class="header-titles">
-                <h1 class="engine-title">SIA Engine</h1>
+                <h1 class="engine-title"><span style="color:#ffffff; font-weight:800; margin-right:4px;">SIA</span> Engine</h1>
                 <div class="engine-subtitle">SELF-IMPROVING SYSTEM</div>
                 <div class="engine-motto">ASK | VERIFY | PROTECT | IMPROVE</div>
             </div>
