@@ -290,7 +290,7 @@ CHECKS.append((
 CHECKS.append((
     "package.json",
     [
-        r'"name": *"sia-agent"',
+        r'"name": *"sia-(agent|package)"',
         r'"bin":',
         r'"bin/sia\.js"',
     ],
