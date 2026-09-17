@@ -308,7 +308,7 @@ CHECKS.append((
 CHECKS.append((
     "pyproject.toml",
     [
-        r'name *= *"sia-agent"',
+        r'name *= *"sia-package"',
         r'\[project\.scripts\]',
         r'sia *= *"cli:main"',
     ],

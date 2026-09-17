@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="sia-agent",
+    name="sia-package",
     version="0.2.0-alpha",
     description="Self-Improving Agents (SIA) - A portable, host-agnostic instruction package that turns any coding assistant into a self-improving project collaborator.",
     long_description=open("README.md", encoding="utf-8").read(),
@@ -21,7 +21,6 @@ setup(
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
     ],
     python_requires=">=3.9",
