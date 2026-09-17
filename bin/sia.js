@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const VERSION = "0.2.0-alpha";
+const VERSION = "0.2.0-alpha.1";
 const PACKAGE_ROOT = path.resolve(__dirname, '..');
 
 function printHelp() {
@@ -32,6 +32,12 @@ function printHelp() {
 function initSia() {
   const cwd = process.cwd();
   const siaTarget = path.join(cwd, 'sia');
+  const bannerPy = fs.existsSync(path.join(PACKAGE_ROOT, 'banner.py')) ? path.join(PACKAGE_ROOT, 'banner.py') : null;
+  if (bannerPy) {
+    try { execSync(`python "${bannerPy}"`, { stdio: 'inherit' }); } catch (e) {
+      try { execSync(`python3 "${bannerPy}"`, { stdio: 'inherit' }); } catch (e2) {}
+    }
+  }
 
   console.log(`\x1b[36m[SIA]\x1b[0m Initializing SIA v${VERSION} in project root: \x1b[33m${cwd}\x1b[0m`);
 

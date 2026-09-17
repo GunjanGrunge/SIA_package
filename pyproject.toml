@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sia-package"
-version = "0.2.0-alpha"
+version = "0.2.0a1"
 description = "Self-Improving Agents (SIA) - A portable, host-agnostic instruction package that turns any coding assistant into a self-improving project collaborator."
 readme = "README.md"
 license = "MIT"

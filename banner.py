@@ -20,7 +20,7 @@ YELLOW = "\033[38;2;255;191;0m"
 RED = "\033[38;2;255;75;75m"
 RESET = "\033[0m"
 
-VERSION = "0.2.0-alpha"
+VERSION = "0.2.0a1"
 
 def is_color_enabled() -> bool:
     return not bool(os.environ.get("NO_COLOR")) and sys.stdout.isatty()

@@ -16,3 +16,6 @@ package-lock.json
 # OS temp files
 .DS_Store
 Thumbs.db
+
+# Vendored SIA (Self Improving Agents) tooling
+sia/

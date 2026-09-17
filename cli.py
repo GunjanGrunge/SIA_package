@@ -38,6 +38,7 @@ def init_sia():
         sys.stdout.reconfigure(encoding="utf-8")
     except Exception:
         pass
+    print_banner()
     cwd = Path.cwd().resolve()
     sia_target = cwd / "sia"
 
