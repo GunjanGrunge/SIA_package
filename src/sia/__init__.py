@@ -1,0 +1,3 @@
+"""SIA's host-neutral orchestration runtime."""
+
+__version__ = "0.2.0"

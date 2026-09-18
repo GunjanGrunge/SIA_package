@@ -1,16 +1,16 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools==75.8.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "sia-package"
-version = "0.2.0a1"
-description = "Self-Improving Agents (SIA) - A portable, host-agnostic instruction package that turns any coding assistant into a self-improving project collaborator."
+version = "0.2.0"
+description = "Host-neutral, persistent orchestration for Self-Improving Agents"
 readme = "README.md"
-license = "MIT"
-authors = [
-    { name = "GunjanGrunge" }
-]
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "GunjanGrunge" }]
+dependencies = []
 keywords = [
     "sia",
     "ai-agent",
@@ -21,20 +21,18 @@ keywords = [
     "superpowers",
     "self-improving-agents",
     "prompts",
-    "skills"
+    "skills",
 ]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
-    "Topic :: Software Development :: Libraries :: Python Modules"
+    "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-requires-python = ">=3.9"
 
 [project.urls]
 Homepage = "https://github.com/GunjanGrunge/SIA_package"
@@ -42,5 +40,14 @@ Repository = "https://github.com/GunjanGrunge/SIA_package"
 Issues = "https://github.com/GunjanGrunge/SIA_package/issues"
 
 [project.scripts]
-sia = "cli:main"
-sia-agent = "cli:main"
+sia = "sia.cli:main"
+sia-agent = "sia.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+sia = ["workflow.md"]
+
+[tool.setuptools.data-files]
+"sia_policy" = ["AGENT.md", "capture-interface.md", "guides/*.md"]

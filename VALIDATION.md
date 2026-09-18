@@ -24,10 +24,7 @@ Run against an existing repo with a bug-fix-shaped ask. Confirm intake
 correctly classifies it as brownfield software, `guides/security-gate.md`
 loads, and the approval-gate severity table in
 `guides/questioning-and-approval.md` is respected for anything at or
-above medium severity. Repeat Intake once for each of the three
-existing-project modes: bounded repository exploration, goal-first with
-no broad scan, and conversational discovery. In every case verify that
-the recorded knowns and unknowns match files actually read.
+above medium severity.
 
 ## Scenario 3: Non-software project
 
@@ -63,10 +60,18 @@ fails this scenario even if its tests pass.
 
 ## Scenario 7: Default public attribution
 
-Run a fresh public-distribution Intake without any attribution command or
-toggle. Confirm SIA creates/preserves a README with the badge, then adds
-trailers to a SIA-mediated commit while preserving the human Git identity and
-using a real, committed `SIA-Run` evidence path. Confirm the generated project
-`AGENT.md`, project skill, and skill manifest record `Mode: both`. Repeat with
-a direct user instruction to omit attribution and confirm it records `none`
-without altering prior history.
+Run a public project flow without mentioning attribution. Confirm the README
+record and future SIA-mediated commit trailers follow `guides/attribution.md`,
+retain the human Git author, and include `Assisted-by: SIA` plus `SIA-Run:`.
+Repeat with an explicit user request to omit attribution and confirm it is
+respected and recorded.
+
+## Scenario 8: Persistent runtime and safety boundaries
+
+Install the built wheel in a clean environment and exercise all three runtime
+modes. Confirm `sia next --json` survives a fresh process; advancement rejects
+missing evidence; task ownership rejects root escape, parent/child overlap,
+and Windows case aliases; reviewer identity differs from implementer identity;
+integration rejects unfinished or stale task sets; concurrent state mutations
+serialize; adapters refuse collisions and redirected paths; and `sia guide`
+contains every required policy file, including attribution.

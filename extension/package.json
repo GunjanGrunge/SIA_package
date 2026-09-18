@@ -4,6 +4,11 @@
   "description": "Portable, host-agnostic instruction package & workflow engine for VS Code, Cursor, Windsurf, Kiro, and AI coding assistants.",
   "version": "0.2.0",
   "publisher": "GunjanGrunge",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GunjanGrunge/SIA_package.git"
+  },
   "icon": "icon.png",
   "engines": {
     "vscode": "^1.75.0"

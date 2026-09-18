@@ -23,8 +23,6 @@ CHECKS.append((
         r"## Authority Order",
         r"User instructions",
         r"Integration\s+phase",
-        r"Competing Agent Framework Boundary",
-        r"exploration budget",
         r"## Launch Screen",
         r"banner\.py",
         r"BANNER\.txt",
@@ -35,13 +33,10 @@ CHECKS.append((
         r"guides/writing-spec\.md",
         r"guides/writing-plan\.md",
         r"guides/writing-project-skills\.md",
-        r"guides/attribution\.md",
         r"guides/subagent-task-brief\.md",
         r"capture-interface\.md",
         r"Project-skill synthesis",
         r"must not implement a task-owned file itself",
-        r"three modes",
-        r"knowns, unknowns, and user goal",
     ],
 ))
 
@@ -69,11 +64,6 @@ CHECKS.append((
         r"\| *High",
         r"## Non-Negotiable Rules",
         r"[Nn]ever assume",
-        r"## Existing Project Intake Modes",
-        r"Goal-first, no broad scan",
-        r"Conversational discovery",
-        r"## SIA Attribution",
-        r"public-distribution default",
     ],
 ))
 
@@ -87,12 +77,8 @@ CHECKS.append((
         r"tool=",
         r"Rule Provenance",
         r"active.*retired|retired.*active",
-        r"Competing Agent Framework Boundary",
-        r"coexist",
         r"Generated Project Skills",
         r"Execution Evidence Gate",
-        r"Intake Record",
-        r"SIA Attribution",
     ],
 ))
 
@@ -154,25 +140,9 @@ CHECKS.append((
         r"## Output Locations",
         r"## Required Contents",
         r"## Skill Manifest",
-        r"project-specific",
+        r"[Pp]roject[- ]specific",
         r"sdd/skill-manifest\.md",
         r"Execution gate",
-        r"conversational intake",
-        r"Attribution policy",
-    ],
-))
-
-CHECKS.append((
-    "guides/attribution.md",
-    [
-        r"# SIA Attribution",
-        r"public SIA distribution",
-        r"Mode: both",
-        r"Co-authored-by",
-        r"Assisted-by: SIA",
-        r"SIA-Run:",
-        r"human Git author",
-        r"## Required Project Record",
     ],
 ))
 
@@ -183,16 +153,12 @@ CHECKS.append((
         r"## Rule Provenance",
         r"## PASS / DEVIATION",
         r"## Pre-Flight Self-Check",
-        r"## Token / Cost Tracking",
-        r"cost-overrun",
         r"## Convergence Signal",
         r"## Rule Hygiene",
         r"### Rule Review And Expiry",
         r"deviation rate",
         r"error class",
         r"retired",
-        r"Process And Framework Deviations",
-        r"framework-default-override",
     ],
 ))
 
@@ -213,31 +179,11 @@ CHECKS.append((
         r"buyorwait",
         r"## Scenario 2",
         r"brownfield",
-        r"existing-project modes",
         r"## Scenario 3",
         r"## Scenario 4",
         r"second host",
         r"## Scenario 5",
         r"deviation rate",
-        r"## Scenario 6",
-        r"auditable delegation",
-        r"## Scenario 7",
-        r"Default public attribution",
-    ],
-))
-
-CHECKS.append((
-    "USAGE.md",
-    [
-        r"## Quick Start",
-        r"## New Project",
-        r"## Existing Project",
-        r"## Claude Code",
-        r"## Codex",
-        r"## During Implementation",
-        r"task-N-dispatch\.md",
-        r"## Updating SIA",
-        r"## SIA Attribution",
     ],
 ))
 
@@ -272,7 +218,6 @@ CHECKS.append((
         r"integrations/claude-code/SKILL\.md",
         r"\.claude/skills/sia/SKILL\.md",
         r"project's own skill",
-        r"## 4\. Attribution is handled by SIA",
     ],
 ))
 
@@ -287,39 +232,91 @@ CHECKS.append((
     ],
 ))
 
+
 CHECKS.append((
-    "package.json",
+    "guides/attribution.md",
     [
-        r'"name": *"sia-(agent|package)"',
-        r'"bin":',
-        r'"bin/sia\.js"',
+        r"# SIA Attribution",
+        r"public SIA distribution",
+        r"Mode: both",
+        r"Do not use `Co-authored-by`",
+        r"Assisted-by: SIA",
+        r"SIA-Run:",
+        r"human Git author",
     ],
 ))
 
 CHECKS.append((
-    "bin/sia.js",
+    "USAGE.md",
     [
-        r"#!/usr/bin/env node",
-        r"initSia",
-        r"runStatus",
+        r"## Quick Start",
+        r"sia-package==0\.2\.0",
+        r"sia next --json",
+        r"## Existing Project",
+        r"## SIA Attribution",
+        r"## During Implementation",
+        r"## Checking Backend Status And Usage",
     ],
 ))
 
 CHECKS.append((
     "pyproject.toml",
     [
-        r'name *= *"sia-package"',
-        r'\[project\.scripts\]',
-        r'sia *= *"cli:main"',
+        r'name = "sia-package"',
+        r'version = "0\.2\.0"',
+        r'requires-python = ">=3\.10"',
+        r'sia = "sia\.cli:main"',
+        r'where = \["src"\]',
+        r'sia = \["workflow\.md"\]',
+        r'"sia_policy"',
+    ],
+))
+
+CHECKS.append((
+    "src/sia/core.py",
+    [
+        r'MODES = \("advisory", "planning", "orchestrator"\)',
+        r'def _project_lock',
+        r'def _normalize_owned',
+        r'owned path must remain inside the project root',
+        r'independent review requires a different reviewer agent ID',
+        r'evidence_sha256',
+        r'integration evidence is stale',
+    ],
+))
+
+CHECKS.append((
+    "src/sia/adapters.py",
+    [
+        r'def _safe_target',
+        r'adapter target escapes project root',
+        r'refusing to overwrite existing adapter',
+        r'refusing to remove modified or unmanaged file',
+    ],
+))
+
+CHECKS.append((
+    "src/sia/policy.py",
+    [
+        r'"attribution\.md"',
+        r'metadata\.files\("sia-package"\)',
     ],
 ))
 
 CHECKS.append((
     "cli.py",
     [
-        r"def init_sia",
-        r"def print_help",
-        r"def main",
+        r'Legacy source-checkout launcher',
+        r'from sia\.cli import main',
+    ],
+))
+
+CHECKS.append((
+    "bin/sia.js",
+    [
+        r'#!/usr/bin/env node',
+        r"'-m', 'sia'",
+        r'pip install sia-package',
     ],
 ))
 

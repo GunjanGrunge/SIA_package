@@ -47,32 +47,6 @@ A plan's Self-Review (below) must include checking that no two tasks'
 Files blocks overlap, unless an integration task exists specifically to
 own that overlap.
 
-## Delegation And Evidence
-
-Every implementation task must name a **Delegation** field: normally
-`scoped implementer subagent`; only orchestration, review, or a named
-integration task may be `controller-owned`. Controller ownership is not
-a loophole for writing task-owned production files.
-
-Before a task's code is changed, the controller creates a durable
-artifact set under `sdd/` (or an equivalent committed project directory):
-
-- `task-N-brief.md` — the exact self-contained brief sent to the host;
-- `task-N-dispatch.md` — host mechanism, subagent identifier/name, and
-  dispatch timestamp; and
-- `task-N-report.md` — the subagent result plus a reviewer verdict.
-
-The plan must name this artifact root and reserve the final Integration
-entry in its progress log. If the host cannot actually dispatch a
-subagent, execution is blocked and the user must be told; do not quietly
-perform the task as the controller and label it delegated.
-
-Under SIA's public-distribution default, make the README badge a named
-documentation task with exclusive ownership of the README and any approved
-asset path. Record the exact commit-trailer format and `SIA-Run` evidence path
-in the plan's commit step. Follow `attribution.md`; do not alter Git author
-identity, and omit attribution only on a direct user override.
-
 ## Bite-Sized Steps
 
 One action per step:
@@ -99,6 +73,23 @@ names/signatures used in later tasks match what earlier tasks' Interfaces
 blocks promised; no two tasks' Files blocks overlap unless a dedicated
 integration task owns that overlap (see Owned Files above). Finally,
 confirm the plan ends with an Integration phase after every task is
-individually complete — see `../AGENT.md` pipeline step 7. Also confirm
-that every implementation task has a Delegation field and durable
-subagent-evidence paths.
+individually complete — see `../AGENT.md` pipeline step 6.
+
+## Delegation And Evidence
+
+Every executable task names its host-native dispatch and evidence paths:
+`task-N-brief.md`, `task-N-dispatch.md` (or CLI `dispatch.json`),
+`task-N-report.md`, and `task-N-review.md`. The dispatch record contains the
+real host agent and native run identifiers. Independent tasks may be launched
+in parallel only when their Files ownership sets are disjoint. The controller
+coordinates and reviews; it never edits files owned by a dispatched task.
+
+### Delegation, committed evidence, and attribution
+
+Each task states a `Delegation` owner and mirrors its canonical `.sia/runs/`
+evidence into committed `sdd/task-N-brief.md`, `task-N-dispatch.md`,
+`task-N-report.md`, and `task-N-review.md` records when project policy requires
+an auditable history. If native dispatch is unavailable, mark execution blocked
+rather than substituting controller implementation. Documentation tasks include
+applicable README attribution, while commit steps retain the human author and
+reference the relevant `SIA-Run:` evidence path.

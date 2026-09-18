@@ -13,7 +13,7 @@ exists to eliminate.
   batch point rather than interrupting again immediately, unless
   continuing without an answer risks an irreversible action.
 
-## Existing Project Intake Modes
+## Existing Project Intake Approaches
 
 When SIA is installed into an existing repository, do not silently read
 the whole codebase. After the minimal safety check (root instructions,
@@ -30,7 +30,7 @@ message:
    user describe the project and desired work over conversation, then
    inspect only the evidence needed to verify those descriptions.
 
-Record the chosen mode, files actually read, knowns, unknowns, and the
+Record the chosen approach, files actually read, knowns, unknowns, and the
 user's stated goal in the project intake record. A directory listing or
 file name is not evidence of file contents; never present it as such.
 

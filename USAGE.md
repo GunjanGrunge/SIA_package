@@ -12,22 +12,19 @@ yourself.
 
 ## Quick Start
 
-Clone the package into the root of the project you want SIA to help with:
+Install the persistent runtime, initialize an explicit mode, and install only
+the host adapter you want:
 
 ```bash
-git clone https://github.com/GunjanGrunge/SIA_package.git sia
+python -m pip install sia-package==0.2.0
+sia init --mode orchestrator
+sia adapter install --host claude
+sia next --json
 ```
 
-Then open that project in your coding assistant and send this exact first
-instruction:
-
-```text
-Read `sia/AGENT.md` in full and follow it.
-```
-
-SIA will inspect only enough project evidence to form a hypothesis, ask
-you one batched round of meaningful questions, and record the agreed goal
-before it plans or implements work.
+Vendoring the repository as `sia/` remains supported. In that case, ask the
+host to read `sia/AGENT.md`; the persisted `.sia/` packet remains authoritative
+for the current stage.
 
 ## What SIA Does For You
 
@@ -214,26 +211,20 @@ Review SIA release notes before resuming a plan. Existing project
 artifacts remain yours; an update should not replace them. SIA should
 record any material generated-skill change in `sdd/skill-manifest.md`.
 
-## Checking Backend Status & Token Savings
+## Checking Backend Status And Usage
 
-You can check whether SIA is active, verify working directory safety, inspect active modular skills, and view token savings at any time:
+Use the persistent backend rather than the cosmetic banner:
 
-- **Via Terminal Command**:
-  ```bash
-  python sia/banner.py --status
-  ```
-- **Via Chat Prompt**:
-  ```text
-  SIA status
-  ```
+```bash
+sia status
+sia next --json
+sia convergence
+```
 
-SIA will audit your current session and print:
-- Active Host Engine (`Claude Code`, `Antigravity IDE`, `Codex CLI`, etc.)
-- Working Directory verification (confirming execution in Project Root, not `.claude/workingtree`)
-- Current Pipeline Stage (`Intake`, `Spec`, `Plan`, `Execution`, `Feedback Loop`)
-- Active Modular Feature Skills Pack
-- Token Savings Accounting (`Tokens Used`, `Baseline Context Cost`, `Tokens Saved`, `% Reduction`)
-- Active Standing Feedback Rules count
+These commands report the runtime mode, current stage and owner, task states,
+integration evidence, and recorded feedback. Token/cost values are shown only
+when host telemetry exists; otherwise usage and savings must be labeled as
+estimates.
 
 ## Invoking SIA Mid-Project (Brownfield)
 
@@ -262,8 +253,13 @@ All SIA subagent tasks, commands (`python main.py`, `npm test`), and generated f
 
 - **No banner appeared:** the host may have hidden shell output. This is
   cosmetic; the workflow starts when `sia/AGENT.md` is read.
-- **Project files running in `.claude/workingtree`:** run `python sia/banner.py --status` to check working directory isolation. SIA strictly enforces project root execution.
-- **No token savings shown:** run `python sia/banner.py --status` or ask for `SIA status` to view cumulative token savings and percentage reductions.
+- **Project files running in `.claude/workingtree`:** stop the task and use
+  `sia status` to confirm the intended project root before redispatching.
+  Working-directory safety is enforced by task ownership and host policy, not
+  by the cosmetic banner.
+- **No usage estimate shown:** run `sia convergence` for persisted feedback
+  metrics. Token/cost savings require host telemetry or must be labeled as
+  estimates.
 - **No subagents were used:** inspect `sdd/`. Missing dispatch and report
   artifacts mean the run is not compliant with the execution gate.
 - **SIA conflicts with existing instructions:** user instructions win,

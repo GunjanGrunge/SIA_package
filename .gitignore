@@ -17,5 +17,5 @@ package-lock.json
 .DS_Store
 Thumbs.db
 
-# Vendored SIA (Self Improving Agents) tooling
-sia/
+# Vendored SIA (Self Improving Agents) tooling at a target project root
+/sia/
