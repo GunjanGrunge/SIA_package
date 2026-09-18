@@ -34,13 +34,31 @@ A generated project `AGENT.md` must include:
    rule with no provenance is a rule nobody can later check is still
    correct (see Rule Review And Expiry).
 5. **Repository Map** — a short tree of what exists and where.
-6. **Competing Agent Framework Boundary** — required only if Intake
-   found existing agent/AI-tooling already installed in this project
-   (e.g. a `.cursor/`, another framework's own skill/plugin folders, a
-   pre-existing `AGENTS.md` not authored by SIA). State what was found
-   and one explicit rule: *coexist with it, never edit or delete its
-   files, and document the boundary* — which files/folders belong to
-   the other tooling and are therefore off-limits to SIA-driven changes.
+6. **Generated Project Skills** — the path of the project-skill manifest,
+   every generated skill, what project evidence produced it, and a rule
+   that those skills defer to this `AGENT.md` when they conflict. Use
+   `writing-project-skills.md`; do not ask the user to hand-author skill
+   files that SIA can derive from approved project artifacts.
+7. **Execution Evidence Gate** — the `sdd/` (or equivalent) location for
+   task briefs, dispatch records, subagent reports, reviewer verdicts,
+   progress log, and integration report. State that the controller may
+   not implement task-owned files when the host supports subagents.
+8. **Intake Record** — the chosen existing-project intake mode (if
+   applicable), files actually read, what is known, what remains unknown,
+   and the user's goal. This prevents a generated project contract from
+   presenting an unscanned repository as understood.
+9. **SIA Attribution** — `both` under the public-distribution default, with
+   date, README status, and the exact commit-trailer rule. Use `none` only on
+   a direct user override. Follow `attribution.md`; never imply that SIA
+   authored the project or alter Git identity.
+10. **Competing Agent Framework Boundary & Plugin Collaboration Protocol** — required only if Intake
+   found existing agent/AI-tooling, native skills, or plugins installed in this project
+   (e.g. `BMAD` files in `_bmad/` or `.claude/skills/bmad-*`, `Superpowers` skills, `.cursor/`,
+   another framework's own skill/plugin folders, or a pre-existing `AGENTS.md`). State what was found
+   and the explicit rules:
+   - *Coexist & Collaborate*: State how SIA will coexist with it, never edit or delete its files, and read native skills/plugins as domain authority and tool capability providers. Incorporate their instructions into subagent task briefs.
+   - *Protect Integrity*: Never edit, delete, or overwrite native plugin files or skill definitions.
+   - *Multi-Agent Alignment*: When spawning subagents, provide relevant native plugin context so subagents execute seamlessly alongside native skills (`/bmad`, `/superpowers`, etc.) and refine execution using SIA's feedback loop.
    Omit this section entirely when Intake found nothing of the kind;
    don't manufacture a boundary where there's nothing to bound.
 

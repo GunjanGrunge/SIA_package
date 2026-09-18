@@ -83,3 +83,13 @@ Every executable task names its host-native dispatch and evidence paths:
 real host agent and native run identifiers. Independent tasks may be launched
 in parallel only when their Files ownership sets are disjoint. The controller
 coordinates and reviews; it never edits files owned by a dispatched task.
+
+### Delegation, committed evidence, and attribution
+
+Each task states a `Delegation` owner and mirrors its canonical `.sia/runs/`
+evidence into committed `sdd/task-N-brief.md`, `task-N-dispatch.md`,
+`task-N-report.md`, and `task-N-review.md` records when project policy requires
+an auditable history. If native dispatch is unavailable, mark execution blocked
+rather than substituting controller implementation. Documentation tasks include
+applicable README attribution, while commit steps retain the human author and
+reference the relevant `SIA-Run:` evidence path.

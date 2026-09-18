@@ -14,6 +14,7 @@ REQUIRED_POLICY = {
     "writing-plan.md",
     "writing-project-skills.md",
     "subagent-task-brief.md",
+    "attribution.md",
     "security-gate.md",
 }
 
@@ -34,7 +35,7 @@ def discover_policy_files() -> list[Path]:
             return installed
     try:
         installed = []
-        for entry in metadata.files("sia-agents") or []:
+        for entry in metadata.files("sia-package") or []:
             if "sia_policy" in entry.parts and entry.name.endswith(".md"):
                 path = Path(entry.locate()).resolve()
                 if path.is_file():

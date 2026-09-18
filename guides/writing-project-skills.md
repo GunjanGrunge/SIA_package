@@ -42,3 +42,19 @@ path, host, evidence sources, generated timestamp, SIA mode, and owner. Include
 competing frameworks discovered at Intake and the stages they own. This makes
 parallel plugin use explicit rather than relying on whichever prompt loaded
 last.
+
+## Modular Skill Decomposition And Attribution
+
+Generate one core operating skill plus only evidence-justified feature/domain
+skills. Goal-first or conversational intake limits skill generation to the
+confirmed goal and evidence actually read; do not invent a broad pack. Refresh
+execution-facing skills after the approved plan changes. Every skill records
+its purpose, evidence, runtime mode, stage owner, relevant standing rules,
+exact checks, and attribution policy. Host discovery copies are selected by the
+user/host, namespaced, collision-safe, and distinct from the generic SIA
+launcher adapter.
+
+Extend the manifest with each canonical path, host copy, purpose, evidence,
+generation reason/time, owner, competing framework stages, attribution mode,
+README path, and reviewer note. Prefer a small modular pack over a monolithic
+context dump.

@@ -110,3 +110,11 @@ sia next --json
 ```
 
 See `HOST-INTEGRATION.md` for stage ownership and plugin coexistence.
+
+## 6. Attribution And Complete Usage
+
+Public SIA-mediated work follows `guides/attribution.md`: retain the human Git
+author, add the compact README attribution, and use `Assisted-by: SIA` plus an
+`SIA-Run:` evidence path on future mediated commits. A direct user instruction
+to omit attribution overrides this default. See `USAGE.md` for new-project,
+existing-project, host-specific, modular-skill, and troubleshooting workflows.

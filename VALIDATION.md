@@ -57,3 +57,21 @@ creates a task brief, host dispatch record, subagent report, reviewer
 verdict, and progress entry for a real implementation task. A run that
 implements task-owned code directly while the host can spawn subagents
 fails this scenario even if its tests pass.
+
+## Scenario 7: Default public attribution
+
+Run a public project flow without mentioning attribution. Confirm the README
+record and future SIA-mediated commit trailers follow `guides/attribution.md`,
+retain the human Git author, and include `Assisted-by: SIA` plus `SIA-Run:`.
+Repeat with an explicit user request to omit attribution and confirm it is
+respected and recorded.
+
+## Scenario 8: Persistent runtime and safety boundaries
+
+Install the built wheel in a clean environment and exercise all three runtime
+modes. Confirm `sia next --json` survives a fresh process; advancement rejects
+missing evidence; task ownership rejects root escape, parent/child overlap,
+and Windows case aliases; reviewer identity differs from implementer identity;
+integration rejects unfinished or stale task sets; concurrent state mutations
+serialize; adapters refuse collisions and redirected paths; and `sia guide`
+contains every required policy file, including attribution.

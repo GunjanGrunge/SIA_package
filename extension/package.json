@@ -1,0 +1,77 @@
+{
+  "name": "sia-vscode-extension",
+  "displayName": "SIA (Self-Improving Agents)",
+  "description": "Portable, host-agnostic instruction package & workflow engine for VS Code, Cursor, Windsurf, Kiro, and AI coding assistants.",
+  "version": "0.2.0",
+  "publisher": "GunjanGrunge",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GunjanGrunge/SIA_package.git"
+  },
+  "icon": "icon.png",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "AI",
+    "Other",
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "sia-activity-bar",
+          "title": "SIA Dashboard",
+          "icon": "icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "sia-activity-bar": [
+        {
+          "type": "webview",
+          "id": "sia.sidebarView",
+          "name": "SIA Self-Improving Dashboard"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "sia.init",
+        "title": "SIA: Initialize SIA in Project Root",
+        "category": "SIA"
+      },
+      {
+        "command": "sia.status",
+        "title": "SIA: Run Status Audit & Token Savings",
+        "category": "SIA"
+      },
+      {
+        "command": "sia.copyPrompt",
+        "title": "SIA: Copy Assistant Prompt to Clipboard",
+        "category": "SIA"
+      },
+      {
+        "command": "sia.banner",
+        "title": "SIA: Display Terminal Launch Banner",
+        "category": "SIA"
+      }
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.7",
+    "@types/vscode": "^1.75.0",
+    "typescript": "^5.0.0"
+  }
+}

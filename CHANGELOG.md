@@ -6,36 +6,43 @@ All notable changes to the SIA package itself are recorded here.
 
 ### Added
 
-- Installable `sia` Python CLI and packaged workflow policy.
+- Installable `sia`/`sia-agent` Python CLI and packaged workflow policy.
 - Durable `.sia/` state for stages, task evidence, feedback events, rules,
   preflight checks, and convergence metrics.
-- Explicit `advisory`, `planning`, and `orchestrator` modes.
+- Explicit `advisory`, `planning`, and `orchestrator` runtime modes.
 - Opt-in adapters for Claude Code, Codex, Kiro, and Antigravity.
-- Configurable stage ownership for coexistence with BMAD, Superpowers, and
-  other agent frameworks.
-- Project-specific skill synthesis and `sdd/skill-manifest.md` guidance.
-- Caller-attested native implementer and independently identified reviewer
-  records, followed by task-bound integration evidence.
+- Configurable stage ownership for BMAD, Superpowers, and other frameworks.
+- Evidence-limited modular project-skill synthesis and
+  `sdd/skill-manifest.md` guidance.
+- Existing-project repository-informed, goal-first, and conversational intake
+  approaches.
+- Public attribution policy that preserves the human Git author.
+- Complete usage and extension-publishing documentation.
+- Optional VS Code-compatible control-center extension.
 
 ### Changed
 
-- SIA now resumes from `sia next --json` instead of relying on conversational
-  context to retain the active workflow stage.
-- Active state mutations are serialized across host-agent processes.
+- SIA resumes from `sia next --json` instead of relying on conversational
+  context to retain the active stage.
+- Active state mutations serialize across host-agent processes.
 - Parallel tasks require canonical, non-overlapping file ownership, including
   parent/child and Windows case-insensitive path protection.
 - Controllers may not silently substitute direct implementation for a
   dispatched subagent task.
-- Feedback capture uses reusable error classes and provenance-bearing active or
-  retired rules.
+- Feedback uses reusable error classes and provenance-bearing active/retired
+  rules.
 - Host adapters are manual and namespaced so other plugins remain available.
+- Heavy root assets were removed; extension branding lives under `extension/`.
+- Token/cost savings are estimates unless backed by host telemetry.
 
 ### Security
 
-- Adapter installation rejects existing-file collisions and redirected paths
-  outside the project root; removal requires exact managed content.
-- Integration is rejected until every task has an independent review and is
-  invalidated whenever execution evidence changes.
+- Adapter installation rejects collisions and redirected paths outside the
+  project root; removal requires exact managed content.
+- Integration requires independent reviews and is invalidated when execution
+  evidence changes.
+- Extension initialization/status delegates to the canonical persistent CLI
+  instead of overwriting host instruction files.
 
 ## [0.1.0] - 2026-09-13
 

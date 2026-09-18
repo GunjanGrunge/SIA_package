@@ -233,6 +233,94 @@ CHECKS.append((
 ))
 
 
+CHECKS.append((
+    "guides/attribution.md",
+    [
+        r"# SIA Attribution",
+        r"public SIA distribution",
+        r"Mode: both",
+        r"Do not use `Co-authored-by`",
+        r"Assisted-by: SIA",
+        r"SIA-Run:",
+        r"human Git author",
+    ],
+))
+
+CHECKS.append((
+    "USAGE.md",
+    [
+        r"## Quick Start",
+        r"sia-package==0\.2\.0",
+        r"sia next --json",
+        r"## Existing Project",
+        r"## SIA Attribution",
+        r"## During Implementation",
+        r"## Checking Backend Status And Usage",
+    ],
+))
+
+CHECKS.append((
+    "pyproject.toml",
+    [
+        r'name = "sia-package"',
+        r'version = "0\.2\.0"',
+        r'requires-python = ">=3\.10"',
+        r'sia = "sia\.cli:main"',
+        r'where = \["src"\]',
+        r'sia = \["workflow\.md"\]',
+        r'"sia_policy"',
+    ],
+))
+
+CHECKS.append((
+    "src/sia/core.py",
+    [
+        r'MODES = \("advisory", "planning", "orchestrator"\)',
+        r'def _project_lock',
+        r'def _normalize_owned',
+        r'owned path must remain inside the project root',
+        r'independent review requires a different reviewer agent ID',
+        r'evidence_sha256',
+        r'integration evidence is stale',
+    ],
+))
+
+CHECKS.append((
+    "src/sia/adapters.py",
+    [
+        r'def _safe_target',
+        r'adapter target escapes project root',
+        r'refusing to overwrite existing adapter',
+        r'refusing to remove modified or unmanaged file',
+    ],
+))
+
+CHECKS.append((
+    "src/sia/policy.py",
+    [
+        r'"attribution\.md"',
+        r'metadata\.files\("sia-package"\)',
+    ],
+))
+
+CHECKS.append((
+    "cli.py",
+    [
+        r'Legacy source-checkout launcher',
+        r'from sia\.cli import main',
+    ],
+))
+
+CHECKS.append((
+    "bin/sia.js",
+    [
+        r'#!/usr/bin/env node',
+        r"'-m', 'sia'",
+        r'pip install sia-package',
+    ],
+))
+
+
 def assert_contains(rel_path: str, patterns: list[str]) -> None:
     path = SIA_ROOT / rel_path
     if not path.exists():

@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="./assets/sia-banner.png" alt="SIA: Self-Improving Agents" width="100%" />
-</p>
+# SIA (Self-Improving Agents)
 
 <p align="center">
   <img src="https://img.shields.io/badge/version-0.2.0-00F2FE.svg?style=flat-square" alt="Version 0.2.0" />
@@ -59,10 +57,6 @@ one shared authentication API. See
 
 ## Architecture
 
-<p align="center">
-  <img src="./assets/architecture-flowchart.png" alt="SIA pipeline diagram" width="100%" />
-</p>
-
 ```text
 host /sia command
        │
@@ -94,6 +88,23 @@ The default `bridge` policy detects common framework folders, records them in
 overwrite adapter files. Choose `advisory` when another framework owns the
 whole development workflow, `planning` when it owns execution, or
 `orchestrator` when SIA should own native-agent dispatch and integration.
+
+## Existing Projects And Attribution
+
+For existing repositories, choose a repository-informed, goal-first, or
+conversational intake approach independently of SIA's persisted runtime mode.
+SIA records evidence, knowns, unknowns, and competing framework boundaries
+without claiming to understand unread files. Public SIA-mediated work follows
+[`guides/attribution.md`](./guides/attribution.md): the human remains the Git
+author while README and `Assisted-by: SIA` / `SIA-Run:` evidence identify the
+workflow. See [`USAGE.md`](./USAGE.md) for complete host and brownfield usage.
+
+## VS Code And Compatible IDEs
+
+The optional extension under `extension/` exposes initialization and status UI
+for VS Code-compatible IDEs. The Python CLI and `.sia/` state remain the
+canonical backend; extension UI must not be treated as independent workflow
+state or verified token telemetry.
 
 ## Validation
 

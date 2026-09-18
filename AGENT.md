@@ -139,3 +139,32 @@ Never assume on a non-trivial decision; never delete, replace, or
 restructure anything without explicit approval; never declare a stage
 "done" until its acceptance criteria are met and the user has approved
 any high-impact work in it.
+
+## Existing-Project Intake Approaches
+
+Do the minimal safety check first, then let the user choose one of three intake
+approaches: **repository-informed exploration**, **goal-first**, or
+**conversational discovery**. This choice is an intake approach, not the
+persisted SIA runtime mode (`advisory`, `planning`, or `orchestrator`). Record
+the selected approach, evidence read, knowns, unknowns, and user goal. Never
+claim knowledge of files not examined. Repository-informed exploration has a
+soft exploration budget of 15 files or roughly 40k tokens; ask before exceeding
+it.
+
+## Attribution
+
+For public SIA-mediated work, load `guides/attribution.md`. Preserve the human
+Git author and use the documented README badge and `Assisted-by: SIA` /
+`SIA-Run:` trailers by default. A direct user instruction to omit attribution
+wins and should be recorded. Never alter Git identity.
+
+## Working Directory And Native Tooling
+
+Run project commands and host-native subagents in the user's project root, not
+a hidden scratch or host working-tree directory, unless the user explicitly
+requests isolation. Record existing BMAD, Superpowers, `.agents/`, Cursor, MCP,
+and other tooling in the Competing Agent Framework Boundary. Treat relevant
+native skills as capabilities and domain context, never as files SIA may
+replace. Use `sia status` and `sia next --json` for authoritative persisted
+state; `banner.py` is cosmetic and token savings are estimates unless backed by
+host telemetry.
