@@ -1,5 +1,7 @@
 # Using SIA
 
+> **Interactive documentation:** [Complete SIA User Guide](https://gunjangrunge.github.io/SIA_package/) — including Claude Code, Codex, Gemini CLI, Antigravity, and Kiro setup.
+
 SIA is a project-adaptive guidance layer for a coding assistant. It does
 not replace Claude Code, Codex, or another host: the host supplies the
 model, terminal, Git, and native subagents; SIA supplies the workflow,
