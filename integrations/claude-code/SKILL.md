@@ -1,14 +1,21 @@
 ---
 name: sia
-description: Load SIA (Self Improving Agents) at the start of any work in this project — a process for turning requirements into a project-specific AGENT.md, spec, plan, and subagent-driven execution, with human approval gates and a self-healing feedback loop. Use whenever starting work in a project that has SIA installed.
+description: Continue SIA only when the user explicitly invokes /sia.
+disable-model-invocation: true
 ---
 
 # SIA (Claude Code discovery shim)
 
 This file exists only so Claude Code finds SIA without being told to. It
-has no logic of its own and must never duplicate SIA's actual guidance.
+has no project logic of its own and must never duplicate SIA's actual
+guidance.
 
-**Read `sia/AGENT.md`, in the project root, in full, right now, and follow
-it exactly.** If this file and `sia/AGENT.md` ever disagree about
-anything, `sia/AGENT.md` is correct — update this file to match it, not
-the other way around.
+Run `sia next --json` in the project root, then read `sia/AGENT.md` in full
+when it is vendored and follow the persisted current stage. If the CLI is
+installed without a vendored copy, run `sia guide` for the workflow contract.
+Record native implementer and reviewer run IDs through the CLI. This skill is
+manual-only so BMAD, Superpowers, and other skills remain independently usable.
+
+If `.claude/skills/<project-slug>-sia/SKILL.md` exists, load it after
+`sia/AGENT.md`. It is the generated project operating skill and still
+defers to the project's own `AGENT.md`.

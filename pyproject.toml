@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools==75.8.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sia-package"
+version = "0.2.0"
+description = "Host-neutral, persistent orchestration for Self-Improving Agents"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "GunjanGrunge" }]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/GunjanGrunge/SIA_package"
+Repository = "https://github.com/GunjanGrunge/SIA_package"
+Issues = "https://github.com/GunjanGrunge/SIA_package/issues"
+
+[project.scripts]
+sia = "sia.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+sia = ["workflow.md"]
+
+[tool.setuptools.data-files]
+"sia_policy" = ["AGENT.md", "capture-interface.md", "guides/*.md"]

@@ -60,3 +60,20 @@ A generated project `AGENT.md` must include:
   prematurely, surface creative decisions as options) so they are not
   only present in `sia/`'s own guide but actually inherited by every
   generated project.
+
+## Generated Project Skills
+
+Name the canonical project-specific skills and point to
+`sdd/skill-manifest.md`. State the selected SIA mode and which framework owns
+each stage. Skills must use `sia next --json` for re-entry and must not replace
+or silently activate competing frameworks.
+
+## Execution Evidence Gate
+
+In orchestrator mode, require a prepared brief, caller-attested Host Evidence
+(native host, agent ID, and run ID), subagent report, independently identified
+reviewer verdict, progress entry, and final integration record. SIA checks the
+record's ordering and completeness but cannot authenticate one common receipt
+across every vendor harness. The controller does not implement files
+owned by a dispatched task. In planning/advisory mode, state which other
+framework owns execution instead of pretending SIA dispatched it.

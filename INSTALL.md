@@ -1,60 +1,112 @@
-# Installing SIA Into A Project
+# Installing SIA
 
-SIA is not a plugin you install once globally — it's a folder you copy
-into each project you want to use it with, the same way BMAD's
-`.claude/skills/` and `_bmad/` folders are vendored per-project rather
-than installed centrally.
+SIA can be installed as a Python CLI, vendored into one project, or both. The
+CLI is the durable control plane; a vendored copy additionally lets the host
+read the full guides directly.
 
 ## 1. Copy the package
 
-```bash
-git clone https://github.com/GunjanGrunge/SIA_package.git /path/to/your-project/sia
+Install the published package globally or in a virtual environment:
+
+```powershell
+python -m pip install sia-package
 ```
 
-(Or download the ZIP from GitHub and extract it as `sia/` in your
-project root — either way, the folder you end up with must be named
-`sia/`, since every guide in this package refers to itself by that
-relative path.)
+For development from a checkout:
+
+```powershell
+python -m pip install /path/to/SIA_package
+```
+
+Or vendor it in the target project:
+
+```powershell
+git clone https://github.com/GunjanGrunge/SIA_package.git C:\path\to\project\sia
+python -m pip install C:\path\to\project\sia
+```
+
+The vendored directory must be named `sia/` because guide references use that
+path. Initialize from the target project root:
+
+```powershell
+sia init --mode orchestrator
+sia next --json
+```
+
+Use `advisory` if BMAD/Superpowers owns planning and execution, or `planning`
+if another framework owns execution.
 
 ## 2. Gitignore the vendored package, keep the generated artifacts
 
-`sia/` is vendored tooling — it is not part of the target project's own
-content, the same way BMAD's `.claude/` and `_bmad/` folders aren't part
-of the application they help build. Add this to the target project's own
-`.gitignore`:
+If vendored, add exactly:
 
 ```gitignore
-# Vendored SIA (Self Improving Agents) tooling — not part of this project.
+# Vendored SIA tooling
 sia/
 ```
 
-Do **not** gitignore what SIA *generates* for this project — that
-project's own `AGENT.md`, `docs/specs/`, `docs/plans/`, `logs/sessions/`,
-and any `sdd/`-style subagent task-brief folders are real project history
-and should be committed, the same way BMAD's `_bmad-output/` (a project's
-own generated brainstorm/intent record, not vendored tooling) is kept and
-committed rather than ignored.
+Do not ignore `.sia/`, the project's own skill, `AGENT.md`/`AGENTS.md`,
+`docs/specs/`, `docs/plans/`, `logs/sessions/`, `skills/`, or `sdd/`. They are
+auditable project history, like `_bmad-output`, and should normally be
+committed. Review `.sia/events.jsonl` before committing because capture context
+must not contain secrets.
 
 ## 3. Give your host a way to find `sia/AGENT.md`
 
-SIA has no host-specific auto-discovery of its own — `sia/AGENT.md` is the
-one mandatory read, and by default nothing points a host at it
-automatically. Two ways to close that:
+Adapters are explicit opt-in launchers. Install one or more; they coexist:
 
-- **Tell the assistant once, explicitly**, at the start of a session:
-  "Read `sia/AGENT.md` and follow it." This always works, on any host,
-  and requires copying nothing extra.
-- **If your host is Claude Code**, also copy
-  `sia/integrations/claude-code/SKILL.md` to `.claude/skills/sia/SKILL.md`
-  in the target project. This is a thin shim — a few lines, no logic of
-  its own — that only exists so Claude Code's own skill-discovery finds
-  SIA without being told. It always defers to `sia/AGENT.md` as the
-  actual source of truth; if the two ever disagree, `sia/AGENT.md` is
-  correct. `.claude/skills/` is discovered by Claude Code regardless of
-  `.gitignore` status, matching how BMAD's own `.claude/skills/bmad-*`
-  folders work while still being gitignored.
+```powershell
+sia adapter install --host claude
+sia adapter install --host codex
+sia adapter install --host kiro
+sia adapter install --host antigravity
+```
 
-Other hosts may grow their own equivalent shims over time
-(e.g. a `.cursor/rules/sia.md`, or an `AGENTS.md`-style pointer) — each
-would be a similarly thin, static file added under
-`sia/integrations/<host>/`, never a fork of SIA's actual guidance.
+They create only these namespaced files:
+
+- Claude Code: `.claude/skills/sia/SKILL.md`
+  (source: `integrations/claude-code/SKILL.md`)
+- Codex: `.agents/skills/sia/SKILL.md`
+- Kiro: `.kiro/steering/sia.md`
+- Antigravity: `.agents/workflows/sia.md`
+
+The Claude and Kiro launchers are manual-only. Every launcher runs
+`sia next --json`, reads `sia/AGENT.md` when vendored (or `sia guide` when
+installed alone), and resumes the persisted stage. No launcher installs an
+always-on hook or replaces root instructions. Existing adapter paths are never
+overwritten.
+
+After Intake and project instruction authoring, generate the project's own
+skill and `sdd/skill-manifest.md` as described in
+`guides/writing-project-skills.md`.
+
+## 4. Use native subagents
+
+In orchestrator mode, prepare each task, invoke the host's own agent mechanism,
+and record its real identity:
+
+```powershell
+sia task prepare --task api --brief sdd/api-brief.md --files src/api.py
+sia task dispatch --task api --host kiro --agent-id backend --native-run-id <run-id>
+sia task finish --task api --report sdd/api-report.md --review sdd/api-review.md `
+  --reviewer-agent-id reviewer --review-native-run-id <review-run-id>
+sia integration --evidence sdd/integration.md
+sia advance
+```
+
+Disjoint task file sets may run in parallel. SIA serializes state updates and
+rejects exact-path and parent/child ownership overlap. The controller must not
+edit a dispatched task's owned files. Agent/run IDs are caller-attested records,
+not cryptographically authenticated vendor receipts. SIA does not claim a
+universal vendor agent API; if native subagents are unavailable, use
+planning/advisory mode or an explicit manual handoff.
+
+## 5. Check installation
+
+```powershell
+sia doctor
+sia status
+sia next --json
+```
+
+See `HOST-INTEGRATION.md` for stage ownership and plugin coexistence.

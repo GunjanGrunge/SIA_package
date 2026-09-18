@@ -1,88 +1,51 @@
 # Changelog
 
-All notable changes to the SIA package itself (not to any project that
-uses it) are recorded here.
+All notable changes to the SIA package itself are recorded here.
+
+## [0.2.0] - 2026-09-18
+
+### Added
+
+- Installable `sia` Python CLI and packaged workflow policy.
+- Durable `.sia/` state for stages, task evidence, feedback events, rules,
+  preflight checks, and convergence metrics.
+- Explicit `advisory`, `planning`, and `orchestrator` modes.
+- Opt-in adapters for Claude Code, Codex, Kiro, and Antigravity.
+- Configurable stage ownership for coexistence with BMAD, Superpowers, and
+  other agent frameworks.
+- Project-specific skill synthesis and `sdd/skill-manifest.md` guidance.
+- Caller-attested native implementer and independently identified reviewer
+  records, followed by task-bound integration evidence.
+
+### Changed
+
+- SIA now resumes from `sia next --json` instead of relying on conversational
+  context to retain the active workflow stage.
+- Active state mutations are serialized across host-agent processes.
+- Parallel tasks require canonical, non-overlapping file ownership, including
+  parent/child and Windows case-insensitive path protection.
+- Controllers may not silently substitute direct implementation for a
+  dispatched subagent task.
+- Feedback capture uses reusable error classes and provenance-bearing active or
+  retired rules.
+- Host adapters are manual and namespaced so other plugins remain available.
+
+### Security
+
+- Adapter installation rejects existing-file collisions and redirected paths
+  outside the project root; removal requires exact managed content.
+- Integration is rejected until every task has an independent review and is
+  invalidated whenever execution evidence changes.
 
 ## [0.1.0] - 2026-09-13
 
-Initial package, implementing the design specified in
-`docs/superpowers/specs/2026-09-13-sia-design.md` (a design doc from
-SIA's own development history — not a file shipped in this package):
+### Added
 
-- `AGENT.md` — bootstrap and pipeline.
-- `guides/security-gate.md` — fixed threat-class checklist.
-- `guides/questioning-and-approval.md` — batching and severity gates.
-- `guides/writing-agent-md.md` — project AGENT.md authoring guide.
-- `guides/writing-spec.md` — project spec authoring guide.
-- `guides/writing-plan.md` — project plan authoring guide.
-- `guides/subagent-task-brief.md` — task brief/report/progress formats.
-- `capture-interface.md` — feedback schema and self-healing loop
-  engineering (PASS/DEVIATION, pre-flight self-check, convergence
-  signal, rule hygiene).
-- `VALIDATION.md` — manual dogfood validation checklist (5 scenarios).
-- `tests/validate_sia.py` — the structure-test harness (dev tooling for
-  building the package, not something copied into a target project).
-
-## [Unreleased]
-
-- `banner.py` — terminal launch-screen banner (Hexagonal Prism mark, Electric
-  Cyan), run at Bootstrap when the host can execute shell commands.
-- `BANNER.txt` — pre-rendered plain-text fallback of the same banner, for
-  hosts that cannot execute shell commands.
-- `AGENT.md` — added a "Launch Screen" section wiring both into the
-  Bootstrap pipeline step; added a pointer to `INSTALL.md` for first-time
-  setup.
-- `INSTALL.md` — how to add SIA to a project: gitignoring the vendored
-  `sia/` folder while keeping generated artifacts (that project's own
-  `AGENT.md`, specs, plans, session logs) committed — mirroring how BMAD's
-  `.claude/`/`_bmad/` are gitignored but `_bmad-output/` is kept.
-- `integrations/claude-code/SKILL.md` — optional, thin Claude Code
-  discovery shim; defers entirely to `AGENT.md` as the source of truth.
-- `AGENT.md` — added an Authority Order section (user instructions >
-  project AGENT.md > approved spec/plan > SIA guides > subagent brief)
-  and an Integration phase at the end of pipeline step 6 (Execution).
-- `guides/writing-plan.md` — added Owned Files: each task's Files block
-  is now an exclusive ownership boundary; overlapping file changes
-  require a dedicated integration task rather than silent overlap.
-- `guides/subagent-task-brief.md` — added an Effort Budget field and a
-  fixed escalation list to the Task Brief Format (stop and report rather
-  than improvise past an unexpected dependency, conflicting file,
-  ambiguous requirement, missing tool, or unrelated failing test); added
-  an Integration Report Format.
-- `guides/writing-spec.md` — resolved a tension between this guide's
-  "confirm section by section" and `questioning-and-approval.md`'s
-  batching rule: one approved pattern now applies (batch every question,
-  draft the complete spec, one structured approval round — except a
-  High-severity decision surfaced mid-draft, confirmed before
-  continuing).
-- `capture-interface.md` — `capture()` gained a fourth field,
-  `error_class` (a reusable label for the *kind* of mistake, e.g.
-  `unsafe-edit-target`, `missing-approval`, `interface-assumption`,
-  `unverified-claim`); added a Rule Provenance section (source event,
-  evidence, severity, error class, scope, date, active/retired status —
-  every rule carries these, not just its sentence); Convergence Signal
-  now tracks deviation rate per error class, not only overall; added
-  Rule Review And Expiry (a periodic check that retires stale/superseded
-  rules rather than leaving them to silently accumulate).
-- `guides/writing-agent-md.md` — Accumulated Feedback Rules now require
-  the full provenance record per rule.
-- `guides/subagent-task-brief.md` — Task Brief Format gained a Relevant
-  Standing Rules field (rules travel *with* a subagent's brief, since a
-  scoped subagent has no reason to read the whole project AGENT.md);
-  reviewers (task-level and Integration) must now state which standing
-  rules were checked and their per-rule verdict, not just whether the
-  code works.
-- `capture-interface.md` — added a Token / Cost Tracking section: a
-  running usage total across a session/plan run, checked against a
-  project-stated ceiling, with an explicit approval-gated response
-  (scope reduction or cheaper model) on hitting it, logged via
-  `capture()` with `error_class: cost-overrun`.
-- `guides/writing-agent-md.md` — added an optional Competing Agent
-  Framework Boundary required section, for projects where Intake found
-  pre-existing agent/AI-tooling already installed: coexist, never edit
-  it, document the boundary.
-- `AGENT.md` — Intake step now also flags any pre-existing agent/AI
-  tooling for the Competing Agent Framework Boundary section, and adds
-  a soft exploration budget (15 files / ~40k tokens by default) during
-  Intake, with an explicit ask-rather-than-continue path if more is
-  genuinely needed.
+- Markdown bootstrap and authority order in `AGENT.md`.
+- Intake, approval, specification, planning, subagent, and security guides,
+  including `guides/security-gate.md`.
+- Feedback capture in `capture-interface.md`, PASS/DEVIATION classification,
+  convergence signals, rule provenance, and rule expiry guidance.
+- Terminal launch banner and plain-text fallback.
+- Claude Code discovery shim.
+- Structural package validator and manual dogfood scenarios.

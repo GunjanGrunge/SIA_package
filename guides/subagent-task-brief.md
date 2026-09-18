@@ -127,3 +127,19 @@ applicable to what this diff actually touched). A reviewer report that
 only answers the first question has silently skipped the second — the
 Integration Report Format below carries the same requirement at the
 whole-plan level.
+
+## Execution Gate
+
+Before implementation, persist the brief with `sia task prepare`. Invoke the
+host's real subagent mechanism and immediately record **Host Evidence** with
+`sia task dispatch`: host name, agent ID, and native run ID. These identifiers
+are caller-attested because SIA cannot authenticate every vendor harness; never
+fabricate them. A prompt copied
+into the controller's own context is not a dispatch. After dispatch, the
+controller does not implement task-owned files itself.
+
+Completion requires an implementer report and a separately authored reviewer
+verdict attached by `sia task finish`. Disjoint ownership permits parallel
+agents; overlapping ownership requires sequencing or an integration task.
+After all tasks are reviewed, `sia integration` records the combined suite,
+interface checks, standing-rule checks, and whole-diff review.

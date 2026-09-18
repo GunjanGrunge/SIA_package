@@ -74,3 +74,12 @@ blocks promised; no two tasks' Files blocks overlap unless a dedicated
 integration task owns that overlap (see Owned Files above). Finally,
 confirm the plan ends with an Integration phase after every task is
 individually complete — see `../AGENT.md` pipeline step 6.
+
+## Delegation And Evidence
+
+Every executable task names its host-native dispatch and evidence paths:
+`task-N-brief.md`, `task-N-dispatch.md` (or CLI `dispatch.json`),
+`task-N-report.md`, and `task-N-review.md`. The dispatch record contains the
+real host agent and native run identifiers. Independent tasks may be launched
+in parallel only when their Files ownership sets are disjoint. The controller
+coordinates and reviews; it never edits files owned by a dispatched task.
