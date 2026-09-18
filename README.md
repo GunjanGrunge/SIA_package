@@ -7,6 +7,11 @@
   <img src="https://img.shields.io/badge/host--agnostic-yes-7B2CBF.svg?style=flat-square" alt="Host-agnostic" />
 </p>
 
+<p align="center">
+  <a href="https://gunjangrunge.github.io/SIA_package/"><strong>📘 Open the Complete SIA User Guide</strong></a>
+  · Claude Code · Codex · Gemini CLI · Antigravity · Kiro
+</p>
+
 <p align="center"><b>Persistent, host-neutral orchestration for self-improving coding agents.</b></p>
 
 SIA combines detailed workflow guidance with an installable Python CLI. The CLI

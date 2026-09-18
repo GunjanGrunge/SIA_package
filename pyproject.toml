@@ -38,6 +38,7 @@ classifiers = [
 Homepage = "https://github.com/GunjanGrunge/SIA_package"
 Repository = "https://github.com/GunjanGrunge/SIA_package"
 Issues = "https://github.com/GunjanGrunge/SIA_package/issues"
+Documentation = "https://gunjangrunge.github.io/SIA_package/"
 
 [project.scripts]
 sia = "sia.cli:main"

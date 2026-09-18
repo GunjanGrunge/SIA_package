@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Complete guide to installing and using SIA persistent orchestration with Claude Code, Codex, Gemini CLI, Antigravity, Kiro, BMAD, and Superpowers.">
+  <meta name="theme-color" content="#07111f">
+  <meta property="og:title" content="SIA — Complete User Guide">
+  <meta property="og:description" content="Persistent, host-neutral orchestration for self-improving coding agents.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://gunjangrunge.github.io/SIA_package/">
+  <link rel="canonical" href="https://gunjangrunge.github.io/SIA_package/">
+  <link rel="icon" href="https://raw.githubusercontent.com/GunjanGrunge/SIA_package/main/extension/icon.svg" type="image/svg+xml">
+  <title>SIA — Complete User Guide</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --bg-deep: #040a13;
+      --surface: #0d1a2a;
+      --surface-2: #112238;
+      --surface-3: #152a43;
+      --line: rgba(154, 185, 224, .16);
+      --text: #ecf6ff;
+      --muted: #9db0c8;
+      --cyan: #20d9ed;
+      --cyan-soft: rgba(32, 217, 237, .12);
+      --blue: #6da8ff;
+      --purple: #bd8cff;
+      --green: #4ce0a3;
+      --amber: #ffc766;
+      --red: #ff7f91;
+      --shadow: 0 20px 60px rgba(0, 0, 0, .28);
+      --radius: 18px;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% -10%, rgba(32,217,237,.15), transparent 33rem),
+        radial-gradient(circle at 95% 10%, rgba(189,140,255,.11), transparent 30rem),
+        var(--bg);
+      font-family: var(--sans);
+      line-height: 1.65;
+    }
+    a { color: var(--cyan); text-decoration: none; }
+    a:hover { text-decoration: underline; text-underline-offset: 3px; }
+    code, pre { font-family: var(--mono); }
+    code { color: #bdeff7; }
+    .skip-link { position: absolute; left: -999px; top: 10px; z-index: 100; background: white; color: #000; padding: 10px; }
+    .skip-link:focus { left: 10px; }
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      border-bottom: 1px solid var(--line);
+      background: rgba(4, 10, 19, .86);
+      backdrop-filter: blur(16px);
+    }
+    .topbar-inner { max-width: 1220px; margin: auto; padding: 12px 24px; display: flex; align-items: center; gap: 24px; }
+    .brand { display: flex; align-items: center; gap: 11px; color: var(--text); font-weight: 800; letter-spacing: .04em; }
+    .brand:hover { text-decoration: none; }
+    .brand img { width: 36px; height: 36px; }
+    .brand small { display: block; color: var(--muted); font-size: 10px; letter-spacing: .09em; font-weight: 600; }
+    nav { margin-left: auto; display: flex; gap: 20px; align-items: center; font-size: 14px; }
+    nav a { color: var(--muted); }
+    nav a:hover { color: var(--text); text-decoration: none; }
+    .button {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 42px; padding: 0 17px; border: 1px solid var(--line); border-radius: 11px;
+      color: var(--text); background: var(--surface-2); font-weight: 700; cursor: pointer;
+    }
+    .button:hover { text-decoration: none; border-color: rgba(32,217,237,.5); transform: translateY(-1px); }
+    .button.primary { color: #031016; background: linear-gradient(135deg, var(--cyan), #7feaff); border-color: transparent; }
+    .hero { max-width: 1220px; margin: auto; padding: 96px 24px 70px; display: grid; grid-template-columns: 1.2fr .8fr; gap: 54px; align-items: center; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; color: var(--cyan); background: var(--cyan-soft); border: 1px solid rgba(32,217,237,.24); padding: 6px 11px; border-radius: 999px; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 5px rgba(76,224,163,.12); }
+    h1 { font-size: clamp(43px, 7vw, 82px); line-height: .98; letter-spacing: -.055em; margin: 20px 0 24px; }
+    h1 span { background: linear-gradient(100deg, var(--cyan), var(--blue), var(--purple)); background-clip: text; color: transparent; }
+    .hero p { color: var(--muted); font-size: 19px; max-width: 720px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+    .hero-panel { background: linear-gradient(145deg, rgba(17,34,56,.96), rgba(8,19,32,.96)); border: 1px solid var(--line); border-radius: 24px; box-shadow: var(--shadow); overflow: hidden; }
+    .terminal-head { display: flex; align-items: center; gap: 7px; padding: 14px 17px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: #ff6e77; }
+    .dot:nth-child(2) { background: #ffd166; } .dot:nth-child(3) { background: #57dc9a; }
+    .terminal-head span:last-child { margin-left: 8px; }
+    pre { margin: 0; padding: 20px; background: #06101c; color: #d8e9f7; overflow: auto; font-size: 13px; line-height: 1.65; border-radius: 12px; }
+    .hero-panel pre { border-radius: 0; min-height: 310px; }
+    .prompt { color: var(--green); } .command { color: #d9f8ff; } .comment { color: #6f8aa8; }
+    .copy { margin-left: auto; border: 0; border-radius: 7px; padding: 5px 9px; color: var(--muted); background: rgba(255,255,255,.06); cursor: pointer; }
+    .copy:hover { color: var(--text); }
+    main { max-width: 1220px; margin: auto; padding: 0 24px 90px; }
+    section { padding: 68px 0 8px; }
+    .section-tag { color: var(--cyan); font-size: 12px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+    h2 { margin: 8px 0 12px; font-size: clamp(30px, 4vw, 48px); line-height: 1.12; letter-spacing: -.035em; }
+    h3 { font-size: 20px; line-height: 1.3; margin: 0 0 10px; }
+    h4 { font-size: 15px; margin: 22px 0 8px; color: var(--cyan); text-transform: uppercase; letter-spacing: .06em; }
+    .lead { max-width: 780px; color: var(--muted); font-size: 17px; margin: 0 0 30px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .grid.two { grid-template-columns: repeat(2, 1fr); }
+    .card { background: linear-gradient(145deg, rgba(17,34,56,.82), rgba(10,23,38,.88)); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,.12); }
+    .card p { color: var(--muted); margin-bottom: 0; }
+    .icon { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 12px; margin-bottom: 17px; background: var(--cyan-soft); color: var(--cyan); font-size: 21px; font-weight: 900; }
+    .mode { position: relative; overflow: hidden; }
+    .mode::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--cyan); }
+    .mode:nth-child(2)::before { background: var(--blue); } .mode:nth-child(3)::before { background: var(--purple); }
+    .pill { display: inline-block; padding: 4px 9px; border-radius: 99px; color: var(--green); background: rgba(76,224,163,.11); font: 700 11px var(--mono); }
+    .flow { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; align-items: stretch; }
+    .stage { position: relative; min-height: 125px; padding: 16px 13px; background: var(--surface); border: 1px solid var(--line); border-radius: 13px; }
+    .stage b { display: block; color: var(--cyan); font: 800 11px var(--mono); margin-bottom: 8px; }
+    .stage strong { font-size: 14px; display: block; }
+    .stage span { color: var(--muted); font-size: 12px; }
+    .stage:not(:last-child)::after { content: "›"; position: absolute; right: -8px; top: 45px; z-index: 3; color: var(--cyan); font-size: 20px; }
+    .hosts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    .host { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+    .host-head { display: flex; gap: 14px; align-items: center; padding: 20px 22px; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.018); }
+    .host-logo { width: 45px; height: 45px; border-radius: 12px; background: white; padding: 7px; object-fit: contain; }
+    .host-title strong { display: block; font-size: 19px; }
+    .host-title span { color: var(--muted); font-size: 12px; }
+    .host-body { padding: 22px; }
+    .host-body ol { padding-left: 20px; color: var(--muted); }
+    .host-body li { margin: 8px 0; }
+    .host-body pre { margin-top: 12px; }
+    .notice { border: 1px solid rgba(255,199,102,.28); background: rgba(255,199,102,.08); color: #ffe6b7; border-radius: 13px; padding: 15px 17px; }
+    .notice.info { border-color: rgba(109,168,255,.3); background: rgba(109,168,255,.08); color: #d5e6ff; }
+    .steps { counter-reset: step; display: grid; gap: 14px; }
+    .step { counter-increment: step; display: grid; grid-template-columns: 42px 1fr; gap: 15px; padding: 21px; background: var(--surface); border: 1px solid var(--line); border-radius: 15px; }
+    .step::before { content: counter(step); width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; color: #001018; background: var(--cyan); font-weight: 900; }
+    .step p { color: var(--muted); margin: 4px 0 0; }
+    .command-block { margin: 14px 0; border: 1px solid var(--line); border-radius: 13px; overflow: hidden; }
+    .command-title { display: flex; align-items: center; padding: 9px 13px; background: var(--surface-2); color: var(--muted); font-size: 12px; }
+    .command-block pre { border-radius: 0; }
+    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line); overflow: hidden; border-radius: 14px; display: table; }
+    th, td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { color: var(--cyan); background: var(--surface-2); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+    td { color: var(--muted); } td code { white-space: nowrap; }
+    tr:last-child td { border-bottom: 0; }
+    .tree { background: #06101c; padding: 22px; border-radius: 14px; border: 1px solid var(--line); color: #bcd0e6; font-family: var(--mono); white-space: pre; overflow-x: auto; }
+    details { background: var(--surface); border: 1px solid var(--line); border-radius: 13px; margin: 10px 0; overflow: hidden; }
+    summary { cursor: pointer; padding: 17px 20px; font-weight: 800; }
+    details > div { padding: 0 20px 18px; color: var(--muted); }
+    footer { border-top: 1px solid var(--line); background: var(--bg-deep); }
+    .footer-inner { max-width: 1220px; margin: auto; padding: 38px 24px; display: flex; justify-content: space-between; gap: 30px; color: var(--muted); font-size: 13px; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 18px; }
+    .mobile-menu { display: none; }
+    @media (max-width: 980px) {
+      .hero { grid-template-columns: 1fr; padding-top: 70px; }
+      .hero-panel { max-width: 680px; }
+      .grid, .hosts { grid-template-columns: 1fr 1fr; }
+      .flow { grid-template-columns: repeat(2, 1fr); }
+      .stage:not(:last-child)::after { display: none; }
+      nav a:not(.button) { display: none; }
+    }
+    @media (max-width: 650px) {
+      .topbar-inner { padding: 10px 16px; } nav .button { display: none; }
+      .hero, main { padding-left: 16px; padding-right: 16px; }
+      .hero { padding-top: 54px; }
+      .grid, .grid.two, .hosts, .flow { grid-template-columns: 1fr; }
+      h1 { font-size: 46px; }
+      section { padding-top: 52px; }
+      table { display: block; overflow-x: auto; }
+      .footer-inner { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .button:hover { transform: none; } }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to guide</a>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#top" aria-label="SIA guide home">
+      <img src="https://raw.githubusercontent.com/GunjanGrunge/SIA_package/main/extension/icon.svg" alt="SIA logo">
+      <span>SIA<small>USER GUIDE</small></span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="#capabilities">Capabilities</a>
+      <a href="#hosts">Hosts</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#reference">CLI</a>
+      <a class="button" href="https://github.com/GunjanGrunge/SIA_package">GitHub ↗</a>
+    </nav>
+  </div>
+</header>
+
+<div id="top" class="hero">
+  <div>
+    <span class="eyebrow"><span class="pulse"></span> SIA 0.2 · persistent orchestration</span>
+    <h1>Your coding agents,<br><span>working as a system.</span></h1>
+    <p>SIA gives Claude Code, Codex, Gemini CLI, Antigravity, Kiro, and other coding assistants one durable workflow: explicit stages, safe parallel ownership, independent review, and a feedback loop that survives new chats.</p>
+    <div class="actions">
+      <a class="button primary" href="#quickstart">Start in 3 minutes</a>
+      <a class="button" href="#hosts">Choose your coding tool</a>
+      <a class="button" href="https://pypi.org/project/sia-package/">PyPI ↗</a>
+    </div>
+  </div>
+  <div class="hero-panel" aria-label="SIA quick start terminal">
+    <div class="terminal-head"><i class="dot"></i><i class="dot"></i><i class="dot"></i><span>project terminal</span><button class="copy" data-copy="hero-code">Copy</button></div>
+    <pre id="hero-code"><span class="comment"># Install once</span>
+<span class="prompt">PS&gt;</span> <span class="command">python -m pip install sia-package==0.2.0</span>
+
+<span class="comment"># Initialize this project</span>
+<span class="prompt">PS&gt;</span> <span class="command">sia init --mode orchestrator</span>
+
+<span class="comment"># Pick your host adapter</span>
+<span class="prompt">PS&gt;</span> <span class="command">sia adapter install --host claude</span>
+
+<span class="comment"># Resume from durable state</span>
+<span class="prompt">PS&gt;</span> <span class="command">sia next --json</span></pre>
+  </div>
+</div>
+
+<main id="main">
+  <section id="capabilities">
+    <span class="section-tag">What SIA does</span>
+    <h2>A control plane for agentic work</h2>
+    <p class="lead">SIA does not replace your model or IDE. It gives the host a shared, inspectable contract and saves workflow state under <code>.sia/</code>.</p>
+    <div class="grid">
+      <article class="card"><div class="icon">↻</div><h3>Durable re-entry</h3><p><code>sia next --json</code> restores the current mode, stage, owner, tasks, and required action after a fresh chat or context compaction.</p></article>
+      <article class="card"><div class="icon">⋈</div><h3>Parallel agent safety</h3><p>Independent tasks can run together only when their canonical file ownership does not overlap— including parent/child and Windows case aliases.</p></article>
+      <article class="card"><div class="icon">✓</div><h3>Independent review</h3><p>Implementation and review carry separate caller-attested host run identities. Integration is blocked until every task is reviewed.</p></article>
+      <article class="card"><div class="icon">◇</div><h3>Evidence-gated stages</h3><p>Specs, plans, skills, reports, and integration records must exist before the workflow advances. Chat claims are not evidence.</p></article>
+      <article class="card"><div class="icon">∞</div><h3>Self-improvement loop</h3><p>PASS/DEVIATION events become scoped, provenance-bearing rules. Preflight checks load them before related work; convergence tracks recurrence.</p></article>
+      <article class="card"><div class="icon">⇄</div><h3>Plugin coexistence</h3><p>BMAD, Superpowers, MCP, native skills, and custom instructions remain available. Assign stage ownership instead of replacing another framework.</p></article>
+    </div>
+  </section>
+
+  <section id="modes">
+    <span class="section-tag">Choose the control level</span>
+    <h2>Three runtime modes</h2>
+    <p class="lead">Runtime mode is independent of the intake approach you choose for an existing project.</p>
+    <div class="grid">
+      <article class="card mode"><span class="pill">LOWEST CONTROL</span><h3>Advisory</h3><p>SIA owns feedback capture, standing rules, preflight, and convergence. Use this when BMAD, Superpowers, or your team already owns planning and execution.</p><div class="command-block"><pre>sia init --mode advisory</pre></div></article>
+      <article class="card mode"><span class="pill">PLANNING CONTROL</span><h3>Planning</h3><p>SIA owns intake, specification, project instructions, generated skills, and plan. A different framework or human team can execute.</p><div class="command-block"><pre>sia init --mode planning</pre></div></article>
+      <article class="card mode"><span class="pill">FULL CONTROL</span><h3>Orchestrator</h3><p>SIA owns the full evidence pipeline and coordinates host-native implementers and reviewers. It still does not impersonate a vendor agent API.</p><div class="command-block"><pre>sia init --mode orchestrator</pre></div></article>
+    </div>
+  </section>
+
+  <section id="quickstart">
+    <span class="section-tag">Quick start</span>
+    <h2>Install, initialize, resume</h2>
+    <div class="steps">
+      <article class="step"><div><h3>Install the Python package</h3><p>Python 3.10 or newer is required.</p><div class="command-block"><div class="command-title">PowerShell / terminal <button class="copy" data-copy="install-code">Copy</button></div><pre id="install-code">python -m pip install sia-package==0.2.0</pre></div></div></article>
+      <article class="step"><div><h3>Open the target project</h3><p>Run SIA from the actual repository root. Choose one runtime mode.</p><div class="command-block"><pre>cd path/to/your-project
+sia init --mode orchestrator
+sia doctor</pre></div></div></article>
+      <article class="step"><div><h3>Install one host launcher</h3><p>Claude, Codex, Kiro, and Antigravity have collision-safe, opt-in adapters. Gemini CLI uses the manual host-neutral flow documented below.</p><div class="command-block"><pre>sia adapter install --host claude
+# or: codex | kiro | antigravity</pre></div></div></article>
+      <article class="step"><div><h3>Ask the host to resume SIA</h3><p>The JSON packet is the durable source of workflow position.</p><div class="command-block"><pre>sia next --json</pre></div></div></article>
+    </div>
+  </section>
+
+  <section id="hosts">
+    <span class="section-tag">Coding tool setup</span>
+    <h2>Use SIA with your preferred host</h2>
+    <p class="lead">The logos below are loaded from each tool's official domain. SIA and its authors are not affiliated with or endorsed by these vendors.</p>
+    <div class="hosts">
+      <article class="host" id="claude-code">
+        <div class="host-head"><img class="host-logo" src="https://claude.com/favicon.ico" alt="Claude logo"><div class="host-title"><strong>Claude Code</strong><span>Project skill · explicit <code>/sia</code></span></div></div>
+        <div class="host-body"><ol><li>Initialize SIA in the project root.</li><li>Install the manual-only Claude skill.</li><li>In Claude Code, invoke <code>/sia</code>. The skill runs the persisted packet and leaves other skills available.</li></ol>
+          <pre>sia init --mode orchestrator
+sia adapter install --host claude
+sia next --json</pre>
+          <p><strong>Installed path:</strong> <code>.claude/skills/sia/SKILL.md</code></p>
+          <p><a href="https://code.claude.com/docs/en/skills/">Official Claude Code skills documentation ↗</a></p>
+        </div>
+      </article>
+
+      <article class="host" id="codex">
+        <div class="host-head"><img class="host-logo" src="https://developers.openai.com/favicon.svg" alt="OpenAI logo"><div class="host-title"><strong>OpenAI Codex</strong><span>Repo skill · AGENTS.md compatible</span></div></div>
+        <div class="host-body"><ol><li>Keep the repository's existing <code>AGENTS.md</code>; SIA does not replace it.</li><li>Install the repo-local SIA skill.</li><li>Ask Codex to use SIA, then follow <code>sia next --json</code>. Record native run IDs when dispatching.</li></ol>
+          <pre>sia init --mode orchestrator
+sia adapter install --host codex
+sia next --json</pre>
+          <p><strong>Installed path:</strong> <code>.agents/skills/sia/SKILL.md</code></p>
+          <p><a href="https://developers.openai.com/codex/concepts/customization/">Official Codex customization documentation ↗</a></p>
+        </div>
+      </article>
+
+      <article class="host" id="gemini-cli">
+        <div class="host-head"><img class="host-logo" src="https://geminicli.com/favicon.ico" alt="Gemini CLI logo"><div class="host-title"><strong>Gemini CLI</strong><span>Host-neutral flow · GEMINI.md context</span></div></div>
+        <div class="host-body"><div class="notice info"><strong>Current status:</strong> SIA does not yet ship <code>sia adapter install --host gemini</code>. Use the CLI packet directly; do not substitute another host's adapter.</div>
+          <ol><li>Initialize SIA.</li><li>Optionally put the small activation rule below in the project's <code>GEMINI.md</code>.</li><li>Ask Gemini to run the packet only when you explicitly request SIA.</li></ol>
+          <pre>sia init --mode planning
+sia next --json</pre>
+          <h4>Optional GEMINI.md entry</h4>
+          <pre>## SIA
+When I explicitly request SIA, run `sia next --json`
+from the project root and follow the returned mode,
+stage owner, evidence gate, and next action. Keep
+existing Gemini skills and project instructions active.</pre>
+          <p>Gemini CLI also supports Agent Skills. Until SIA adds a tested Gemini adapter, the host-neutral packet above is the supported SIA path.</p>
+          <p><a href="https://geminicli.com/docs/cli/gemini-md/">Official GEMINI.md documentation ↗</a> · <a href="https://geminicli.com/docs/cli/skills/">Official Agent Skills documentation ↗</a></p>
+        </div>
+      </article>
+
+      <article class="host" id="antigravity">
+        <div class="host-head"><img class="host-logo" src="https://antigravity.google/favicon.ico" alt="Google Antigravity logo"><div class="host-title"><strong>Google Antigravity</strong><span>Custom workflow · native agents</span></div></div>
+        <div class="host-body"><ol><li>Initialize SIA in the Antigravity workspace root.</li><li>Install the workflow adapter.</li><li>Invoke <code>/sia</code> from Agent Manager. Use native agents for prepared implementation/review tasks.</li></ol>
+          <pre>sia init --mode orchestrator
+sia adapter install --host antigravity
+sia next --json</pre>
+          <p><strong>Installed path:</strong> <code>.agents/workflows/sia.md</code></p>
+          <p><a href="https://codelabs.developers.google.com/autonomous-ai-developer-pipelines-antigravity">Official Antigravity workflows codelab ↗</a></p>
+        </div>
+      </article>
+
+      <article class="host" id="kiro">
+        <div class="host-head"><img class="host-logo" src="https://kiro.dev/favicon.ico" alt="Kiro logo"><div class="host-title"><strong>Kiro</strong><span>Manual steering · native subagents</span></div></div>
+        <div class="host-body"><ol><li>Install the manual steering adapter.</li><li>Invoke the SIA steering command explicitly.</li><li>In orchestrator mode, delegate prepared tasks to Kiro subagents and record each implementer/reviewer identity.</li></ol>
+          <pre>sia init --mode orchestrator
+sia adapter install --host kiro
+sia next --json</pre>
+          <p><strong>Installed path:</strong> <code>.kiro/steering/sia.md</code></p>
+          <p><a href="https://kiro.dev/docs/steering/">Official Kiro steering documentation ↗</a> · <a href="https://kiro.dev/docs/custom-agents/subagents/">Subagents ↗</a></p>
+        </div>
+      </article>
+
+      <article class="host" id="manual-host">
+        <div class="host-head"><div class="host-logo" aria-hidden="true" style="display:grid;place-items:center;color:#07111f;font-weight:900">AI</div><div class="host-title"><strong>Any other coding assistant</strong><span>Standalone prompt packet</span></div></div>
+        <div class="host-body"><p>If a host can run commands and read files, it can use SIA without an adapter:</p>
+          <pre>sia init --mode planning
+sia next --json</pre>
+          <p>Give the JSON result to the host and ask it to follow the current stage. Use advisory/planning mode when the host cannot provide native subagents or independent run identities.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="workflow">
+    <span class="section-tag">Operating model</span>
+    <h2>The persistent SIA pipeline</h2>
+    <p class="lead">Approval gates wrap every stage. The current stage is persisted; the assistant does not infer it from conversation memory.</p>
+    <div class="flow" aria-label="SIA stages">
+      <div class="stage"><b>01</b><strong>Intake</strong><span>Goal, evidence, boundaries</span></div>
+      <div class="stage"><b>02</b><strong>Spec</strong><span>Approved architecture</span></div>
+      <div class="stage"><b>03</b><strong>Instructions</strong><span>Project rules</span></div>
+      <div class="stage"><b>04</b><strong>Skills</strong><span>Evidence-derived pack</span></div>
+      <div class="stage"><b>05</b><strong>Plan</strong><span>Files and interfaces</span></div>
+      <div class="stage"><b>06</b><strong>Execution</strong><span>Dispatch and review</span></div>
+      <div class="stage"><b>07</b><strong>Feedback</strong><span>Rules and convergence</span></div>
+    </div>
+
+    <h3 style="margin-top:34px">Advancing evidence-gated stages</h3>
+    <div class="grid two">
+      <div class="card"><h3>Ask what comes next</h3><pre>sia status
+sia next --json</pre><p>Every host follows the same packet, so changing tools does not reset the process.</p></div>
+      <div class="card"><h3>Attach the artifact</h3><pre>sia advance --evidence docs/specs/export.md</pre><p>Specification, instructions, skills, and plan stages require project-local evidence paths.</p></div>
+    </div>
+  </section>
+
+  <section id="multi-agent">
+    <span class="section-tag">Orchestrator mode</span>
+    <h2>Prepare → dispatch → review → integrate</h2>
+    <p class="lead">SIA records caller-attested host identities and enforces ordering. The actual agent is spawned by Claude, Codex, Kiro, Antigravity, or another native harness.</p>
+    <div class="command-block"><div class="command-title">1 · Prepare exclusive ownership <button class="copy" data-copy="task-code">Copy</button></div><pre id="task-code">sia task prepare \
+  --task backend \
+  --brief sdd/backend-brief.md \
+  --files src/api.py
+
+sia task prepare \
+  --task frontend \
+  --brief sdd/frontend-brief.md \
+  --files src/App.tsx</pre></div>
+    <div class="command-block"><div class="command-title">2 · Record the native implementer</div><pre>sia task dispatch \
+  --task backend \
+  --host kiro \
+  --agent-id backend-implementer \
+  --native-run-id &lt;run-id&gt;</pre></div>
+    <div class="command-block"><div class="command-title">3 · Attach report and independent review</div><pre>sia task finish \
+  --task backend \
+  --report sdd/backend-report.md \
+  --review sdd/backend-review.md \
+  --reviewer-agent-id backend-reviewer \
+  --review-native-run-id &lt;review-run-id&gt;</pre></div>
+    <div class="command-block"><div class="command-title">4 · Certify the combined result</div><pre>sia integration --evidence sdd/integration.md
+sia advance</pre></div>
+    <div class="notice"><strong>What SIA rejects:</strong> overlapping paths, project-root ownership, paths outside the repository, the same implementer/reviewer identity, empty reports, integration before all reviews, and stale integration after the task set changes.</div>
+  </section>
+
+  <section id="learning">
+    <span class="section-tag">Feedback loop</span>
+    <h2>Turn verified mistakes into scoped rules</h2>
+    <div class="grid two">
+      <div class="card"><h3>Record outcomes</h3><pre>sia record \
+  --outcome pass \
+  --signal review \
+  --context "Approved without correction" \
+  --severity low
+
+sia capture \
+  --signal review-finding \
+  --context "Controller touched an owned file" \
+  --severity high \
+  --error-class ownership-breach</pre></div>
+      <div class="card"><h3>Add and apply an approved rule</h3><pre>sia rule add \
+  --text "Never edit dispatched task files" \
+  --scope "src/*.py" \
+  --severity high \
+  --error-class ownership-breach \
+  --source-event &lt;event-id&gt;
+
+sia preflight --scope src/api.py
+sia convergence</pre></div>
+    </div>
+    <p class="notice info">Medium/high matching rules require acknowledgment. Rules keep source event, evidence, severity, error class, scope, introduction date, and active/retired status.</p>
+  </section>
+
+  <section id="coexistence">
+    <span class="section-tag">BMAD, Superpowers, MCP</span>
+    <h2>Share ownership instead of replacing tools</h2>
+    <p class="lead">SIA's default framework policy is <code>bridge</code>. Existing framework files remain off limits.</p>
+    <div class="grid two">
+      <div class="card"><h3>Let BMAD own planning</h3><pre>sia owner --stage plan --to bmad
+sia next --json</pre><p>The packet tells the host to obtain BMAD's artifact before SIA advances.</p></div>
+      <div class="card"><h3>Use only the learning loop</h3><pre>sia init --mode advisory
+sia capture ...
+sia preflight --scope src/auth.py
+sia convergence</pre><p>Other frameworks own the delivery process while SIA maintains project feedback.</p></div>
+    </div>
+  </section>
+
+  <section id="reference">
+    <span class="section-tag">Reference</span>
+    <h2>CLI command map</h2>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Command</th><th>Purpose</th><th>Typical time</th></tr></thead>
+        <tbody>
+          <tr><td><code>sia init --mode …</code></td><td>Create durable project state in advisory, planning, or orchestrator mode.</td><td>Once per project/run</td></tr>
+          <tr><td><code>sia status</code></td><td>Show mode, current stage/owner, tasks, and integration state.</td><td>Any time</td></tr>
+          <tr><td><code>sia next --json</code></td><td>Produce the host-neutral next-action packet.</td><td>Every SIA turn/new session</td></tr>
+          <tr><td><code>sia guide</code></td><td>Print the complete installed workflow policy.</td><td>Installed-only use</td></tr>
+          <tr><td><code>sia doctor</code></td><td>Check initialization and complete policy availability.</td><td>After install/update</td></tr>
+          <tr><td><code>sia owner</code></td><td>Assign one stage to SIA or another framework.</td><td>When bridging tools</td></tr>
+          <tr><td><code>sia advance</code></td><td>Validate evidence and complete the current stage.</td><td>Stage boundary</td></tr>
+          <tr><td><code>sia adapter install/remove</code></td><td>Manage collision-safe host launchers.</td><td>Host setup</td></tr>
+          <tr><td><code>sia task prepare</code></td><td>Establish task ID, brief, and exclusive owned paths.</td><td>Before native spawn</td></tr>
+          <tr><td><code>sia task dispatch</code></td><td>Record caller-attested host implementer/run identity.</td><td>Immediately after spawn</td></tr>
+          <tr><td><code>sia task finish</code></td><td>Attach implementer report and independently identified review.</td><td>After review</td></tr>
+          <tr><td><code>sia integration</code></td><td>Bind combined evidence to the complete reviewed task set.</td><td>End of execution</td></tr>
+          <tr><td><code>sia record / capture</code></td><td>Persist PASS or DEVIATION outcomes.</td><td>After proposals/reviews</td></tr>
+          <tr><td><code>sia rule add/retire</code></td><td>Manage provenance-bearing standing rules.</td><td>After approved learning</td></tr>
+          <tr><td><code>sia preflight</code></td><td>Load matching active rules before related work.</td><td>Before proposals/changes</td></tr>
+          <tr><td><code>sia convergence</code></td><td>Compute overall and per-error-class deviation rates.</td><td>Milestones/reviews</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="state">
+    <span class="section-tag">Files and trust boundary</span>
+    <h2>What is stored where</h2>
+    <div class="grid two">
+      <div class="tree">.sia/
+├── config.json       # mode, framework policy, owners
+├── state.json        # stage, tasks, integration
+├── events.jsonl      # append-only outcomes
+├── rules.json        # active and retired rules
+├── project.lock      # cross-process serialization
+└── runs/
+    └── &lt;run-id&gt;/
+        ├── tasks/
+        └── integration.md</div>
+      <div class="card"><h3>Commit intentionally</h3><p>SIA runtime evidence can contain user corrections, paths, and review context. Review it for secrets before committing. Generated project artifacts—specs, plans, skills, and selected <code>sdd/</code> mirrors—are normal project history.</p><h3 style="margin-top:24px">Trust boundary</h3><p>SIA checks ordering, path ownership, evidence presence, reviewer separation, and state consistency. It cannot cryptographically prove a vendor agent ran; native IDs are supplied by the host/controller.</p></div>
+    </div>
+  </section>
+
+  <section id="extension">
+    <span class="section-tag">Optional UI</span>
+    <h2>VS Code-compatible extension</h2>
+    <p class="lead">The repository includes a VSIX for VS Code-compatible IDEs. Install <code>sia-package</code> first: the extension delegates initialization and status to the Python runtime and does not maintain a second state machine.</p>
+    <div class="command-block"><pre>python -m pip install sia-package==0.2.0
+# In VS Code: Extensions → … → Install from VSIX
+# Select sia-vscode-extension-0.2.0.vsix</pre></div>
+  </section>
+
+  <section id="troubleshooting">
+    <span class="section-tag">Troubleshooting</span>
+    <h2>Common questions</h2>
+    <details><summary>SIA says the project is not initialized</summary><div>Run <code>sia init --mode advisory|planning|orchestrator</code> from the project root, then <code>sia doctor</code>.</div></details>
+    <details><summary>The host did not invoke SIA automatically</summary><div>This is intentional. Adapters are explicit to avoid monopolizing unrelated prompts. Invoke <code>/sia</code> where supported, or ask the host to run <code>sia next --json</code>.</div></details>
+    <details><summary>Gemini CLI has no install adapter</summary><div>Use the host-neutral packet and optional <code>GEMINI.md</code> activation rule above. Do not install the Codex/Antigravity adapter into Gemini paths.</div></details>
+    <details><summary>SIA blocks a second parallel task</summary><div>Its owned path intersects an active task. Sequence the work or give a later integration task exclusive ownership of the shared file.</div></details>
+    <details><summary>Preflight exits with code 2</summary><div>A matching medium/high standing rule needs acknowledgment. Review the rule and use <code>--acknowledge &lt;rule-id&gt;</code> only after approval.</div></details>
+    <details><summary>I use BMAD or Superpowers</summary><div>Choose advisory mode or assign individual stages with <code>sia owner</code>. SIA should not edit those frameworks' files.</div></details>
+    <details><summary>Can SIA spawn agents by itself?</summary><div>No universal vendor API exists. The host performs the actual spawn; SIA records caller-attested identities and enforces the common evidence contract.</div></details>
+  </section>
+
+  <section id="resources">
+    <span class="section-tag">More detail</span>
+    <h2>Repository resources</h2>
+    <div class="grid">
+      <a class="card" href="https://github.com/GunjanGrunge/SIA_package/blob/main/USAGE.md"><h3>USAGE.md</h3><p>Long-form project, host, brownfield, and implementation guidance.</p></a>
+      <a class="card" href="https://github.com/GunjanGrunge/SIA_package/blob/main/HOST-INTEGRATION.md"><h3>Host contract</h3><p>Modes, re-entry protocol, adapter paths, and native-agent boundary.</p></a>
+      <a class="card" href="https://github.com/GunjanGrunge/SIA_package/blob/main/VALIDATION.md"><h3>Validation</h3><p>Dogfood scenarios and runtime safety boundaries.</p></a>
+      <a class="card" href="https://github.com/GunjanGrunge/SIA_package"><h3>Source code</h3><p>Runtime, adapters, guides, extension, issues, and release history.</p></a>
+      <a class="card" href="https://pypi.org/project/sia-package/"><h3>PyPI package</h3><p>Published Python package and installation metadata.</p></a>
+      <a class="card" href="https://github.com/GunjanGrunge/SIA_package/issues"><h3>Report an issue</h3><p>Questions, bugs, integration gaps, and host adapter requests.</p></a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div><strong style="color:var(--text)">SIA · Self-Improving Agents</strong><br>MIT licensed · human approval remains the highest project authority.</div>
+    <div class="footer-links"><a href="#top">Back to top</a><a href="https://github.com/GunjanGrunge/SIA_package">GitHub</a><a href="https://pypi.org/project/sia-package/">PyPI</a></div>
+  </div>
+  <div style="max-width:1220px;margin:auto;padding:0 24px 30px;color:#6f849e;font-size:11px">Claude, OpenAI, Gemini, Antigravity, and Kiro names/logos belong to their respective owners. Host behavior was summarized from linked official documentation. Content was rephrased for compliance with licensing restrictions.</div>
+</footer>
+
+<script>
+  document.querySelectorAll('[data-copy]').forEach(function (button) {
+    button.addEventListener('click', async function () {
+      var source = document.getElementById(button.getAttribute('data-copy'));
+      if (!source) return;
+      var text = source.innerText.replace(/^PS>\s?/gm, '').replace(/^#.*$/gm, function (line) { return line; });
+      try {
+        await navigator.clipboard.writeText(text);
+        var old = button.textContent;
+        button.textContent = 'Copied';
+        setTimeout(function () { button.textContent = old; }, 1400);
+      } catch (_) {
+        button.textContent = 'Select text';
+      }
+    });
+  });
+</script>
+</body>
+</html>
