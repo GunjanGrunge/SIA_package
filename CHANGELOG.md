@@ -2,6 +2,53 @@
 
 All notable changes to the SIA package itself are recorded here.
 
+## [Unreleased]
+
+### Added
+
+- **Claude Code plugin.** `.claude-plugin/plugin.json` and `marketplace.json`,
+  installable with `/plugin marketplace add GunjanGrunge/SIA_package` then
+  `/plugin install sia@sia`.
+- Skills `sia-start`, `sia-orchestrate` and `sia-workflow`; agents
+  `sia-implementer` and `sia-reviewer`.
+- **The CLI ships inside the plugin — no `pip install`.** `cli.py` is now the
+  plugin entry point and puts `src/` on `sys.path` itself, so Python 3 is the
+  only prerequisite. The PyPI package remains the path for other hosts.
+
+### Fixed
+
+- Execution-stage refusals name the current stage, the remaining stages and the
+  exact next command. They previously stated the constraint alone, which made a
+  working install read as a dead end: the quickstart completed without error
+  and then every useful command refused.
+- `orchestrate configure` rejects the `replace-with-*` placeholders emitted by
+  `orchestrate example`. It previously accepted them and reported
+  `"configured": true`, so the failure surfaced far from its cause.
+- Framework detection widened beyond bmad/superpowers to `.claude`, `.agents`,
+  `.kiro`, `.gemini` and `.antigravity`. On a real brownfield project it had
+  detected one of five.
+- `guides/orchestration.md` documents the cheap/current/strong tiers.
+
+### Changed
+
+- README and the published user guide lead with the plugin install and explain
+  the five evidence gates between `init` and `execution`.
+- The `cli.py` contract check asserts the file documents `CLAUDE_PLUGIN_ROOT`
+  and inserts `src/` on `sys.path`, instead of pinning a docstring describing
+  it as a legacy shim.
+
+### Removed
+
+- Two stale `sia-vscode-extension-0.2.0.vsix` artifacts (repository root and
+  `extension/`); `*.vsix` is now gitignored. The extension is built from source
+  rather than shipped prebuilt.
+
+### Known issues
+
+- `docs/reviews/2026-09-18-sia-0.3-review.md` records a **NEEDS_CHANGES** review
+  of this runtime with a confirmed Critical hard-budget bypass and several High
+  findings. None are addressed here.
+
 ## [0.3.0] - 2026-09-18
 
 ### Added
