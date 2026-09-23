@@ -33,8 +33,11 @@ Superpowers, MCP, and other plugins remain available through bridge ownership.
 
 ```text
 /plugin marketplace add GunjanGrunge/SIA_package
-/plugin install sia
+/plugin install sia@sia
 ```
+
+(`sia@sia` is `plugin@marketplace`. Bare `sia` only resolves if no other
+installed marketplace offers that name.)
 
 Then say **"set up SIA on this project"**. The `sia-start` skill takes it from
 there. The CLI is bundled with the plugin — there is **no `pip install`** and no
@@ -42,6 +45,13 @@ virtualenv; Python 3 is the only prerequisite.
 
 The plugin ships three skills (`sia-start`, `sia-orchestrate`, `sia-workflow`)
 and two agents (`sia-implementer`, `sia-reviewer`).
+
+**What it can do on your machine:** by default SIA only reads and writes
+`.sia/` and asks *this host* to spawn its own subagents. The optional
+`standalone` backend additionally launches provider CLIs you configure, as
+argument arrays with `shell=False`, behind an explicit
+`orchestrate run --approve-commands` gate. That is the plugin's largest
+capability surface; it is opt-in and never runs a shell string.
 
 ### Other hosts, or the CLI on its own
 

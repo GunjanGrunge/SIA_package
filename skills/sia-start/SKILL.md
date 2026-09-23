@@ -1,7 +1,6 @@
 ---
 name: sia-start
 description: Set up SIA in a project and walk it from intake to execution. Use when the user says "start SIA", "set up SIA", "init SIA", "use SIA on this project", "sia status", or asks where SIA is in its workflow or why SIA refuses to prepare tasks.
-argument-hint: "[advisory|planning|orchestrator]"
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep
 ---
 

@@ -22,3 +22,6 @@ Thumbs.db
 
 # Editor/IDE local settings
 .qoder/
+
+# Built VS Code extension packages
+*.vsix

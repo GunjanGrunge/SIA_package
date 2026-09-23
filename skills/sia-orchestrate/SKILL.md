@@ -1,8 +1,7 @@
 ---
 name: sia-orchestrate
 description: Configure model tiers and dispatch SIA subagents with budgets, file-ownership safety and independent review. Use when the user says "sia orchestrate", "dispatch SIA agents", "run SIA workers", "configure SIA models", or asks SIA to parallelize implementation work across cheap and strong models.
-argument-hint: "[native-host|standalone]"
-allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Agent
+allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Agent, Task
 ---
 
 # Orchestrating work with SIA
@@ -76,15 +75,16 @@ hash that every receipt must cite.
 Choose the backend deliberately:
 
 - **`native-host`** — this Claude Code session spawns the workers with the
-  Agent tool. Use this by default.
+  subagent-dispatch tool. Use this by default.
 - **`standalone`** — SIA launches configured provider CLIs itself with
   `shell=False`, gated behind `orchestrate run --approve-commands`. Use this
   only when the user wants workers on a different provider or self-hosted model.
 
 ## Step 4 — dispatch, as the controller
 
-For `native-host`, launch every ready implementer **in parallel** with the
-Agent tool, using the `sia-implementer` agent and each operation's
+For `native-host`, launch every ready implementer **in parallel** with this
+host's subagent-dispatch tool — named `Agent` in current Claude Code builds and
+`Task` in older ones — using the `sia-implementer` agent and each operation's
 `requested_model_id` where the host supports it.
 
 The controller must not edit task-owned files itself. Brief, dispatch, review,

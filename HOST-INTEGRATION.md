@@ -66,6 +66,13 @@ metadata. Unknown data must stay unknown.
 | Gemini CLI | `.gemini/skills/sia/SKILL.md` | `.gemini/agents/*.md` model |
 | Antigravity | `.agents/workflows/sia.md` | coordinator/UI/profile when exposed |
 
+**Claude Code users should install the plugin instead** (`/plugin install
+sia@sia`). It ships the `sia-start`, `sia-orchestrate` and `sia-workflow`
+skills plus the `sia-implementer` and `sia-reviewer` agents, and bundles the
+CLI so no `pip install` is required. The `integrations/claude-code/` adapter
+remains for source-checkout use; installing both leaves two overlapping `sia`
+skills in one project.
+
 Install with `sia adapter install --host claude|codex|kiro|gemini|antigravity`.
 Use `--upgrade` only to replace an unchanged SIA-managed v1 adapter. SIA refuses
 collisions, modified files, and redirected paths outside the project.
