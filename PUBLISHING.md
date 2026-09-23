@@ -47,5 +47,5 @@ Open VSX ([open-vsx.org](https://open-vsx.org/)) is the open extension registry 
 3. Publish your built `.vsix` file:
 
 ```bash
-npx ovsx publish extension/sia-vscode-extension-0.2.0.vsix -t <YOUR_OPEN_VSX_TOKEN>
+npx ovsx publish extension/sia-vscode-extension-0.3.0.vsix -t <YOUR_OPEN_VSX_TOKEN>
 ```

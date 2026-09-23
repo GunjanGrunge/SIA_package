@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
 import json
 import sys
 from pathlib import Path
@@ -10,6 +11,8 @@ from typing import Any
 from . import __version__
 from .adapters import ADAPTERS, install_adapter, remove_adapter
 from .core import MODES, Project, SiaError
+from .orchestration import OrchestrationError, load_json, run_standalone
+from .routing import example_config
 from .policy import render_policy
 
 
@@ -71,15 +74,20 @@ def parser() -> argparse.ArgumentParser:
     retire.add_argument("--reason", required=True)
 
     adapter = commands.add_parser("adapter", help="manage explicit host launchers").add_subparsers(dest="adapter_command", required=True)
-    for action in ("install", "remove"):
-        item = adapter.add_parser(action)
-        item.add_argument("--host", required=True, choices=tuple(ADAPTERS))
+    install = adapter.add_parser("install")
+    install.add_argument("--host", required=True, choices=tuple(ADAPTERS))
+    install.add_argument("--upgrade", action="store_true", help="replace only an unchanged managed v1 adapter")
+    remove = adapter.add_parser("remove")
+    remove.add_argument("--host", required=True, choices=tuple(ADAPTERS))
 
     task = commands.add_parser("task", help="record native subagent execution evidence").add_subparsers(dest="task_command", required=True)
     prepare = task.add_parser("prepare")
     prepare.add_argument("--task", required=True)
     prepare.add_argument("--brief", required=True, type=Path)
     prepare.add_argument("--files", action="append", required=True)
+    prepare.add_argument("--risk", choices=("low", "medium", "high"), default="medium")
+    prepare.add_argument("--complexity", choices=("simple", "normal", "complex"), default="normal")
+    prepare.add_argument("--estimated-tokens", type=int)
     dispatch = task.add_parser("dispatch")
     dispatch.add_argument("--task", required=True)
     dispatch.add_argument("--host", required=True)
@@ -94,6 +102,22 @@ def parser() -> argparse.ArgumentParser:
 
     integration = commands.add_parser("integration", help="record final combined validation and review")
     integration.add_argument("--evidence", required=True, type=Path)
+
+    orchestrate = commands.add_parser(
+        "orchestrate", help="plan and run cost-aware native or standalone subagents"
+    ).add_subparsers(dest="orchestrate_command", required=True)
+    configure = orchestrate.add_parser("configure", help="validate and store model, budget, and worker config")
+    configure.add_argument("--file", required=True, type=Path)
+    plan = orchestrate.add_parser("plan", help="route prepared tasks and reserve run budget")
+    plan.add_argument("--backend", choices=("native-host", "standalone"), required=True)
+    plan.add_argument("--host", required=True)
+    plan.add_argument("--replace", action="store_true")
+    run = orchestrate.add_parser("run", help="execute an approved standalone dispatch plan")
+    run.add_argument("--approve-commands", action="store_true")
+    receipt = orchestrate.add_parser("receipt", help="ingest one native-host operation receipt")
+    receipt.add_argument("--file", required=True, type=Path)
+    orchestrate.add_parser("status", help="show operation, budget, and telemetry status")
+    orchestrate.add_parser("example", help="print a safe orchestration config template")
     return root
 
 
@@ -141,23 +165,46 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 result = project.retire_rule(args.id, args.reason)
         elif args.command == "adapter":
-            action = install_adapter if args.adapter_command == "install" else remove_adapter
-            status, path = action(project.root, args.host)
+            if args.adapter_command == "install":
+                status, path = install_adapter(project.root, args.host, args.upgrade)
+            else:
+                status, path = remove_adapter(project.root, args.host)
             result = {"status": status, "host": args.host, "path": str(path.relative_to(project.root))}
         elif args.command == "task":
             if args.task_command == "prepare":
-                result = project.prepare_task(args.task, args.brief, args.files)
+                result = project.prepare_task(
+                    args.task,
+                    args.brief,
+                    args.files,
+                    args.risk,
+                    args.complexity,
+                    args.estimated_tokens,
+                )
             elif args.task_command == "dispatch":
                 result = project.dispatch_task(args.task, args.host, args.agent_id, args.native_run_id)
             else:
                 result = project.finish_task(args.task, args.report, args.review, args.reviewer_agent_id, args.review_native_run_id)
         elif args.command == "integration":
             result = project.record_integration(args.evidence)
+        elif args.command == "orchestrate":
+            if args.orchestrate_command == "configure":
+                result = project.configure_orchestration(load_json(args.file.resolve()))
+            elif args.orchestrate_command == "plan":
+                result = project.create_dispatch_plan(args.backend, args.host, args.replace)
+            elif args.orchestrate_command == "run":
+                plan_path, _ = project.dispatch_plan()
+                result = asyncio.run(run_standalone(project, plan_path, args.approve_commands))
+            elif args.orchestrate_command == "receipt":
+                result = project.apply_orchestration_receipt(load_json(args.file.resolve()), args.file.resolve())
+            elif args.orchestrate_command == "example":
+                result = example_config()
+            else:
+                result = project.orchestration_status()
         else:  # pragma: no cover - argparse prevents this
             raise SiaError(f"unknown command: {args.command}")
         emit(result, args.json)
         return 0
-    except (SiaError, FileExistsError, PermissionError, ValueError) as exc:
+    except (SiaError, OrchestrationError, FileExistsError, PermissionError, ValueError) as exc:
         print(f"sia: {exc}", file=sys.stderr)
         return 2
 

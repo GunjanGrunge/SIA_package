@@ -167,10 +167,12 @@ record is the durable source for the prose loop above.
 
 ## Token / Cost Tracking
 
-Track host-reported token/cost telemetry when available. Otherwise label usage
-and savings as estimates based on turns, subagent runs, files touched, or other
-explicit proxies—never as measured fact. A project may set a session or plan
-ceiling. Warn near 80%; at the ceiling stop for scope reduction or a user-
-approved model change. Capture an exceeded ceiling as a DEVIATION with
-`error_class: cost-overrun`. Persist it through `sia capture`; the current
-runtime does not claim a separate authoritative billing ledger.
+Track host/worker-reported token and cost telemetry when available. Otherwise
+label usage as calculated, estimated, or unknown—never as billed actual. The
+orchestration config sets run token/USD ceilings and an 80% default warning;
+plan creation reserves estimated usage atomically, receipts reconcile the
+ledger, and standalone review scheduling stops after a hard ceiling is
+exceeded. Capture an exceeded ceiling as a DEVIATION with
+`error_class: cost-overrun`. `sia orchestrate status` is the authoritative
+run ledger; savings require an explicit configured baseline and inherit the
+underlying telemetry quality.

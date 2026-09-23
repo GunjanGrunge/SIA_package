@@ -92,7 +92,7 @@ Working Directory Verified: <yes/no — confirmed executed in project root>
 What changed: <files touched, one line each>
 Verification evidence: <the actual command run and its output, not a
                          claim that it passed>
-Token Accounting: <Tokens Used: X | Baseline Cost: Y | Tokens Saved: Z (P% Reduction)>
+Token/Cost Ledger: <input/output/total tokens; USD; actual|calculated|estimated|unknown; source; optional configured-baseline savings>
 Deviations from the brief: <anything done differently than specified,
                              and why>
 Open questions: <anything the reviewer needs to decide>
@@ -113,7 +113,7 @@ each task's report is reviewed:
 Report: <path to task-N-report.md>
 Dispatch: <path to task-N-dispatch.md; host/subagent identifier>
 Reviewer notes: <anything the reviewer added beyond the report itself>
-Usage & Token Savings: <Tokens Used: X | Baseline Cost: Y | Tokens Saved: Z (P% Reduction)>
+Usage & Cost: <tokens/USD, telemetry quality/source, and savings only against an explicit configured baseline>
 ```
 
 ## Integration Report Format
@@ -172,3 +172,17 @@ verdict attached by `sia task finish`. Disjoint ownership permits parallel
 agents; overlapping ownership requires sequencing or an integration task.
 After all tasks are reviewed, `sia integration` records the combined suite,
 interface checks, standing-rule checks, and whole-diff review.
+
+## Routed Worker Fields
+
+A managed operation adds immutable plan ID/hash, operation ID, role, risk,
+complexity, model tier, exact requested model ID, routing reason, token/cost
+reservation, dependencies, timeout, and receipt requirements to the task brief.
+The host or standalone worker may not silently choose another model: it records
+the actual model or `unknown`, and fallback follows project policy.
+
+Implementers with disjoint ownership may run in parallel. Review operations
+remain blocked until their implementer receipt completes and must use a
+different worker identity. Every receipt records provenance
+(`native_attested` or `standalone_observed`) and telemetry quality (`actual`,
+`calculated`, `estimated`, or `unknown`). See `orchestration.md`.

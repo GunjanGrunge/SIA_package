@@ -2,6 +2,29 @@
 
 All notable changes to the SIA package itself are recorded here.
 
+## [0.3.0] - 2026-09-18
+
+### Added
+
+- Real multi-agent orchestration with shared native-host and standalone
+  backends.
+- Deterministic cheap/current/strong model routing by task role, risk, and
+  complexity.
+- Immutable dispatch plans, concurrent implementers, independent routed
+  reviewers, receipts, timeout/output controls, and shell-free command arrays.
+- Atomic token/USD reservations, warning/hard budget gates, configured pricing,
+  and actual/calculated/estimated/unknown telemetry quality.
+- First-class Gemini CLI adapter and v2 managed protocols for Claude Code,
+  Codex, Kiro, and Antigravity.
+- Receipt-bound integration evidence manifests and safe adapter upgrades.
+
+### Changed
+
+- Multi-agent cost optimization is now SIA's primary orchestration workflow;
+  evidence-only task commands remain backward compatible.
+- Native host plans request exact configured model IDs without guessing the
+  active IDE model; unknown model/run/usage data remains explicitly unknown.
+
 ## [0.2.0] - 2026-09-18
 
 ### Added

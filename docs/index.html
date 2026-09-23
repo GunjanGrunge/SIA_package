@@ -175,6 +175,7 @@
     </a>
     <nav aria-label="Primary navigation">
       <a href="#capabilities">Capabilities</a>
+      <a href="#cost-routing">Cost routing</a>
       <a href="#hosts">Hosts</a>
       <a href="#workflow">Workflow</a>
       <a href="#reference">CLI</a>
@@ -185,9 +186,9 @@
 
 <div id="top" class="hero">
   <div>
-    <span class="eyebrow"><span class="pulse"></span> SIA 0.2 · persistent orchestration</span>
+    <span class="eyebrow"><span class="pulse"></span> SIA 0.3 · cost-aware multi-agent orchestration</span>
     <h1>Your coding agents,<br><span>working as a system.</span></h1>
-    <p>SIA gives Claude Code, Codex, Gemini CLI, Antigravity, Kiro, and other coding assistants one durable workflow: explicit stages, safe parallel ownership, independent review, and a feedback loop that survives new chats.</p>
+    <p>SIA decomposes approved work into ownership-safe operations, routes simple work to cheaper models, preserves the selected/current model for normal coordination, escalates high-risk work, launches independent workers in parallel, and binds every result to a receipt that survives new chats.</p>
     <div class="actions">
       <a class="button primary" href="#quickstart">Start in 3 minutes</a>
       <a class="button" href="#hosts">Choose your coding tool</a>
@@ -197,13 +198,17 @@
   <div class="hero-panel" aria-label="SIA quick start terminal">
     <div class="terminal-head"><i class="dot"></i><i class="dot"></i><i class="dot"></i><span>project terminal</span><button class="copy" data-copy="hero-code">Copy</button></div>
     <pre id="hero-code"><span class="comment"># Install once</span>
-<span class="prompt">PS&gt;</span> <span class="command">python -m pip install sia-package==0.2.0</span>
+<span class="prompt">PS&gt;</span> <span class="command">python -m pip install sia-package==0.3.0</span>
 
 <span class="comment"># Initialize this project</span>
 <span class="prompt">PS&gt;</span> <span class="command">sia init --mode orchestrator</span>
 
 <span class="comment"># Pick your host adapter</span>
 <span class="prompt">PS&gt;</span> <span class="command">sia adapter install --host claude</span>
+
+<span class="comment"># Configure exact cheap/current/strong models + budgets</span>
+<span class="prompt">PS&gt;</span> <span class="command">sia orchestrate example &gt; orchestration.json</span>
+<span class="prompt">PS&gt;</span> <span class="command">sia orchestrate configure --file orchestration.json</span>
 
 <span class="comment"># Resume from durable state</span>
 <span class="prompt">PS&gt;</span> <span class="command">sia next --json</span></pre>
@@ -217,7 +222,7 @@
     <p class="lead">SIA does not replace your model or IDE. It gives the host a shared, inspectable contract and saves workflow state under <code>.sia/</code>.</p>
     <div class="grid">
       <article class="card"><div class="icon">↻</div><h3>Durable re-entry</h3><p><code>sia next --json</code> restores the current mode, stage, owner, tasks, and required action after a fresh chat or context compaction.</p></article>
-      <article class="card"><div class="icon">⋈</div><h3>Parallel agent safety</h3><p>Independent tasks can run together only when their canonical file ownership does not overlap— including parent/child and Windows case aliases.</p></article>
+      <article class="card"><div class="icon">⋈</div><h3>Real parallel workers</h3><p>Native-host plans make the active assistant spawn its subagents; standalone plans make SIA launch approved command-array workers itself. Disjoint ownership prevents write collisions.</p></article>
       <article class="card"><div class="icon">✓</div><h3>Independent review</h3><p>Implementation and review carry separate caller-attested host run identities. Integration is blocked until every task is reviewed.</p></article>
       <article class="card"><div class="icon">◇</div><h3>Evidence-gated stages</h3><p>Specs, plans, skills, reports, and integration records must exist before the workflow advances. Chat claims are not evidence.</p></article>
       <article class="card"><div class="icon">∞</div><h3>Self-improvement loop</h3><p>PASS/DEVIATION events become scoped, provenance-bearing rules. Preflight checks load them before related work; convergence tracks recurrence.</p></article>
@@ -240,14 +245,37 @@
     <span class="section-tag">Quick start</span>
     <h2>Install, initialize, resume</h2>
     <div class="steps">
-      <article class="step"><div><h3>Install the Python package</h3><p>Python 3.10 or newer is required.</p><div class="command-block"><div class="command-title">PowerShell / terminal <button class="copy" data-copy="install-code">Copy</button></div><pre id="install-code">python -m pip install sia-package==0.2.0</pre></div></div></article>
+      <article class="step"><div><h3>Install the Python package</h3><p>Python 3.10 or newer is required.</p><div class="command-block"><div class="command-title">PowerShell / terminal <button class="copy" data-copy="install-code">Copy</button></div><pre id="install-code">python -m pip install sia-package==0.3.0</pre></div></div></article>
       <article class="step"><div><h3>Open the target project</h3><p>Run SIA from the actual repository root. Choose one runtime mode.</p><div class="command-block"><pre>cd path/to/your-project
 sia init --mode orchestrator
 sia doctor</pre></div></div></article>
       <article class="step"><div><h3>Install one host launcher</h3><p>Claude, Codex, Kiro, and Antigravity have collision-safe, opt-in adapters. Gemini CLI uses the manual host-neutral flow documented below.</p><div class="command-block"><pre>sia adapter install --host claude
 # or: codex | kiro | antigravity</pre></div></div></article>
+      <article class="step"><div><h3>Configure routing and budget</h3><p>Generate the template, then set exact provider IDs for cheap, current, and strong models, configured prices, token/USD ceilings, and concurrency.</p><div class="command-block"><pre>sia orchestrate example &gt; orchestration.json
+sia orchestrate configure --file orchestration.json</pre></div></div></article>
       <article class="step"><div><h3>Ask the host to resume SIA</h3><p>The JSON packet is the durable source of workflow position.</p><div class="command-block"><pre>sia next --json</pre></div></div></article>
     </div>
+  </section>
+
+  <section id="cost-routing">
+    <span class="section-tag">Core USP · cost and context optimization</span>
+    <h2>Use the cheapest model that can safely do the job</h2>
+    <p class="lead">SIA does not hard-code vendor aliases or guess the model selected in your IDE. You configure exact IDs once; every plan persists the tier, model, reason, reservation, and fallback policy.</p>
+    <div class="grid">
+      <article class="card mode"><span class="pill">CHEAP</span><h3>Bounded workers</h3><p>Low-risk/simple implementation, exploration, routine tests, documentation, triage, and high-volume supporting work.</p></article>
+      <article class="card mode"><span class="pill">CURRENT</span><h3>Selected capable model</h3><p>Normal implementation, coordination, and independent review. Set this to the exact model you selected or approved for the project.</p></article>
+      <article class="card mode"><span class="pill">STRONG</span><h3>Risk and escalation</h3><p>Complex architecture, security/high-risk implementation, high-risk review, and configured escalation after a cheaper attempt fails.</p></article>
+    </div>
+    <div class="grid two" style="margin-top:18px">
+      <div class="card"><h3>One router, two backends</h3><pre># The active assistant spawns native subagents
+sia orchestrate plan --backend native-host --host claude
+
+# SIA launches approved provider CLI workers
+sia orchestrate plan --backend standalone --host provider-cli
+sia orchestrate run --approve-commands</pre></div>
+      <div class="card"><h3>Budget and telemetry truth</h3><p>Plan estimates reserve tokens and USD atomically before dispatch. Warnings trigger at the configured fraction; hard ceilings reject plans and stop new standalone review scheduling. Receipts label usage as <strong>actual</strong>, <strong>calculated</strong>, <strong>estimated</strong>, or <strong>unknown</strong>. Savings require an explicit baseline.</p><pre>sia orchestrate status</pre></div>
+    </div>
+    <div class="notice"><strong>Security boundary:</strong> standalone command arrays use <code>shell=False</code>, whole-argument placeholders, minimal environment allowlists, no stdin, bounded logs, and timeouts. They still run with your OS user permissions and are not a filesystem/network sandbox.</div>
   </section>
 
   <section id="hosts">
@@ -262,7 +290,7 @@ sia doctor</pre></div></div></article>
 sia adapter install --host claude
 sia next --json</pre>
           <p><strong>Installed path:</strong> <code>.claude/skills/sia/SKILL.md</code></p>
-          <p><a href="https://code.claude.com/docs/en/skills/">Official Claude Code skills documentation ↗</a></p>
+          <p><a href="https://code.claude.com/docs/en/subagents">Official Claude Code subagents/model routing ↗</a> · <a href="https://code.claude.com/docs/en/skills/">Skills ↗</a></p>
         </div>
       </article>
 
@@ -273,24 +301,21 @@ sia next --json</pre>
 sia adapter install --host codex
 sia next --json</pre>
           <p><strong>Installed path:</strong> <code>.agents/skills/sia/SKILL.md</code></p>
-          <p><a href="https://developers.openai.com/codex/concepts/customization/">Official Codex customization documentation ↗</a></p>
+          <p><a href="https://developers.openai.com/codex/concepts/multi-agents/">Official Codex subagents/model routing ↗</a> · <a href="https://developers.openai.com/codex/concepts/customization/">Customization ↗</a></p>
         </div>
       </article>
 
       <article class="host" id="gemini-cli">
-        <div class="host-head"><img class="host-logo" src="https://geminicli.com/favicon.ico" alt="Gemini CLI logo"><div class="host-title"><strong>Gemini CLI</strong><span>Host-neutral flow · GEMINI.md context</span></div></div>
-        <div class="host-body"><div class="notice info"><strong>Current status:</strong> SIA does not yet ship <code>sia adapter install --host gemini</code>. Use the CLI packet directly; do not substitute another host's adapter.</div>
-          <ol><li>Initialize SIA.</li><li>Optionally put the small activation rule below in the project's <code>GEMINI.md</code>.</li><li>Ask Gemini to run the packet only when you explicitly request SIA.</li></ol>
-          <pre>sia init --mode planning
-sia next --json</pre>
-          <h4>Optional GEMINI.md entry</h4>
-          <pre>## SIA
-When I explicitly request SIA, run `sia next --json`
-from the project root and follow the returned mode,
-stage owner, evidence gate, and next action. Keep
-existing Gemini skills and project instructions active.</pre>
-          <p>Gemini CLI also supports Agent Skills. Until SIA adds a tested Gemini adapter, the host-neutral packet above is the supported SIA path.</p>
-          <p><a href="https://geminicli.com/docs/cli/gemini-md/">Official GEMINI.md documentation ↗</a> · <a href="https://geminicli.com/docs/cli/skills/">Official Agent Skills documentation ↗</a></p>
+        <div class="host-head"><img class="host-logo" src="https://geminicli.com/favicon.ico" alt="Gemini CLI logo"><div class="host-title"><strong>Gemini CLI</strong><span>Native Agent Skill · model-routed subagents</span></div></div>
+        <div class="host-body"><div class="notice info"><strong>First-class adapter:</strong> SIA installs a project Agent Skill; Gemini custom agents provide exact model, tools, max-turn, and timeout controls.</div>
+          <ol><li>Initialize and configure SIA's cheap/current/strong model IDs.</li><li>Install the Gemini skill adapter.</li><li>Invoke SIA explicitly. The main Gemini agent consumes the immutable plan and delegates to `.gemini/agents/*.md` specialists; subagents cannot recursively spawn more subagents.</li></ol>
+          <pre>sia init --mode orchestrator
+sia adapter install --host gemini
+sia orchestrate configure --file orchestration.json
+sia orchestrate plan --backend native-host --host gemini</pre>
+          <p><strong>Installed path:</strong> <code>.gemini/skills/sia/SKILL.md</code></p>
+          <p>Use each routed operation's exact model in the custom agent frontmatter. Record actual usage when exposed; otherwise retain SIA's estimate.</p>
+          <p><a href="https://geminicli.com/docs/core/subagents/">Official Gemini CLI subagents/model configuration ↗</a> · <a href="https://geminicli.com/docs/cli/skills/">Agent Skills ↗</a></p>
         </div>
       </article>
 
@@ -301,7 +326,7 @@ existing Gemini skills and project instructions active.</pre>
 sia adapter install --host antigravity
 sia next --json</pre>
           <p><strong>Installed path:</strong> <code>.agents/workflows/sia.md</code></p>
-          <p><a href="https://codelabs.developers.google.com/autonomous-ai-developer-pipelines-antigravity">Official Antigravity workflows codelab ↗</a></p>
+          <p><a href="https://codelabs.developers.google.com/multi-language-code-auditor-antigravity">Official parallel Antigravity agents codelab ↗</a> · <a href="https://codelabs.developers.google.com/autonomous-ai-developer-pipelines-antigravity">Workflows ↗</a></p>
         </div>
       </article>
 
@@ -351,31 +376,35 @@ sia next --json</pre><p>Every host follows the same packet, so changing tools do
 
   <section id="multi-agent">
     <span class="section-tag">Orchestrator mode</span>
-    <h2>Prepare → dispatch → review → integrate</h2>
-    <p class="lead">SIA records caller-attested host identities and enforces ordering. The actual agent is spawned by Claude, Codex, Kiro, Antigravity, or another native harness.</p>
-    <div class="command-block"><div class="command-title">1 · Prepare exclusive ownership <button class="copy" data-copy="task-code">Copy</button></div><pre id="task-code">sia task prepare \
+    <h2>Prepare → route → run → receipt → integrate</h2>
+    <p class="lead">SIA routes all operations before execution, launches real standalone workers or instructs the native host to spawn them, then unlocks independent reviewers only after implementation receipts complete.</p>
+    <div class="command-block"><div class="command-title">1 · Prepare ownership and routing metadata <button class="copy" data-copy="task-code">Copy</button></div><pre id="task-code">sia task prepare \
   --task backend \
   --brief sdd/backend-brief.md \
-  --files src/api.py
+  --files src/api.py \
+  --risk high \
+  --complexity complex \
+  --estimated-tokens 40000
 
 sia task prepare \
-  --task frontend \
-  --brief sdd/frontend-brief.md \
-  --files src/App.tsx</pre></div>
-    <div class="command-block"><div class="command-title">2 · Record the native implementer</div><pre>sia task dispatch \
-  --task backend \
-  --host kiro \
-  --agent-id backend-implementer \
-  --native-run-id &lt;run-id&gt;</pre></div>
-    <div class="command-block"><div class="command-title">3 · Attach report and independent review</div><pre>sia task finish \
-  --task backend \
-  --report sdd/backend-report.md \
-  --review sdd/backend-review.md \
-  --reviewer-agent-id backend-reviewer \
-  --review-native-run-id &lt;review-run-id&gt;</pre></div>
-    <div class="command-block"><div class="command-title">4 · Certify the combined result</div><pre>sia integration --evidence sdd/integration.md
+  --task docs \
+  --brief sdd/docs-brief.md \
+  --files docs/guide.md \
+  --risk low \
+  --complexity simple \
+  --estimated-tokens 8000</pre></div>
+    <div class="command-block"><div class="command-title">2 · Create the immutable routed plan</div><pre># Active coding assistant spawns native agents
+sia orchestrate plan --backend native-host --host kiro
+
+# Or SIA launches approved provider CLI processes
+sia orchestrate plan --backend standalone --host provider-cli
+sia orchestrate run --approve-commands</pre></div>
+    <div class="command-block"><div class="command-title">3 · Native hosts submit one receipt per operation</div><pre>sia orchestrate receipt --file backend-implement-receipt.json
+sia orchestrate status
+# Routed reviewer operations become ready automatically.</pre></div>
+    <div class="command-block"><div class="command-title">4 · Bind all receipts to integration</div><pre>sia integration --evidence sdd/integration.md
 sia advance</pre></div>
-    <div class="notice"><strong>What SIA rejects:</strong> overlapping paths, project-root ownership, paths outside the repository, the same implementer/reviewer identity, empty reports, integration before all reviews, and stale integration after the task set changes.</div>
+    <div class="notice"><strong>What SIA rejects:</strong> over-budget plans, overlapping paths, project-root escape, unknown placeholders, silent model mismatch, duplicate/falsified plan hashes, the same implementer/reviewer identity, empty reports, unfinished orchestration, and stale integration.</div>
   </section>
 
   <section id="learning">
@@ -435,9 +464,13 @@ sia convergence</pre><p>Other frameworks own the delivery process while SIA main
           <tr><td><code>sia owner</code></td><td>Assign one stage to SIA or another framework.</td><td>When bridging tools</td></tr>
           <tr><td><code>sia advance</code></td><td>Validate evidence and complete the current stage.</td><td>Stage boundary</td></tr>
           <tr><td><code>sia adapter install/remove</code></td><td>Manage collision-safe host launchers.</td><td>Host setup</td></tr>
-          <tr><td><code>sia task prepare</code></td><td>Establish task ID, brief, and exclusive owned paths.</td><td>Before native spawn</td></tr>
-          <tr><td><code>sia task dispatch</code></td><td>Record caller-attested host implementer/run identity.</td><td>Immediately after spawn</td></tr>
-          <tr><td><code>sia task finish</code></td><td>Attach implementer report and independently identified review.</td><td>After review</td></tr>
+          <tr><td><code>sia task prepare</code></td><td>Define task brief, exclusive paths, risk, complexity, and estimate.</td><td>Before planning</td></tr>
+          <tr><td><code>sia orchestrate configure</code></td><td>Validate/store exact models, prices, budgets, routing, concurrency, and workers.</td><td>Project/run setup</td></tr>
+          <tr><td><code>sia orchestrate plan</code></td><td>Route operations, reserve budget, and persist immutable plan/hash.</td><td>Before workers</td></tr>
+          <tr><td><code>sia orchestrate run</code></td><td>Launch approved standalone workers concurrently with shell disabled.</td><td>Standalone backend</td></tr>
+          <tr><td><code>sia orchestrate receipt</code></td><td>Ingest native-host operation identity, model, report, and telemetry.</td><td>After each native worker</td></tr>
+          <tr><td><code>sia orchestrate status</code></td><td>Show operation counts, token/USD ledger, and telemetry quality.</td><td>During execution</td></tr>
+          <tr><td><code>sia task dispatch/finish</code></td><td>Legacy/manual evidence flow retained for backward compatibility.</td><td>Non-managed tasks</td></tr>
           <tr><td><code>sia integration</code></td><td>Bind combined evidence to the complete reviewed task set.</td><td>End of execution</td></tr>
           <tr><td><code>sia record / capture</code></td><td>Persist PASS or DEVIATION outcomes.</td><td>After proposals/reviews</td></tr>
           <tr><td><code>sia rule add/retire</code></td><td>Manage provenance-bearing standing rules.</td><td>After approved learning</td></tr>
@@ -453,15 +486,17 @@ sia convergence</pre><p>Other frameworks own the delivery process while SIA main
     <h2>What is stored where</h2>
     <div class="grid two">
       <div class="tree">.sia/
-├── config.json       # mode, framework policy, owners
-├── state.json        # stage, tasks, integration
+├── config.json       # models, routing, budget, owners
+├── state.json        # stage, operations, telemetry
 ├── events.jsonl      # append-only outcomes
 ├── rules.json        # active and retired rules
-├── project.lock      # cross-process serialization
-└── runs/
-    └── &lt;run-id&gt;/
-        ├── tasks/
-        └── integration.md</div>
+├── project.lock      # atomic reservations/transitions
+└── runs/&lt;run-id&gt;/
+    ├── dispatch-plan.json
+    ├── integration.md
+    └── tasks/&lt;task-id&gt;/
+        ├── attempts/
+        └── receipts/</div>
       <div class="card"><h3>Commit intentionally</h3><p>SIA runtime evidence can contain user corrections, paths, and review context. Review it for secrets before committing. Generated project artifacts—specs, plans, skills, and selected <code>sdd/</code> mirrors—are normal project history.</p><h3 style="margin-top:24px">Trust boundary</h3><p>SIA checks ordering, path ownership, evidence presence, reviewer separation, and state consistency. It cannot cryptographically prove a vendor agent ran; native IDs are supplied by the host/controller.</p></div>
     </div>
   </section>
@@ -470,9 +505,9 @@ sia convergence</pre><p>Other frameworks own the delivery process while SIA main
     <span class="section-tag">Optional UI</span>
     <h2>VS Code-compatible extension</h2>
     <p class="lead">The repository includes a VSIX for VS Code-compatible IDEs. Install <code>sia-package</code> first: the extension delegates initialization and status to the Python runtime and does not maintain a second state machine.</p>
-    <div class="command-block"><pre>python -m pip install sia-package==0.2.0
+    <div class="command-block"><pre>python -m pip install sia-package==0.3.0
 # In VS Code: Extensions → … → Install from VSIX
-# Select sia-vscode-extension-0.2.0.vsix</pre></div>
+# Select sia-vscode-extension-0.3.0.vsix</pre></div>
   </section>
 
   <section id="troubleshooting">
@@ -480,11 +515,11 @@ sia convergence</pre><p>Other frameworks own the delivery process while SIA main
     <h2>Common questions</h2>
     <details><summary>SIA says the project is not initialized</summary><div>Run <code>sia init --mode advisory|planning|orchestrator</code> from the project root, then <code>sia doctor</code>.</div></details>
     <details><summary>The host did not invoke SIA automatically</summary><div>This is intentional. Adapters are explicit to avoid monopolizing unrelated prompts. Invoke <code>/sia</code> where supported, or ask the host to run <code>sia next --json</code>.</div></details>
-    <details><summary>Gemini CLI has no install adapter</summary><div>Use the host-neutral packet and optional <code>GEMINI.md</code> activation rule above. Do not install the Codex/Antigravity adapter into Gemini paths.</div></details>
+    <details><summary>How does SIA choose cheap versus current/strong?</summary><div>The approved orchestration config maps low/simple, normal, high/complex, and review roles to explicit model tiers. Every decision and exact provider model ID is persisted in the immutable plan.</div></details>
+    <details><summary>Can SIA spawn agents by itself?</summary><div>Yes, in standalone mode it launches explicitly approved provider CLI command arrays concurrently with <code>shell=False</code>. In native-host mode, the active coding assistant uses its own subagent tool from SIA's plan. Native IDs remain caller-attested.</div></details>
     <details><summary>SIA blocks a second parallel task</summary><div>Its owned path intersects an active task. Sequence the work or give a later integration task exclusive ownership of the shared file.</div></details>
     <details><summary>Preflight exits with code 2</summary><div>A matching medium/high standing rule needs acknowledgment. Review the rule and use <code>--acknowledge &lt;rule-id&gt;</code> only after approval.</div></details>
     <details><summary>I use BMAD or Superpowers</summary><div>Choose advisory mode or assign individual stages with <code>sia owner</code>. SIA should not edit those frameworks' files.</div></details>
-    <details><summary>Can SIA spawn agents by itself?</summary><div>No universal vendor API exists. The host performs the actual spawn; SIA records caller-attested identities and enforces the common evidence contract.</div></details>
   </section>
 
   <section id="resources">

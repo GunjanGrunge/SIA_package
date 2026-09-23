@@ -19,3 +19,9 @@ Thumbs.db
 
 # Vendored SIA (Self Improving Agents) tooling at a target project root
 /sia/
+
+# Editor/IDE local settings
+.qoder/
+
+# Built VS Code extension packages
+*.vsix

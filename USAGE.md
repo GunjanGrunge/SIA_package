@@ -18,7 +18,7 @@ Install the persistent runtime, initialize an explicit mode, and install only
 the host adapter you want:
 
 ```bash
-python -m pip install sia-package==0.2.0
+python -m pip install sia-package==0.3.0
 sia init --mode orchestrator
 sia adapter install --host claude
 sia next --json
@@ -46,6 +46,49 @@ After you state a goal, SIA should:
    are checked before related future work.
 
 The host harness executes the work. SIA coordinates the process around it.
+
+## Cost-Aware Multi-Agent Orchestration
+
+SIA 0.3 manages a routed worker fleet rather than only recording task evidence.
+Generate a safe config template, set exact provider model IDs and prices, then
+store it in the project:
+
+```bash
+sia orchestrate example > orchestration.json
+# Edit cheap/current/strong IDs, prices, budgets, concurrency, and routing.
+sia orchestrate configure --file orchestration.json
+```
+
+Prepare bounded work with enough metadata for deterministic routing:
+
+```bash
+sia task prepare --task docs --brief sdd/docs.md --files docs/guide.md \
+  --risk low --complexity simple --estimated-tokens 8000
+sia task prepare --task auth --brief sdd/auth.md --files src/auth.py \
+  --risk high --complexity complex --estimated-tokens 40000
+```
+
+For an active coding assistant, create a native plan and let its SIA adapter
+spawn all ready operations in parallel:
+
+```bash
+sia orchestrate plan --backend native-host --host claude
+sia orchestrate receipt --file worker-receipt.json
+sia orchestrate status
+```
+
+For a configured provider CLI, SIA can launch real subprocess workers itself:
+
+```bash
+sia orchestrate plan --backend standalone --host provider-cli
+sia orchestrate run --approve-commands
+```
+
+Standalone commands are arrays executed with `shell=False`; the approval flag
+is mandatory. Cheap handles bounded low-risk work, current handles normal work
+and review, and strong handles complex/high-risk work. Exact routing is
+persisted. Model IDs are never guessed. Usage is labeled actual, calculated,
+estimated, or unknown. See [`guides/orchestration.md`](./guides/orchestration.md).
 
 ## SIA Attribution
 
@@ -167,11 +210,11 @@ sdd/task-N-report.md
 sdd/progress.md
 ```
 
-For normal implementation tasks, the controller briefs and reviews while
-the host's scoped subagents write the task-owned files. Each task carries
-an effort budget. If the host cannot spawn subagents or cannot provide
-dispatch evidence, SIA must say that execution is blocked rather than
-pretending direct controller work was delegated.
+For managed implementation, SIA routes prepared tasks and launches them through
+the active host's native subagents or the approved standalone command backend.
+Each operation carries a token/cost reservation. If native spawning is
+unavailable, configure standalone workers or switch to planning/advisory mode;
+never pretend direct controller work was delegated.
 
 Useful follow-up messages include:
 

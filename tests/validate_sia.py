@@ -184,6 +184,8 @@ CHECKS.append((
         r"second host",
         r"## Scenario 5",
         r"deviation rate",
+        r"## Scenario 9",
+        r"Cost-aware real multi-agent orchestration",
     ],
 ))
 
@@ -227,8 +229,9 @@ CHECKS.append((
         r"^name: sia$",
         r"^description:",
         r"sia/AGENT\.md",
-        r"has no .*logic of its own",
-        r"generated project operating skill",
+        r"managed-by-sia-adapter-v2",
+        r"sia orchestrate plan",
+        r"requested_model_id",
     ],
 ))
 
@@ -250,8 +253,9 @@ CHECKS.append((
     "USAGE.md",
     [
         r"## Quick Start",
-        r"sia-package==0\.2\.0",
+        r"sia-package==0\.3\.0",
         r"sia next --json",
+        r"## Cost-Aware Multi-Agent Orchestration",
         r"## Existing Project",
         r"## SIA Attribution",
         r"## During Implementation",
@@ -263,7 +267,7 @@ CHECKS.append((
     "pyproject.toml",
     [
         r'name = "sia-package"',
-        r'version = "0\.2\.0"',
+        r'version = "0\.3\.0"',
         r'requires-python = ">=3\.10"',
         r'sia = "sia\.cli:main"',
         r'where = \["src"\]',
@@ -282,6 +286,10 @@ CHECKS.append((
         r'independent review requires a different reviewer agent ID',
         r'evidence_sha256',
         r'integration evidence is stale',
+        r'def configure_orchestration',
+        r'def create_dispatch_plan',
+        r'def apply_orchestration_receipt',
+        r'budget-exceeded',
     ],
 ))
 
@@ -292,6 +300,9 @@ CHECKS.append((
         r'adapter target escapes project root',
         r'refusing to overwrite existing adapter',
         r'refusing to remove modified or unmanaged file',
+        r'managed-by-sia-adapter-v2',
+        r'"gemini": AdapterSpec',
+        r'KNOWN_V1_HASHES',
     ],
 ))
 
@@ -299,14 +310,80 @@ CHECKS.append((
     "src/sia/policy.py",
     [
         r'"attribution\.md"',
+        r'"orchestration\.md"',
         r'metadata\.files\("sia-package"\)',
+    ],
+))
+
+CHECKS.append((
+    "guides/orchestration.md",
+    [
+        r"# Cost-Aware Multi-Agent Orchestration",
+        r"cheap/current/strong",
+        r"native-host",
+        r"standalone",
+        r"shell=False",
+        r"actual",
+        r"calculated",
+        r"estimated",
+        r"unknown",
+        r"cost-overrun",
+    ],
+))
+
+CHECKS.append((
+    "src/sia/routing.py",
+    [
+        r"def validate_orchestration_config",
+        r"def route_task",
+        r"def normalize_telemetry",
+        r"ALLOWED_PLACEHOLDERS",
+        r"warning_fraction",
+    ],
+))
+
+CHECKS.append((
+    "src/sia/orchestration.py",
+    [
+        r"asyncio\.create_subprocess_exec",
+        r"shell=False|create_subprocess_exec",
+        r"SIA_USAGE_JSON:",
+        r"--approve-commands",
+        r"run_standalone",
+    ],
+))
+
+CHECKS.append((
+    "HOST-INTEGRATION.md",
+    [
+        r"## Execution Backends",
+        r"## Cost-Aware Model Routing",
+        r"Native Re-entry And Receipt Protocol",
+        r"Gemini CLI",
+        r"Standalone Worker Security",
+    ],
+))
+
+CHECKS.append((
+    "integrations/gemini-cli/SKILL.md",
+    [
+        r"^name: sia$",
+        r"managed-by-sia-adapter-v2",
+        r"\.gemini/agents",
+        r"sia orchestrate plan",
     ],
 ))
 
 CHECKS.append((
     "cli.py",
     [
-        r'Legacy source-checkout launcher',
+        # cli.py is the Claude Code plugin's entry point, not a legacy shim.
+        # These two patterns pin the property that matters: it documents the
+        # CLAUDE_PLUGIN_ROOT invocation, and it puts the bundled src/ on
+        # sys.path itself. Lose the second and the plugin silently needs a
+        # pip install again.
+        r'CLAUDE_PLUGIN_ROOT',
+        r'sys\.path\.insert',
         r'from sia\.cli import main',
     ],
 ))

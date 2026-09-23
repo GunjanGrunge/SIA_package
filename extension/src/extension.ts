@@ -6,7 +6,7 @@ import { promisify } from 'util';
 
 const execFileAsync = promisify(execFile);
 
-const VERSION = "0.2.0";
+const VERSION = "0.3.0";
 const PROMPT_TEXT = 'Read sia/AGENT.md in full and follow it.';
 
 let statusBarItem: vscode.StatusBarItem;
@@ -18,7 +18,7 @@ export function activate(context: vscode.ExtensionContext) {
     statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
     statusBarItem.command = 'sia.status';
     statusBarItem.text = `$(symbol-event) SIA: Active`;
-    statusBarItem.tooltip = `SIA v${VERSION} (Click for Status Audit & Token Savings Estimate)`;
+    statusBarItem.tooltip = `SIA v${VERSION} (Click for authoritative CLI orchestration status)`;
     statusBarItem.show();
     context.subscriptions.push(statusBarItem);
 
@@ -128,18 +128,8 @@ class SiaSidebarWebviewProvider implements vscode.WebviewViewProvider {
             } catch (e) {}
         }
 
-        let tokensSaved = 0;
-        let costSavedUsd = "0.00";
-        if (hasAgent || hasSdd || skillsList.length > 0) {
-            tokensSaved = (subagentCount * 12500) + (skillsList.length * 8000) + (hasSpecs ? 15000 : 5000);
-            costSavedUsd = ((tokensSaved / 1000000) * 3.00).toFixed(2);
-        }
-
-        const formattedTokens = tokensSaved >= 1000000
-            ? `~${(tokensSaved / 1000000).toFixed(2)}M`
-            : tokensSaved >= 1000
-            ? `~${(tokensSaved / 1000).toFixed(0)}k`
-            : `~${tokensSaved}`;
+        const formattedTokens = hasSia ? "CLI ledger" : "—";
+        const costStatus = hasSia ? "actual / calc / est" : "—";
 
         return `<!DOCTYPE html>
 <html lang="en">
@@ -554,7 +544,7 @@ class SiaSidebarWebviewProvider implements vscode.WebviewViewProvider {
             </div>
             <div>
                 <div class="metric-number" style="color: #38bdf8;">${formattedTokens}</div>
-                <div class="metric-label">Tokens Saved</div>
+                <div class="metric-label">Token Usage</div>
             </div>
         </div>
         <div class="metric-card">
@@ -562,8 +552,8 @@ class SiaSidebarWebviewProvider implements vscode.WebviewViewProvider {
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/></svg>
             </div>
             <div>
-                <div class="metric-number" style="color: #c084fc;">$${costSavedUsd}</div>
-                <div class="metric-label">Est. USD Reduced</div>
+                <div class="metric-number" style="color: #c084fc;">${costStatus}</div>
+                <div class="metric-label">Telemetry Quality</div>
             </div>
         </div>
     </div>

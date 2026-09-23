@@ -1,21 +1,26 @@
 ---
 name: sia
-description: Continue SIA only when the user explicitly invokes /sia.
+description: Run SIA's cost-aware multi-agent workflow only when the user explicitly invokes /sia.
 disable-model-invocation: true
 ---
 
-# SIA (Claude Code discovery shim)
+# SIA cost-aware orchestrator
 
-This file exists only so Claude Code finds SIA without being told to. It
-has no project logic of its own and must never duplicate SIA's actual
-guidance.
+<!-- managed-by-sia-adapter-v2 -->
+Run `sia next --json` in the project root. Read `sia/AGENT.md` when vendored,
+or run `sia guide` for the installed policy. Activation is explicit; other
+skills and plugins remain available.
 
-Run `sia next --json` in the project root, then read `sia/AGENT.md` in full
-when it is vendored and follow the persisted current stage. If the CLI is
-installed without a vendored copy, run `sia guide` for the workflow contract.
-Record native implementer and reviewer run IDs through the CLI. This skill is
-manual-only so BMAD, Superpowers, and other skills remain independently usable.
+At execution, run `sia orchestrate plan --backend native-host --host claude`.
+Use Claude Code's Agent tool to launch every ready implementer concurrently.
+Pass each operation's exact `requested_model_id` when supported; custom agents
+may define `model: haiku|sonnet|opus|<full-id>|inherit`. Use cheaper models for
+bounded scans and current/strong models for demanding work and independent
+review. Verify substitutions in `/tasks`.
 
-If `.claude/skills/<project-slug>-sia/SKILL.md` exists, load it after
-`sia/AGENT.md`. It is the generated project operating skill and still
-defers to the project's own `AGENT.md`.
+For each worker, save a non-empty report and submit a JSON receipt containing
+the immutable plan ID/hash, operation ID, agent/run identity, requested and
+actual model, report path, and actual usage when exposed. Ingest it with
+`sia orchestrate receipt --file <path>`. Launch routed reviewers after
+implementers complete. Never claim telemetry or model identity Claude did not
+expose, and never let the controller edit task-owned files.

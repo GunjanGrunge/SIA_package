@@ -1,53 +1,88 @@
 # Host Integration Contract
 
 SIA has one durable control plane: the `sia` CLI and project-local `.sia/`
-state. Host files are opt-in launchers, not alternate implementations.
+state. A host adapter is an explicit launcher for SIA's immutable dispatch plan,
+not a second workflow engine.
 
-## Modes
+## Execution Backends
 
-| Mode | SIA owns | Use with other frameworks |
+| Backend | Who starts workers | What SIA observes |
 |---|---|---|
-| `advisory` | feedback capture, rules, preflight, convergence | BMAD/Superpowers own planning and execution |
-| `planning` | intake, spec, project instructions, skills, plan | another framework may own execution |
-| `orchestrator` | full pipeline and execution evidence | SIA dispatches; other plugins remain available as tools/skills |
+| `native-host` | The active Claude, Codex, Kiro, Gemini, or Antigravity controller uses native subagent tools | Caller-attested agent/thread/model/usage receipts |
+| `standalone` | SIA runs user-approved command arrays with `shell=False` | Process, timeout, output, model request, and receipt evidence |
 
-`bridge` is the default framework policy. SIA never edits or deletes another
-framework's files and writes runtime data only below `.sia/`. Assign stage
-ownership with `sia owner --stage <stage> --to <sia|bmad|superpowers|name>`;
-`sia next` exposes the current owner and requires that owner's artifact before
-advancement.
+Both backends share one model router, token/USD budget, concurrency policy,
+operation DAG, receipt schema, task ownership contract, and integration gate.
+Standalone processes are observed but are not an OS filesystem/network sandbox.
 
-## Re-entry Protocol
+## Runtime Modes And Plugin Ownership
 
-Every host launcher performs the same operation:
+| Mode | SIA owns | Worker behavior |
+|---|---|---|
+| `advisory` | feedback, rules, preflight, convergence | never starts workers |
+| `planning` | intake through plan | never starts workers |
+| `orchestrator` | full evidence pipeline | may launch only at execution when owner is `sia` |
 
-1. Run `sia next --json` from the project root.
-2. Follow the returned current stage and mode.
-3. Before implementation, run `sia task prepare` with exclusive file owners.
-4. Spawn the host's real native implementer/reviewer agents.
-5. Record native agent/run identifiers with `sia task dispatch` and attach the
-   report/review with `sia task finish`.
-6. Record PASS/DEVIATION outcomes. Run `sia preflight` before the next proposal.
+The `bridge` framework policy remains default. BMAD, Superpowers, MCP, native
+skills, and custom plugins remain available. Assign stages with
+`sia owner --stage <stage> --to <owner>`. If another framework owns execution,
+SIA emits a handoff and launches nothing.
 
-This state survives fresh chats and context compaction, so SIA does not depend
-on remaining in the model's conversation window.
+## Cost-Aware Model Routing
 
-## Adapter Locations
+The user explicitly configures exact provider IDs for three logical tiers:
 
-- Claude Code: `.claude/skills/sia/SKILL.md` (`disable-model-invocation: true`)
-- Codex: `.agents/skills/sia/SKILL.md`
-- Kiro: `.kiro/steering/sia.md` (`inclusion: manual`)
-- Antigravity: `.agents/workflows/sia.md`
+- **cheap** — bounded exploration, routine tests, documentation, simple/low-risk tasks;
+- **current** — the user's selected/default capable model for normal work and review;
+- **strong** — high-risk, security, architecture, complex escalation, or high-risk review.
 
-Install with `sia adapter install --host claude|codex|kiro|antigravity`.
-Adapters refuse to overwrite existing files. They do not install hooks because
-a prompt/session hook would make SIA monopolize unrelated work.
+SIA never guesses the currently selected IDE model. A dispatch plan records the
+requested tier/model and routing reason. Receipts record the actual model or
+`unknown`. Configured-price calculations are `calculated`; heuristic usage is
+`estimated`; provider/worker-reported usage may be `actual`.
 
-## Native Subagents
+## Native Re-entry And Receipt Protocol
 
-SIA checks the ordering and completeness of caller-attested dispatch evidence; it
-does not authenticate a vendor's agent API. The host launcher/controller must
-supply truthful native identifiers. Claude, Codex, Kiro, and Antigravity each
-spawn agents through their native harness. If a host cannot provide native subagents, use `planning` or
-`advisory` mode, or explicitly perform manual task handoffs; do not claim
-multi-agent execution occurred.
+1. Run `sia next --json`.
+2. Prepare tasks with exact files, risk, complexity, and optional token estimate.
+3. Run `sia orchestrate plan --backend native-host --host <host>`.
+4. Spawn all ready implementers in parallel using each requested model.
+5. Save each report and create a receipt with plan ID/hash, operation ID,
+   agent/run identity, requested/actual model, report path, and telemetry.
+6. Run `sia orchestrate receipt --file <receipt.json>`.
+7. Launch newly-ready independent reviewers and ingest their receipts.
+8. Run integration only when `sia orchestrate status` reports `complete`.
+
+Native IDs and telemetry remain attestations unless a host exposes verifiable
+metadata. Unknown data must stay unknown.
+
+## Adapter Locations And Capabilities
+
+| Host | Adapter | Native model control |
+|---|---|---|
+| Claude Code | `.claude/skills/sia/SKILL.md` | per invocation or `.claude/agents/*.md` model |
+| Codex | `.agents/skills/sia/SKILL.md` | custom agent model/reasoning effort |
+| Kiro | `.kiro/steering/sia.md` | `.kiro/agents/*` top-level model |
+| Gemini CLI | `.gemini/skills/sia/SKILL.md` | `.gemini/agents/*.md` model |
+| Antigravity | `.agents/workflows/sia.md` | coordinator/UI/profile when exposed |
+
+**Claude Code users should install the plugin instead** (`/plugin install
+sia@sia`). It ships the `sia-start`, `sia-orchestrate` and `sia-workflow`
+skills plus the `sia-implementer` and `sia-reviewer` agents, and bundles the
+CLI so no `pip install` is required. The `integrations/claude-code/` adapter
+remains for source-checkout use; installing both leaves two overlapping `sia`
+skills in one project.
+
+Install with `sia adapter install --host claude|codex|kiro|gemini|antigravity`.
+Use `--upgrade` only to replace an unchanged SIA-managed v1 adapter. SIA refuses
+collisions, modified files, and redirected paths outside the project.
+
+## Standalone Worker Security
+
+Standalone workers are configured as argument arrays, never command strings.
+Placeholders must occupy a whole argument. SIA uses
+`asyncio.create_subprocess_exec(..., shell=False)`, project-root `cwd`, no
+inherited stdin, a minimal environment plus named allowlist, timeout/kill,
+bounded logs, and an explicit `--approve-commands` gate. Configuration must not
+contain secret values; refer only to environment variable names. Worker output
+is untrusted and must pass receipt/path/model/budget validation.
