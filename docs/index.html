@@ -197,7 +197,11 @@
   </div>
   <div class="hero-panel" aria-label="SIA quick start terminal">
     <div class="terminal-head"><i class="dot"></i><i class="dot"></i><i class="dot"></i><span>project terminal</span><button class="copy" data-copy="hero-code">Copy</button></div>
-    <pre id="hero-code"><span class="comment"># Install once</span>
+    <pre id="hero-code"><span class="comment"># Claude Code: install the plugin (no pip install)</span>
+<span class="prompt">&gt;</span> <span class="command">/plugin marketplace add GunjanGrunge/SIA_package</span>
+<span class="prompt">&gt;</span> <span class="command">/plugin install sia@sia</span>
+
+<span class="comment"># Other hosts: install the CLI once</span>
 <span class="prompt">PS&gt;</span> <span class="command">python -m pip install sia-package==0.3.0</span>
 
 <span class="comment"># Initialize this project</span>
@@ -245,7 +249,9 @@
     <span class="section-tag">Quick start</span>
     <h2>Install, initialize, resume</h2>
     <div class="steps">
-      <article class="step"><div><h3>Install the Python package</h3><p>Python 3.10 or newer is required.</p><div class="command-block"><div class="command-title">PowerShell / terminal <button class="copy" data-copy="install-code">Copy</button></div><pre id="install-code">python -m pip install sia-package==0.3.0</pre></div></div></article>
+      <article class="step"><div><h3>Claude Code: install the plugin</h3><p><strong>No <code>pip install</code> is needed.</strong> The CLI is bundled with the plugin; Python 3.10 or newer is the only prerequisite.</p><div class="command-block"><div class="command-title">Claude Code <button class="copy" data-copy="plugin-code">Copy</button></div><pre id="plugin-code">/plugin marketplace add GunjanGrunge/SIA_package
+/plugin install sia@sia</pre></div><p>Then say <em>&ldquo;set up SIA on this project&rdquo;</em>. The <code>sia-start</code> skill walks the project from intake to execution, so the remaining steps below are handled for you. The plugin ships the <code>sia-start</code>, <code>sia-orchestrate</code> and <code>sia-workflow</code> skills plus the <code>sia-implementer</code> and <code>sia-reviewer</code> agents.</p></div></article>
+      <article class="step"><div><h3>Other hosts: install the Python package</h3><p>Codex, Kiro, Gemini CLI and Antigravity drive the CLI directly. Python 3.10 or newer is required.</p><div class="command-block"><div class="command-title">PowerShell / terminal <button class="copy" data-copy="install-code">Copy</button></div><pre id="install-code">python -m pip install sia-package==0.3.0</pre></div></div></article>
       <article class="step"><div><h3>Open the target project</h3><p>Run SIA from the actual repository root. Choose one runtime mode.</p><div class="command-block"><pre>cd path/to/your-project
 sia init --mode orchestrator
 sia doctor</pre></div></div></article>
@@ -254,6 +260,10 @@ sia doctor</pre></div></div></article>
       <article class="step"><div><h3>Configure routing and budget</h3><p>Generate the template, then set exact provider IDs for cheap, current, and strong models, configured prices, token/USD ceilings, and concurrency.</p><div class="command-block"><pre>sia orchestrate example &gt; orchestration.json
 sia orchestrate configure --file orchestration.json</pre></div></div></article>
       <article class="step"><div><h3>Ask the host to resume SIA</h3><p>The JSON packet is the durable source of workflow position.</p><div class="command-block"><pre>sia next --json</pre></div></div></article>
+      <article class="step"><div><h3>Walk the stages to <code>execution</code></h3><p><strong>Read this before reporting a bug.</strong> <code>init</code> leaves the project at <code>intake</code>. In orchestrator mode, <code>task prepare</code> and <code>orchestrate plan</code> are <em>illegal</em> until the project reaches <code>execution</code> &mdash; five evidence-gated advances away. Configuring routing before then succeeds and then refuses to dispatch, which reads like a failure but is the gate doing its job.</p><div class="command-block"><pre>intake → spec → project-instructions → skills → plan → execution
+
+sia next --json                  # what this stage requires
+sia advance --evidence &lt;path&gt;    # once that artifact exists</pre></div><p>A stage transition needs an artifact on disk, never a claim in conversation. The Claude Code plugin&rsquo;s <code>sia-start</code> skill walks this for you. Use <code>advisory</code> mode if you want the feedback loop without the gates.</p></div></article>
     </div>
   </section>
 
@@ -504,10 +514,11 @@ sia convergence</pre><p>Other frameworks own the delivery process while SIA main
   <section id="extension">
     <span class="section-tag">Optional UI</span>
     <h2>VS Code-compatible extension</h2>
-    <p class="lead">The repository includes a VSIX for VS Code-compatible IDEs. Install <code>sia-package</code> first: the extension delegates initialization and status to the Python runtime and does not maintain a second state machine.</p>
+    <p class="lead">An extension for VS Code-compatible IDEs lives under <code>extension/</code>. It is <strong>not</strong> shipped as a prebuilt VSIX in the repository &mdash; build it from source. Install <code>sia-package</code> first: the extension delegates initialization and status to the Python runtime and does not maintain a second state machine.</p>
     <div class="command-block"><pre>python -m pip install sia-package==0.3.0
+cd extension &amp;&amp; npm install &amp;&amp; npx vsce package
 # In VS Code: Extensions → … → Install from VSIX
-# Select sia-vscode-extension-0.3.0.vsix</pre></div>
+# Select the .vsix produced above</pre></div>
   </section>
 
   <section id="troubleshooting">
