@@ -13,6 +13,7 @@ REQUIRED_POLICY = {
     "writing-spec.md",
     "writing-plan.md",
     "writing-project-skills.md",
+    "orchestration.md",
     "subagent-task-brief.md",
     "attribution.md",
     "security-gate.md",

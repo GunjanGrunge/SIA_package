@@ -1,32 +1,47 @@
 # SIA Runtime Workflow Contract
 
-Use `sia next --json` at the beginning of every SIA turn and after context
-compaction. The returned stage is the durable source of workflow position.
+Run `sia next --json` at the start of every SIA turn and after context
+compaction. Persisted `.sia/` state is the source of workflow position.
 
 ## Universal Rules
 
 - User instructions and explicit approvals are highest authority.
-- Respect `.sia/config.json` stage ownership and `framework_policy`.
-- In bridge mode, do not edit or delete BMAD, Superpowers, or other framework
-  files. Keep their skills/plugins available in parallel.
-- Persist artifact evidence before `sia advance`; a chat claim is not evidence.
-- Record every proposal outcome with `sia record` or `sia capture`, and run
-  `sia preflight` before the next proposal.
+- Respect runtime mode, stage ownership, bridge policy, budgets, and active
+  feedback rules.
+- Never replace BMAD, Superpowers, MCP, native skills, or other framework files.
+- Persist evidence before advancement; conversation claims are not evidence.
+- Record PASS/DEVIATION outcomes and run preflight before related work.
 
-## Stages
+## Cost-Aware Multi-Agent Execution
 
-Intake classifies the work and competing tooling. Spec creates an approved
-contract. Project instructions capture only project-specific durable rules.
-Skills create a project operating skill and `sdd/skill-manifest.md`. Plan names
-exact file ownership, interfaces, checks, and integration. Execution prepares
-one brief per task, dispatches a real host-native agent, records its native ID,
-attaches an independent review, and finishes with combined integration
-evidence. Feedback records outcomes, rules, and convergence.
+Only orchestrator mode at SIA-owned execution may launch workers. Configure
+exact cheap/current/strong model IDs, configured prices, hard token/USD
+ceilings, warning fraction, concurrency, and optional standalone command arrays
+with `sia orchestrate configure`.
 
-## Execution Boundary
+Prepare each task with disjoint owned files, risk, complexity, and an optional
+token estimate. Create one immutable dispatch plan:
 
-The controller coordinates and reviews; it does not edit task-owned files after
-dispatch. Independent tasks with disjoint file ownership may run in parallel.
-Overlapping ownership must be sequenced or assigned to a later integration
-task. If the host lacks native subagents, switch to planning/advisory mode or
-ask the user to approve a manual handoff; never fabricate dispatch evidence.
+- `native-host`: the active coding assistant launches native subagents from the
+  plan and submits caller-attested receipts;
+- `standalone`: SIA launches explicitly approved argument-array workers with
+  `shell=False`, bounded output, timeout, and minimal environment inheritance.
+
+Route simple low-risk work to cheap, normal work/review to current, and
+complex/high-risk work or high-risk review to strong unless the approved config
+says otherwise. Run independent implementers in parallel, then independent
+reviewers. Never infer model IDs or label estimated/calculated usage as actual.
+Stop at hard budgets and preserve plugins as capabilities rather than alternate
+state stores.
+
+## Evidence And Integration
+
+Every receipt names the immutable plan hash, operation, worker identity,
+requested/actual model, report path, provenance, and telemetry quality. The
+controller never edits dispatched files. Integration requires every operation
+to complete, separate reviewer identity, a full suite/interface/combined-diff
+check, and an evidence manifest binding plan and receipt hashes.
+
+Standalone child processes run with the current user's permissions and are not
+a filesystem/network sandbox. Native host IDs remain attestations unless the
+host provides verifiable metadata.

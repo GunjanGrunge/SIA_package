@@ -75,3 +75,16 @@ and Windows case aliases; reviewer identity differs from implementer identity;
 integration rejects unfinished or stale task sets; concurrent state mutations
 serialize; adapters refuse collisions and redirected paths; and `sia guide`
 contains every required policy file, including attribution.
+
+## Scenario 9: Cost-aware real multi-agent orchestration
+
+Configure explicit cheap/current/strong model IDs, prices, budgets, concurrency,
+and standalone worker arrays. Prepare at least two disjoint tasks: one
+low/simple and one high/complex. Verify deterministic routing, immutable plan
+hashes, parallel implementers, independent routed reviewers, and receipt-bound
+integration. Confirm plan creation rejects hard budget overruns and non-SIA
+execution ownership; standalone execution requires `--approve-commands`, uses
+no shell, enforces timeout/output bounds, and stops new review work after a hard
+ceiling. Exercise actual, calculated, estimated, and unknown telemetry. On each
+native host, confirm the adapter requests exact models where supported and
+records unknown rather than fabricating unavailable model/run/cost data.

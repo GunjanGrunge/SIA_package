@@ -68,6 +68,8 @@ Load these as needed, per the pipeline stage you're in:
   plan.
 - `guides/writing-project-skills.md` — how to synthesize the project's
   own host-discoverable skills from its goals, contract, and plan.
+- `guides/orchestration.md` — cost-aware model routing, native receipts,
+  standalone workers, budgets, and telemetry.
 - `guides/subagent-task-brief.md` — task brief / report / progress-log
   formats for subagent-driven execution.
 - `guides/security-gate.md` — fixed threat-class checklist. Load only
@@ -114,19 +116,15 @@ on it if neither option is available.
 6. **Plan authoring** — using `guides/writing-plan.md`, break the spec
    into an implementation plan, saved into this project's own
    `docs/plans/`.
-7. **Execution** — using `guides/subagent-task-brief.md`, materialize a
-   brief, host-dispatch record, subagent report, and reviewer verdict for
-   every implementation task. If the host can spawn subagents, the
-   controller **must not implement a task-owned file itself**: it briefs,
-   dispatches, reviews, integrates, and escalates. If the host cannot
-   spawn subagents, stop and tell the user before implementation rather
-   than silently substituting single-agent work. After every task in the
-   plan is individually reviewed and complete, run one **Integration
-   phase** before declaring the plan done: run the project's full
-   test/build suite (not just each task's own check), verify the named
-   Interfaces between tasks actually match up in the combined code (not
-   just each task's own diff in isolation), and review the whole plan's
-   combined diff as one unit.
+7. **Execution** — configure exact cheap/current/strong model identifiers,
+   prices, budgets, and concurrency per `guides/orchestration.md`; prepare tasks
+   with ownership, risk, complexity, and estimates; create one immutable native
+   or standalone dispatch plan; launch every ready disjoint implementer in
+   parallel; ingest truthful model/usage receipts; then launch independent
+   routed reviewers. The controller **must not implement a task-owned file itself**.
+   If another framework owns execution, hand off and launch nothing.
+   After every operation is reviewed, run one **Integration phase** and bind
+   the plan/receipt manifest, full suite, interfaces, and combined diff.
 8. **Feedback loop** — capture corrections, review findings, and (for
    software projects) security-gate findings via
    `capture(signal_type, context, severity, error_class)` (see `capture-interface.md`),

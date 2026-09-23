@@ -1,7 +1,7 @@
 # SIA (Self-Improving Agents)
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.2.0-00F2FE.svg?style=flat-square" alt="Version 0.2.0" />
+  <img src="https://img.shields.io/badge/version-0.3.0-00F2FE.svg?style=flat-square" alt="Version 0.3.0" />
   <img src="https://img.shields.io/badge/status-active-success.svg?style=flat-square" alt="Status: Active" />
   <img src="https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat-square" alt="License: MIT" />
   <img src="https://img.shields.io/badge/host--agnostic-yes-7B2CBF.svg?style=flat-square" alt="Host-agnostic" />
@@ -14,27 +14,66 @@
 
 <p align="center"><b>Persistent, host-neutral orchestration for self-improving coding agents.</b></p>
 
-SIA combines detailed workflow guidance with an installable Python CLI. The CLI
-keeps the current stage, subagent evidence, feedback events, standing rules,
-and convergence data under `.sia/`, so SIA survives fresh chats and context
-compaction instead of appearing only at the beginning of a session.
+SIA is a persistent, host-neutral multi-agent control plane. It decomposes
+approved work into ownership-safe operations, routes bounded tasks to explicitly
+configured cheaper models, preserves the selected/current model for normal
+coordination, escalates complex/high-risk work to a strong tier, launches
+independent workers in parallel, and requires separate review before
+integration. State, receipts, budgets, and telemetry survive new chats under
+`.sia/`.
 
-SIA supports three explicit modes: `advisory`, `planning`, and `orchestrator`.
-Its host adapters are manual launchers, so BMAD, Superpowers, and other plugins
-remain usable in parallel.
+Use **native-host orchestration** when Claude Code, Codex, Kiro, Gemini CLI, or
+Antigravity should spawn its own subagents. Use **standalone orchestration** when
+SIA should launch user-approved provider CLI command arrays itself. BMAD,
+Superpowers, MCP, and other plugins remain available through bridge ownership.
 
 ## Install
+
+### Claude Code plugin (recommended)
+
+```text
+/plugin marketplace add GunjanGrunge/SIA_package
+/plugin install sia
+```
+
+Then say **"set up SIA on this project"**. The `sia-start` skill takes it from
+there. The CLI is bundled with the plugin — there is **no `pip install`** and no
+virtualenv; Python 3 is the only prerequisite.
+
+The plugin ships three skills (`sia-start`, `sia-orchestrate`, `sia-workflow`)
+and two agents (`sia-implementer`, `sia-reviewer`).
+
+### Other hosts, or the CLI on its own
 
 ```powershell
 python -m pip install sia-package
 sia init --mode orchestrator
 sia adapter install --host kiro
-sia next --json
 ```
 
-Replace `kiro` with `claude`, `codex`, or `antigravity`. You can also vendor
-this repository as `sia/`; see [`INSTALL.md`](./INSTALL.md). No provider API
-key or cloud service is required by SIA itself.
+Replace `kiro` with `claude`, `codex`, `gemini`, or `antigravity`. You can also
+vendor this repository as `sia/`; see [`INSTALL.md`](./INSTALL.md). No provider
+API key or cloud service is required by SIA itself.
+
+### What happens after init — read this before reporting a bug
+
+`init` leaves the project at the **`intake`** stage. In orchestrator mode,
+`task prepare` and `orchestrate plan` are illegal until the project reaches
+**`execution`**, which is five evidence-gated advances away:
+
+```text
+intake -> spec -> project-instructions -> skills -> plan -> execution
+```
+
+```text
+sia next --json                  # what this stage requires
+sia advance --evidence <path>    # once that artifact exists
+```
+
+This is deliberate: a stage transition needs an artifact on disk, never a claim
+in conversation. Configuring orchestration before reaching `execution` succeeds
+and then refuses to dispatch — the refusal names the stage and the next
+command. Use `advisory` mode if you want SIA's feedback loop without the gates.
 
 ## Core commands
 
@@ -42,10 +81,13 @@ key or cloud service is required by SIA itself.
 sia init --mode advisory|planning|orchestrator
 sia next --json                  durable host re-entry packet
 sia advance --evidence <path>    evidence-gated stage transition
-sia task prepare ...             establish exclusive file ownership
-sia task dispatch ...            persist native host agent/run identity
-sia task finish ...              attach report + independently identified review
-sia integration --evidence ...   attach combined validation/review
+sia task prepare ...             define owned files, risk, complexity, estimate
+sia orchestrate configure ...    store models, prices, budgets, concurrency
+sia orchestrate plan ...         route operations and reserve budget
+sia orchestrate run ...          launch approved standalone workers in parallel
+sia orchestrate receipt ...      ingest native-host worker evidence
+sia orchestrate status           show operations, budget, telemetry quality
+sia integration --evidence ...   bind all receipts and combined validation
 sia record ... / sia capture ... persist PASS/DEVIATION outcomes
 sia rule add ... / sia preflight ... / sia convergence
 sia adapter install --host ...   install an explicit, namespaced launcher
@@ -53,11 +95,12 @@ sia owner --stage plan --to bmad assign stage ownership in bridge mode
 sia doctor                       diagnose project integration
 ```
 
-The CLI does not fake universal agent spawning. Claude Code, Codex, Kiro, and
-Antigravity create agents through their own native harnesses; SIA checks the
-ordering, ownership, and completeness of the common brief/dispatch/review
-record. Native IDs are caller-attested because vendor harnesses do not expose
-one shared authentication API. See
+SIA can launch real standalone subprocess workers and can make the active host
+launch native subagents from the same immutable plan. Native-host identities
+and telemetry remain caller-attested because vendors expose different APIs;
+standalone process execution is observed but is not an OS security sandbox.
+Actual, calculated, estimated, and unknown telemetry are labeled separately.
+See
 [`HOST-INTEGRATION.md`](./HOST-INTEGRATION.md).
 
 ## Architecture

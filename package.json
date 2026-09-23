@@ -1,6 +1,6 @@
 {
   "name": "sia-package",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Self-Improving Agents (SIA) - A portable, host-agnostic instruction package that turns any coding assistant into a self-improving project collaborator.",
   "main": "bin/sia.js",
   "bin": {

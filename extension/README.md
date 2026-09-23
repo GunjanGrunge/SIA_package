@@ -13,22 +13,22 @@
 ## 📦 Installation Options
 
 ### Option 1: Install VSIX Package Directly
-1. Download `sia-vscode-extension-0.2.0.vsix` from [GitHub Releases](https://github.com/GunjanGrunge/SIA_package/releases).
+1. Download `sia-vscode-extension-0.3.0.vsix` from [GitHub Releases](https://github.com/GunjanGrunge/SIA_package/releases).
 2. Open **VS Code**, **Cursor**, **Windsurf**, or **Kiro**.
 3. Open Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`).
 4. Click the `...` menu in the top right -> **Install from VSIX...**
-5. Select `sia-vscode-extension-0.2.0.vsix`.
+5. Select `sia-vscode-extension-0.3.0.vsix`.
 
 ### Option 2: CLI Installation
 ```bash
 # For VS Code
-code --install-extension sia-vscode-extension-0.2.0.vsix
+code --install-extension sia-vscode-extension-0.3.0.vsix
 
 # For Cursor
-cursor --install-extension sia-vscode-extension-0.2.0.vsix
+cursor --install-extension sia-vscode-extension-0.3.0.vsix
 
 # For Windsurf
-windsurf --install-extension sia-vscode-extension-0.2.0.vsix
+windsurf --install-extension sia-vscode-extension-0.3.0.vsix
 ```
 
 ## 🎮 Available Commands

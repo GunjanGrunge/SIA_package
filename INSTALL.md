@@ -59,6 +59,7 @@ Adapters are explicit opt-in launchers. Install one or more; they coexist:
 sia adapter install --host claude
 sia adapter install --host codex
 sia adapter install --host kiro
+sia adapter install --host gemini
 sia adapter install --host antigravity
 ```
 
@@ -68,6 +69,7 @@ They create only these namespaced files:
   (source: `integrations/claude-code/SKILL.md`)
 - Codex: `.agents/skills/sia/SKILL.md`
 - Kiro: `.kiro/steering/sia.md`
+- Gemini CLI: `.gemini/skills/sia/SKILL.md`
 - Antigravity: `.agents/workflows/sia.md`
 
 The Claude and Kiro launchers are manual-only. Every launcher runs
@@ -80,26 +82,40 @@ After Intake and project instruction authoring, generate the project's own
 skill and `sdd/skill-manifest.md` as described in
 `guides/writing-project-skills.md`.
 
-## 4. Use native subagents
+## 4. Configure And Run Cost-Aware Subagents
 
-In orchestrator mode, prepare each task, invoke the host's own agent mechanism,
-and record its real identity:
+Generate a config template and set exact cheap/current/strong model IDs,
+configured prices, hard budgets, concurrency, and optional standalone workers:
 
 ```powershell
-sia task prepare --task api --brief sdd/api-brief.md --files src/api.py
-sia task dispatch --task api --host kiro --agent-id backend --native-run-id <run-id>
-sia task finish --task api --report sdd/api-report.md --review sdd/api-review.md `
-  --reviewer-agent-id reviewer --review-native-run-id <review-run-id>
+sia orchestrate example > orchestration.json
+sia orchestrate configure --file orchestration.json
+```
+
+Prepare bounded tasks, then choose a backend:
+
+```powershell
+sia task prepare --task api --brief sdd/api-brief.md --files src/api.py `
+  --risk high --complexity complex --estimated-tokens 40000
+
+# Active assistant launches native workers and submits receipts.
+sia orchestrate plan --backend native-host --host kiro
+sia orchestrate receipt --file api-implement-receipt.json
+
+# Or SIA launches approved provider CLI command arrays itself.
+sia orchestrate plan --backend standalone --host provider-cli
+sia orchestrate run --approve-commands
+
+sia orchestrate status
 sia integration --evidence sdd/integration.md
 sia advance
 ```
 
-Disjoint task file sets may run in parallel. SIA serializes state updates and
-rejects exact-path and parent/child ownership overlap. The controller must not
-edit a dispatched task's owned files. Agent/run IDs are caller-attested records,
-not cryptographically authenticated vendor receipts. SIA does not claim a
-universal vendor agent API; if native subagents are unavailable, use
-planning/advisory mode or an explicit manual handoff.
+Disjoint implementers run in parallel; reviewers unlock after implementer
+receipts. SIA rejects ownership overlap, hard-budget plans, model mismatch,
+invalid receipts, duplicate reviewer identity, and unfinished integration.
+Native IDs remain caller-attested. Standalone processes are observed and
+shell-free but are not an OS sandbox. See `guides/orchestration.md`.
 
 ## 5. Check installation
 
