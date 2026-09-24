@@ -1,4 +1,5 @@
 {
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "sia",
   "version": "0.4.0",
   "description": "Self-Improving Agents: evidence-gated workflow and cost-aware multi-agent orchestration with durable state, file-ownership safety, and independent review.",
@@ -9,11 +10,5 @@
   "homepage": "https://gunjangrunge.github.io/SIA_package/",
   "repository": "https://github.com/GunjanGrunge/SIA_package",
   "license": "MIT",
-  "keywords": [
-    "orchestration",
-    "subagents",
-    "workflow",
-    "cost-control",
-    "code-review"
-  ]
+  "keywords": ["orchestration", "subagents", "workflow", "cost-control", "code-review"]
 }

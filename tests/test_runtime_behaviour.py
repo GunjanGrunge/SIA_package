@@ -219,6 +219,8 @@ def test_every_version_marker_agrees() -> None:
         ".claude-plugin/plugin.json": json_version(".claude-plugin/plugin.json", "version"),
         ".claude-plugin/marketplace.json": json_version(
             ".claude-plugin/marketplace.json", "plugins", 0, "version"),
+        "plugin.json": json_version("plugin.json", "version"),
+        "gemini-extension.json": json_version("gemini-extension.json", "version"),
     }
 
     assert len(set(versions.values())) == 1, f"version markers disagree: {versions}"

@@ -1,7 +1,7 @@
 # SIA (Self-Improving Agents)
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.3.1-00F2FE.svg?style=flat-square" alt="Version 0.3.1" />
+  <img src="https://img.shields.io/badge/version-0.4.0-00F2FE.svg?style=flat-square" alt="Version 0.4.0" />
   <img src="https://img.shields.io/badge/status-active-success.svg?style=flat-square" alt="Status: Active" />
   <img src="https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat-square" alt="License: MIT" />
   <img src="https://img.shields.io/badge/host--agnostic-yes-7B2CBF.svg?style=flat-square" alt="Host-agnostic" />
@@ -29,19 +29,34 @@ Superpowers, MCP, and other plugins remain available through bridge ownership.
 
 ## Install
 
-### Claude Code plugin (recommended)
+SIA installs as a plugin in each host. **There is no `pip install`**: the plugin
+bundles SIA and runs it as an MCP server that the host starts for you. Python 3
+is the only prerequisite.
+
+| Host | Install | Status |
+|---|---|---|
+| **Claude Code** | `/plugin marketplace add GunjanGrunge/SIA_package`<br>`/plugin install sia@sia` | ✅ Verified end to end |
+| **Codex** | `codex plugin marketplace add GunjanGrunge/SIA_package`<br>`codex plugin add sia@sia` | ✅ Verified end to end (see note) |
+| **Gemini CLI** | `gemini extensions install https://github.com/GunjanGrunge/SIA_package` | ⚠️ Built to Gemini's docs; not yet tested |
+| **Kiro** | Install a power from the GitHub URL | ⚠️ Not yet tested |
+| **Antigravity** | `agy plugin install <path-to-a-clone>` | ⚠️ Not yet tested |
+
+`sia@sia` is `plugin@marketplace`. Then say **"set up SIA on this project"**.
+The `sia-start` skill walks the project from intake to execution.
+
+**Codex asks before SIA writes.** Read-only tools (status, next, doctor,
+preflight, …) run without a prompt; tools that change `.sia/` ask for approval,
+which is Codex protecting you. In a non-interactive `codex exec` run there is
+nobody to answer, so the call is cancelled. To allow SIA's own tools there —
+and only SIA's — add:
 
 ```text
-/plugin marketplace add GunjanGrunge/SIA_package
-/plugin install sia@sia
+-c 'plugins."sia@sia".mcp_servers.sia.default_tools_approval_mode="approve"'
 ```
 
-(`sia@sia` is `plugin@marketplace`. Bare `sia` only resolves if no other
-installed marketplace offers that name.)
-
-Then say **"set up SIA on this project"**. The `sia-start` skill takes it from
-there. The CLI is bundled with the plugin — there is **no `pip install`** and no
-virtualenv; Python 3 is the only prerequisite.
+**Windows hosts** launch the command `python3`. If only `python` or `py` is on
+your `PATH`, the plugin cannot start SIA. Check with `python3 --version` before
+installing; the Microsoft Store build of Python provides `python3`.
 
 The plugin ships three skills (`sia-start`, `sia-orchestrate`, `sia-workflow`)
 and two agents (`sia-implementer`, `sia-reviewer`).
@@ -53,21 +68,21 @@ argument arrays with `shell=False`, behind an explicit
 `orchestrate run --approve-commands` gate. That is the plugin's largest
 capability surface; it is opt-in and never runs a shell string.
 
-### Other hosts, or the CLI on its own
+### The CLI on its own, without a host plugin
+
+Only needed for scripting SIA outside an agent host, or for the `standalone`
+backend's `orchestrate run --approve-commands`, which is deliberately not
+exposed to agents.
 
 ```powershell
 python -m pip install "git+https://github.com/GunjanGrunge/SIA_package"
 sia init --mode orchestrator
-sia adapter install --host kiro
 ```
 
 This installs from GitHub on purpose: PyPI's `sia-package` is still 0.2.0, which
-has no orchestration runtime, so `pip install sia-package` gets you a CLI without
-the features described here.
-
-Replace `kiro` with `claude`, `codex`, `gemini`, or `antigravity`. You can also
-vendor this repository as `sia/`; see [`INSTALL.md`](./INSTALL.md). No provider
-API key or cloud service is required by SIA itself.
+has no orchestration runtime. You can also vendor this repository as `sia/`; see
+[`INSTALL.md`](./INSTALL.md). No provider API key or cloud service is required
+by SIA itself.
 
 ### What happens after init — read this before reporting a bug
 
