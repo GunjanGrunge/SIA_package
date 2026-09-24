@@ -1,0 +1,20 @@
+{
+  "name": "sia",
+  "interface": {
+    "displayName": "SIA"
+  },
+  "plugins": [
+    {
+      "name": "sia",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/GunjanGrunge/SIA_package.git"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

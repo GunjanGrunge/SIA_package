@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "sia": {
+      "command": "python3",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/sia_mcp.py"]
+    }
+  }
+}
