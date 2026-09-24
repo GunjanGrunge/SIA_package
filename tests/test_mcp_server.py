@@ -162,6 +162,47 @@ def test_invalid_arguments_are_refused_before_running(client: Client, project: P
     assert not (project / ".sia").exists(), "nothing may run on invalid arguments"
 
 
+# --- feedback tools -------------------------------------------------------
+
+def test_feedback_tools_accept_their_documented_arguments(client: Client, project: Path) -> None:
+    """The skills document these argument sets. An earlier version of the
+    skills documented CLI examples that were missing required flags and would
+    have failed; this runs the documented shapes for real."""
+    root = str(project)
+    assert not client.call("sia_init", project_root=root, mode="orchestrator")[1]
+
+    text, err = client.call("sia_preflight", project_root=root, scope=["src/**"])
+    assert not err, text
+    text, err = client.call("sia_record", project_root=root, outcome="pass",
+                            signal="probe", context="documented shape", severity="low")
+    assert not err, text
+    text, err = client.call("sia_capture", project_root=root, signal="budget-overrun",
+                            context="documented shape", severity="high", error_class="cost-overrun")
+    assert not err, text
+    text, err = client.call("sia_convergence", project_root=root)
+    assert not err, text
+    assert "cost-overrun" in text, "the captured deviation must be counted"
+
+
+def test_the_documented_rule_add_command_works(project: Path) -> None:
+    """sia-workflow documents `rule add` as a CLI command with these flags."""
+    cli = SERVER.parent / "cli.py"
+
+    def sia(*args: str) -> subprocess.CompletedProcess[str]:
+        return subprocess.run([sys.executable, str(cli), *args], cwd=project,
+                              capture_output=True, text=True)
+
+    assert sia("init", "--mode", "orchestrator").returncode == 0
+    captured = sia("--json", "capture", "--signal", "s", "--context", "c",
+                   "--severity", "medium", "--error-class", "probe-class")
+    assert captured.returncode == 0, captured.stderr
+    event_id = json.loads(captured.stdout)["id"]
+
+    added = sia("rule", "add", "--text", "a standing rule", "--scope", "src/**",
+                "--severity", "medium", "--error-class", "probe-class", "--source-event", event_id)
+    assert added.returncode == 0, added.stderr
+
+
 # --- workflow end to end over MCP ----------------------------------------
 
 def test_full_workflow_to_a_dispatch_plan(client: Client, project: Path) -> None:

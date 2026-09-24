@@ -1,0 +1,11 @@
+{
+  "name": "sia",
+  "version": "0.3.1",
+  "description": "Self-Improving Agents: evidence-gated workflow and cost-aware multi-agent orchestration with durable state, file-ownership safety, and independent review.",
+  "mcpServers": {
+    "sia": {
+      "command": "python3",
+      "args": ["${extensionPath}${/}sia_mcp.py"]
+    }
+  }
+}
