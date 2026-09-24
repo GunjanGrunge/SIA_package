@@ -415,6 +415,17 @@ def serve(stdin: TextIO, protocol_out: TextIO) -> None:
 
 
 def run() -> None:
+    # MCP over stdio is UTF-8 and newline-delimited. On Windows, piped stdin is
+    # decoded with the legacy code page and text-mode stdout writes "\r\n".
+    # Verified under Windows Python: a project at ...\José_日本 arrived as
+    # ...\JosÃ©_æ—¥æœ¬ and was reported as not existing, and every reply line
+    # ended in "\r\n". Pin both streams before reading or writing anything.
+    for stream, options in ((sys.stdin, {}), (sys.stdout, {"newline": "\n"}),
+                            (sys.stderr, {"errors": "backslashreplace"})):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            reconfigure(encoding="utf-8", **options)
+
     # stdout carries the protocol. Anything else that reaches it corrupts the
     # stream, so keep the real handle for protocol writes and point sys.stdout
     # at stderr for the lifetime of the server.
