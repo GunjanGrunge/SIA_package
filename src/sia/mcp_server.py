@@ -217,6 +217,33 @@ TOOLS: dict[str, ToolSpec] = {
     ),
 }
 
+# MCP tool annotations. A tool that declares none is treated by the spec's
+# defaults as destructive AND open-world, so every tool looked maximally
+# dangerous and hosts demanded approval even for a read-only status check.
+# These are verified, not guessed: each read-only tool was run against a
+# fingerprinted .sia/ directory and changed nothing. Nothing here touches the
+# network, so openWorldHint is false throughout.
+READ_ONLY_TOOLS = frozenset({
+    "sia_doctor", "sia_status", "sia_next", "sia_guide", "sia_preflight",
+    "sia_convergence", "sia_orchestrate_example", "sia_orchestrate_status",
+})
+# orchestrate_configure replaces the stored config; orchestrate_plan can discard
+# an existing plan when `replace` is set. Everything else only adds or advances.
+DESTRUCTIVE_TOOLS = frozenset({"sia_orchestrate_configure", "sia_orchestrate_plan"})
+IDEMPOTENT_WRITE_TOOLS = frozenset({"sia_owner"})
+
+
+def annotations(name: str) -> dict[str, Any]:
+    read_only = name in READ_ONLY_TOOLS
+    return {
+        "title": name.removeprefix("sia_").replace("_", " ").capitalize(),
+        "readOnlyHint": read_only,
+        "destructiveHint": name in DESTRUCTIVE_TOOLS,
+        "idempotentHint": read_only or name in IDEMPOTENT_WRITE_TOOLS,
+        "openWorldHint": False,
+    }
+
+
 # Deliberately NOT exposed:
 #   orchestrate run  -- launches subprocesses; its --approve-commands flag is a
 #                       HUMAN gate. Over MCP the model could pass it itself.
@@ -341,7 +368,8 @@ class Server:
             self._result(request_id, {})
         elif method == "tools/list":
             self._result(request_id, {"tools": [
-                {"name": name, "description": spec[0], "inputSchema": spec[1]}
+                {"name": name, "description": spec[0], "inputSchema": spec[1],
+                 "annotations": annotations(name)}
                 for name, spec in TOOLS.items()
             ]})
         elif method == "tools/call":

@@ -163,6 +163,58 @@ def test_invalid_arguments_are_refused_before_running(client: Client, project: P
     assert not (project / ".sia").exists(), "nothing may run on invalid arguments"
 
 
+# --- tool annotations -----------------------------------------------------
+
+def test_every_tool_declares_annotations(client: Client) -> None:
+    """Undeclared annotations default to destructive and open-world under the
+    MCP spec, which makes hosts demand approval for a harmless status check."""
+    for tool in client.request("tools/list")["result"]["tools"]:
+        hints = tool.get("annotations")
+        assert hints, f"{tool['name']} declares no annotations"
+        assert hints["openWorldHint"] is False, f"{tool['name']}: SIA never touches the network"
+        if hints["readOnlyHint"]:
+            assert hints["destructiveHint"] is False, f"{tool['name']}: read-only cannot be destructive"
+
+
+def fingerprint(root: Path) -> dict[str, bytes]:
+    return {str(p.relative_to(root)): p.read_bytes() for p in sorted((root / ".sia").rglob("*")) if p.is_file()}
+
+
+# Valid arguments for every tool, for a fresh orchestrator project at `intake`.
+# The read-only test must use these: a call rejected by argument validation
+# never runs, so it trivially "writes nothing" and proves nothing. An earlier
+# version of this test made exactly that mistake and passed with a writing tool
+# mislabelled as read-only.
+VALID_ARGS: dict[str, dict[str, Any]] = {
+    "sia_preflight": {"scope": ["src/**"]},
+    "sia_advance": {"evidence": ["sdd/intake.md"]},
+    "sia_owner": {"stage": "plan", "to": "sia"},
+    "sia_record": {"outcome": "pass", "signal": "s", "context": "c", "severity": "low"},
+    "sia_capture": {"signal": "s", "context": "c", "severity": "low", "error_class": "e"},
+}
+VALIDATION_ERRORS = ("missing required argument", "unknown argument", "must be", "needs at least")
+
+
+def test_tools_labelled_read_only_really_write_nothing(client: Client, project: Path) -> None:
+    """A read-only label is a promise hosts act on by skipping approval. If a
+    tool labelled read-only ever writes, this catches it."""
+    root = str(project)
+    assert not client.call("sia_init", project_root=root, mode="orchestrator")[1]
+    write(project, "sdd/intake.md")
+
+    read_only = [t["name"] for t in client.request("tools/list")["result"]["tools"]
+                 if t["annotations"]["readOnlyHint"]]
+    assert read_only, "expected some read-only tools"
+
+    for name in read_only:
+        before = fingerprint(project)
+        text, _ = client.call(name, project_root=root, **VALID_ARGS.get(name, {}))
+        assert not text.startswith(VALIDATION_ERRORS), (
+            f"{name} was rejected on its arguments, so it never ran and the check "
+            f"proves nothing: {text}")
+        assert fingerprint(project) == before, f"{name} is labelled read-only but changed .sia/"
+
+
 # --- the shipped launcher in .mcp.json -------------------------------------
 #
 # Hosts disagree on how an MCP server learns where its plugin lives. Codex
