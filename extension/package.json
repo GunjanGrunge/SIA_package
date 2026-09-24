@@ -2,7 +2,7 @@
   "name": "sia-vscode-extension",
   "displayName": "SIA (Self-Improving Agents)",
   "description": "Portable, host-agnostic instruction package & workflow engine for VS Code, Cursor, Windsurf, Kiro, and AI coding assistants.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "publisher": "GunjanGrunge",
   "license": "MIT",
   "repository": {

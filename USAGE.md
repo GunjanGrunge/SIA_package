@@ -18,7 +18,7 @@ Install the persistent runtime, initialize an explicit mode, and install only
 the host adapter you want:
 
 ```bash
-python -m pip install sia-package==0.3.0
+python -m pip install "git+https://github.com/GunjanGrunge/SIA_package"
 sia init --mode orchestrator
 sia adapter install --host claude
 sia next --json

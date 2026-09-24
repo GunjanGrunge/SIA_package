@@ -2,7 +2,7 @@
 
 All notable changes to the SIA package itself are recorded here.
 
-## [Unreleased]
+## [0.3.1] - 2026-09-24
 
 ### Added
 
@@ -13,7 +13,13 @@ All notable changes to the SIA package itself are recorded here.
   `sia-implementer` and `sia-reviewer`.
 - **The CLI ships inside the plugin — no `pip install`.** `cli.py` is now the
   plugin entry point and puts `src/` on `sys.path` itself, so Python 3 is the
-  only prerequisite. The PyPI package remains the path for other hosts.
+  only prerequisite.
+- **Behavioural tests** in `tests/test_runtime_behaviour.py`. Until now `tests/`
+  held only a string-pattern validator and three tests of that validator;
+  nothing drove the runtime. The new suite runs the real CLI end to end and
+  covers the budget ceiling, independent review, stage-gate refusals and
+  placeholder rejection. Each budget test was mutation-checked against a
+  deliberately reintroduced bypass.
 
 ### Fixed
 
@@ -28,6 +34,12 @@ All notable changes to the SIA package itself are recorded here.
   `.kiro`, `.gemini` and `.antigravity`. On a real brownfield project it had
   detected one of five.
 - `guides/orchestration.md` documents the cheap/current/strong tiers.
+- **Non-Claude install instructions were broken.** PyPI only carries 0.2.0.
+  Docs pinning `pip install sia-package==0.3.0` failed outright with "No
+  matching distribution found", and docs saying plain `pip install sia-package`
+  silently installed 0.2.0, which has no orchestration runtime at all. Codex,
+  Kiro, Gemini CLI and Antigravity users now install from GitHub, which works
+  today, until a release reaches PyPI.
 
 ### Changed
 
@@ -45,9 +57,20 @@ All notable changes to the SIA package itself are recorded here.
 
 ### Known issues
 
-- `docs/reviews/2026-09-18-sia-0.3-review.md` records a **NEEDS_CHANGES** review
-  of this runtime with a confirmed Critical hard-budget bypass and several High
-  findings. None are addressed here.
+- `docs/reviews/2026-09-18-sia-0.3-review.md` is a **NEEDS_CHANGES** review of
+  an earlier state of this runtime.
+  - Its **Critical hard-budget bypass is fixed** and now has regression tests.
+    Verified by driving a run over its ceiling on the first receipt and on the
+    final one: the overrun is terminal, later receipts are rejected, and
+    integration is blocked. A previous version of this changelog listed it as
+    open without having tested it; that was wrong.
+  - Its **High findings have not been re-verified** against this code. Treat
+    them as open until each is checked: mutable hashed briefs, stale integration
+    receipts, ownership-transfer bypass, unbounded or cancellation-unsafe
+    subprocesses, inline prompt disclosure, silent strong-to-current routing.
+- 0.3.x is not yet on PyPI; see the install fix above.
+- No orchestration run has yet dispatched a live worker. Verification so far
+  stops at plan creation and recorded receipts.
 
 ## [0.3.0] - 2026-09-18
 

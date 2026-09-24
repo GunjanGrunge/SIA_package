@@ -9,7 +9,7 @@ read the full guides directly.
 Install the published package globally or in a virtual environment:
 
 ```powershell
-python -m pip install sia-package
+python -m pip install "git+https://github.com/GunjanGrunge/SIA_package"
 ```
 
 For development from a checkout:
