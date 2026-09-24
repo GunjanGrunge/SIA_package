@@ -8,8 +8,10 @@ project_root.
 """
 from __future__ import annotations
 
+import importlib.util
 import json
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -307,6 +309,86 @@ def test_the_launcher_picks_the_highest_version_numerically(tmp_path: Path) -> N
 
     result = handshake(launch(args, cwd=project, home=home))
     assert result["result"]["serverInfo"]["name"] == "sia"
+
+
+def minimal_plugin(at: Path) -> Path:
+    """A real, runnable copy of the plugin's server -- just sia_mcp.py and src/.
+    Symlinking the whole repo would drag node_modules into directory scans."""
+    at.mkdir(parents=True)
+    shutil.copy(REPO / "sia_mcp.py", at / "sia_mcp.py")
+    shutil.copytree(REPO / "src", at / "src", ignore=shutil.ignore_patterns("__pycache__", "*.egg-info"))
+    return at
+
+
+def test_both_config_files_match_their_generator() -> None:
+    """Claude Code and Codex read .mcp.json; Kiro reads mcp.json. They must not
+    drift from each other or from tools/gen_mcp_config.py."""
+    spec = importlib.util.spec_from_file_location("gen", REPO / "tools" / "gen_mcp_config.py")
+    gen = importlib.util.module_from_spec(spec)
+    assert spec.loader
+    spec.loader.exec_module(gen)
+    for name in (".mcp.json", "mcp.json"):
+        assert (REPO / name).read_text(encoding="utf-8") == gen.render(), (
+            f"{name} is stale: run python3 tools/gen_mcp_config.py")
+
+
+@pytest.mark.parametrize("layout", [
+    ("some-registry", "sia"),
+    ("GunjanGrunge", "SIA_package", "main"),
+])
+def test_the_launcher_finds_a_kiro_power(tmp_path: Path, layout: tuple[str, ...]) -> None:
+    """Kiro documents no plugin-root variable and no install location, so the
+    launcher searches its powers directory. Two plausible depths are covered."""
+    _, args = shipped_launcher()
+    home, project = tmp_path / "home", tmp_path / "project"
+    project.mkdir()
+    minimal_plugin(home.joinpath(".kiro", "powers", *layout))
+
+    result = handshake(launch(args, cwd=project, home=home))
+    assert result["result"]["serverInfo"]["name"] == "sia"
+
+
+def test_the_launcher_never_runs_code_from_its_working_directory(tmp_path: Path) -> None:
+    """Security. Codex starts the server with cwd = the user's project. If the
+    launcher trusted its working directory, opening an untrusted repository that
+    contains a file named sia_mcp.py would execute that file automatically."""
+    _, args = shipped_launcher()
+    project = tmp_path / "untrusted-repo"
+    project.mkdir()
+    marker = tmp_path / "PWNED"
+    (project / "sia_mcp.py").write_text(f"open({str(marker)!r}, 'w').write('ran')\n")
+
+    proc = launch(args, cwd=project, home=tmp_path / "empty-home")
+    proc.communicate(timeout=10)
+
+    assert not marker.exists(), "the launcher executed a sia_mcp.py from the project directory"
+    assert proc.returncode != 0
+
+
+def test_a_non_ascii_project_path_survives_a_legacy_encoding(tmp_path: Path) -> None:
+    """Windows decodes piped stdin with its legacy code page. Under Windows
+    Python, a project at ...\\José_日本 arrived as ...\\JosÃ©_æ—¥æœ¬ and SIA said
+    it did not exist. PYTHONIOENCODING=cp1252 reproduces that on any OS."""
+    project = tmp_path / "José_日本"
+    project.mkdir()
+    env = {**os.environ, "PYTHONIOENCODING": "cp1252"}
+    proc = subprocess.Popen([sys.executable, str(SERVER)], cwd=tmp_path, env=env,
+                            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    messages = [
+        {"jsonrpc": "2.0", "id": 1, "method": "initialize",
+         "params": {"protocolVersion": "2025-06-18", "capabilities": {}}},
+        {"jsonrpc": "2.0", "id": 2, "method": "tools/call",
+         "params": {"name": "sia_init", "arguments": {"project_root": str(project), "mode": "orchestrator"}}},
+    ]
+    # Raw UTF-8, as a Node host's JSON.stringify sends it -- not \\u escapes.
+    payload = "".join(json.dumps(m, ensure_ascii=False) + "\n" for m in messages).encode("utf-8")
+    out, err = proc.communicate(payload, timeout=30)
+
+    lines = [line for line in out.split(b"\n") if line.strip()]
+    assert not any(line.endswith(b"\r") for line in lines), "protocol lines must end in \\n, not \\r\\n"
+    reply = json.loads(lines[-1])["result"]
+    assert reply["isError"] is False, reply["content"][0]["text"]
+    assert (project / ".sia").is_dir()
 
 
 def test_the_launcher_fails_loudly_and_keeps_stdout_clean(tmp_path: Path) -> None:
