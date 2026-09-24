@@ -253,7 +253,10 @@ CHECKS.append((
     "USAGE.md",
     [
         r"## Quick Start",
-        r"sia-package==0\.3\.0",
+        # Previously required `sia-package==0\.3\.0` -- a command that fails,
+        # because PyPI only carries 0.2.0. The check was enforcing the bug.
+        # Require the GitHub install, which works, until a release reaches PyPI.
+        r"git\+https://github\.com/GunjanGrunge/SIA_package",
         r"sia next --json",
         r"## Cost-Aware Multi-Agent Orchestration",
         r"## Existing Project",
@@ -267,7 +270,10 @@ CHECKS.append((
     "pyproject.toml",
     [
         r'name = "sia-package"',
-        r'version = "0\.3\.0"',
+        # Shape only. Pinning the exact number meant every release had to edit
+        # this test; the real risk -- version markers drifting apart across
+        # files -- is asserted in tests/test_runtime_behaviour.py.
+        r'version = "\d+\.\d+\.\d+"',
         r'requires-python = ">=3\.10"',
         r'sia = "sia\.cli:main"',
         r'where = \["src"\]',
@@ -393,7 +399,10 @@ CHECKS.append((
     [
         r'#!/usr/bin/env node',
         r"'-m', 'sia'",
-        r'pip install sia-package',
+        # Previously required `pip install sia-package`, which installs 0.2.0
+        # (no orchestration runtime). The launcher's error message must point
+        # somewhere that actually works.
+        r'git\+https://github\.com/GunjanGrunge/SIA_package',
     ],
 ))
 

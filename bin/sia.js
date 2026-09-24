@@ -14,6 +14,6 @@ for (const executable of candidates) {
   lastError = result.error;
 }
 
-console.error('SIA requires Python and `python -m pip install sia-package`.');
+console.error('SIA requires Python and `python -m pip install "git+https://github.com/GunjanGrunge/SIA_package"`.');
 if (lastError) console.error(lastError.message);
 process.exit(1);

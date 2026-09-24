@@ -1,7 +1,7 @@
 # SIA (Self-Improving Agents)
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.3.0-00F2FE.svg?style=flat-square" alt="Version 0.3.0" />
+  <img src="https://img.shields.io/badge/version-0.3.1-00F2FE.svg?style=flat-square" alt="Version 0.3.1" />
   <img src="https://img.shields.io/badge/status-active-success.svg?style=flat-square" alt="Status: Active" />
   <img src="https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat-square" alt="License: MIT" />
   <img src="https://img.shields.io/badge/host--agnostic-yes-7B2CBF.svg?style=flat-square" alt="Host-agnostic" />
@@ -56,10 +56,14 @@ capability surface; it is opt-in and never runs a shell string.
 ### Other hosts, or the CLI on its own
 
 ```powershell
-python -m pip install sia-package
+python -m pip install "git+https://github.com/GunjanGrunge/SIA_package"
 sia init --mode orchestrator
 sia adapter install --host kiro
 ```
+
+This installs from GitHub on purpose: PyPI's `sia-package` is still 0.2.0, which
+has no orchestration runtime, so `pip install sia-package` gets you a CLI without
+the features described here.
 
 Replace `kiro` with `claude`, `codex`, `gemini`, or `antigravity`. You can also
 vendor this repository as `sia/`; see [`INSTALL.md`](./INSTALL.md). No provider

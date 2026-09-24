@@ -202,7 +202,7 @@
 <span class="prompt">&gt;</span> <span class="command">/plugin install sia@sia</span>
 
 <span class="comment"># Other hosts: install the CLI once</span>
-<span class="prompt">PS&gt;</span> <span class="command">python -m pip install sia-package==0.3.0</span>
+<span class="prompt">PS&gt;</span> <span class="command">python -m pip install "git+https://github.com/GunjanGrunge/SIA_package"</span>
 
 <span class="comment"># Initialize this project</span>
 <span class="prompt">PS&gt;</span> <span class="command">sia init --mode orchestrator</span>
@@ -251,7 +251,7 @@
     <div class="steps">
       <article class="step"><div><h3>Claude Code: install the plugin</h3><p><strong>No <code>pip install</code> is needed.</strong> The CLI is bundled with the plugin; Python 3.10 or newer is the only prerequisite.</p><div class="command-block"><div class="command-title">Claude Code <button class="copy" data-copy="plugin-code">Copy</button></div><pre id="plugin-code">/plugin marketplace add GunjanGrunge/SIA_package
 /plugin install sia@sia</pre></div><p>Then say <em>&ldquo;set up SIA on this project&rdquo;</em>. The <code>sia-start</code> skill walks the project from intake to execution, so the remaining steps below are handled for you. The plugin ships the <code>sia-start</code>, <code>sia-orchestrate</code> and <code>sia-workflow</code> skills plus the <code>sia-implementer</code> and <code>sia-reviewer</code> agents.</p></div></article>
-      <article class="step"><div><h3>Other hosts: install the Python package</h3><p>Codex, Kiro, Gemini CLI and Antigravity drive the CLI directly. Python 3.10 or newer is required.</p><div class="command-block"><div class="command-title">PowerShell / terminal <button class="copy" data-copy="install-code">Copy</button></div><pre id="install-code">python -m pip install sia-package==0.3.0</pre></div></div></article>
+      <article class="step"><div><h3>Other hosts: install the Python package</h3><p>Codex, Kiro, Gemini CLI and Antigravity drive the CLI directly. Python 3.10 or newer is required.</p><div class="command-block"><div class="command-title">PowerShell / terminal <button class="copy" data-copy="install-code">Copy</button></div><pre id="install-code">python -m pip install "git+https://github.com/GunjanGrunge/SIA_package"</pre></div></div></article>
       <article class="step"><div><h3>Open the target project</h3><p>Run SIA from the actual repository root. Choose one runtime mode.</p><div class="command-block"><pre>cd path/to/your-project
 sia init --mode orchestrator
 sia doctor</pre></div></div></article>
@@ -515,7 +515,7 @@ sia convergence</pre><p>Other frameworks own the delivery process while SIA main
     <span class="section-tag">Optional UI</span>
     <h2>VS Code-compatible extension</h2>
     <p class="lead">An extension for VS Code-compatible IDEs lives under <code>extension/</code>. It is <strong>not</strong> shipped as a prebuilt VSIX in the repository &mdash; build it from source. Install <code>sia-package</code> first: the extension delegates initialization and status to the Python runtime and does not maintain a second state machine.</p>
-    <div class="command-block"><pre>python -m pip install sia-package==0.3.0
+    <div class="command-block"><pre>python -m pip install "git+https://github.com/GunjanGrunge/SIA_package"
 cd extension &amp;&amp; npm install &amp;&amp; npx vsce package
 # In VS Code: Extensions → … → Install from VSIX
 # Select the .vsix produced above</pre></div>
