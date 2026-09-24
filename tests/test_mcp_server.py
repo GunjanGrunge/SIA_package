@@ -9,6 +9,7 @@ project_root.
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -160,6 +161,103 @@ def test_invalid_arguments_are_refused_before_running(client: Client, project: P
     _, empty_list = client.call("sia_advance", project_root=str(project), evidence=[])
     assert bad_enum and unknown and empty_list
     assert not (project / ".sia").exists(), "nothing may run on invalid arguments"
+
+
+# --- the shipped launcher in .mcp.json -------------------------------------
+#
+# Hosts disagree on how an MCP server learns where its plugin lives. Codex
+# 0.136.0 was probed: it expands no variable in MCP arguments, sets no PLUGIN_*
+# environment, and starts the server with cwd = the user's project. The launcher
+# in .mcp.json therefore locates the plugin itself. These tests run that exact
+# launcher, read from the shipped file, under each host's conditions.
+
+REPO = SERVER.parent
+LITERAL = "${CLAUDE_PLUGIN_ROOT}"   # what Codex passes through unexpanded
+
+
+def shipped_launcher() -> tuple[str, list[str]]:
+    server = json.loads((REPO / ".mcp.json").read_text(encoding="utf-8"))["mcpServers"]["sia"]
+    return server["command"], server["args"]
+
+
+def launch(args: list[str], cwd: Path, home: Path) -> subprocess.Popen[str]:
+    """Start the launcher with a clean environment: no PLUGIN_* variables."""
+    env = {"PATH": os.environ.get("PATH", ""), "HOME": str(home)}
+    return subprocess.Popen([sys.executable, *args], cwd=cwd, env=env, text=True,
+                            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+
+def handshake(proc: subprocess.Popen[str]) -> dict[str, Any]:
+    assert proc.stdin and proc.stdout
+    proc.stdin.write(json.dumps({"jsonrpc": "2.0", "id": 1, "method": "initialize",
+                                 "params": {"protocolVersion": "2025-06-18", "capabilities": {}}}) + "\n")
+    proc.stdin.flush()
+    line = proc.stdout.readline()
+    proc.stdin.close()
+    proc.wait(timeout=10)
+    assert line, f"no handshake; stderr: {proc.stderr.read() if proc.stderr else ''}"
+    return json.loads(line)
+
+
+def fake_codex_install(home: Path, version: str, target: Path) -> None:
+    slot = home / ".codex" / "plugins" / "cache" / "some-marketplace" / "sia" / version
+    slot.parent.mkdir(parents=True, exist_ok=True)
+    slot.symlink_to(target, target_is_directory=True)
+
+
+def decoy_plugin(tmp: Path, name: str) -> Path:
+    """A plugin root whose server refuses to start, so choosing it is visible."""
+    root = tmp / name
+    root.mkdir()
+    (root / "sia_mcp.py").write_text("import sys; sys.exit('decoy chosen: " + name + "')\n")
+    return root
+
+
+def test_the_launcher_uses_a_root_the_host_substituted(tmp_path: Path) -> None:
+    """Claude Code expands ${CLAUDE_PLUGIN_ROOT}, so the real path arrives."""
+    command, args = shipped_launcher()
+    assert command == "python3"
+    substituted = [a if a != LITERAL else str(REPO) for a in args]
+    result = handshake(launch(substituted, cwd=tmp_path, home=tmp_path / "empty-home"))
+    assert result["result"]["serverInfo"]["name"] == "sia"
+
+
+def test_the_launcher_finds_a_codex_install_when_nothing_is_substituted(tmp_path: Path) -> None:
+    """Codex: literal ${...}, empty environment, cwd = project. Only the cache
+    can reveal where the plugin is."""
+    _, args = shipped_launcher()
+    assert LITERAL in args, "the launcher must still offer the Claude Code variable"
+    home, project = tmp_path / "home", tmp_path / "project"
+    project.mkdir()
+    fake_codex_install(home, "0.3.1", REPO)
+
+    result = handshake(launch(args, cwd=project, home=home))
+    assert result["result"]["serverInfo"]["name"] == "sia"
+
+
+def test_the_launcher_picks_the_highest_version_numerically(tmp_path: Path) -> None:
+    """Sorted as text, 0.9.0 comes after 0.10.0 and the older plugin would load."""
+    _, args = shipped_launcher()
+    home, project = tmp_path / "home", tmp_path / "project"
+    project.mkdir()
+    fake_codex_install(home, "0.10.0", REPO)
+    fake_codex_install(home, "0.9.0", decoy_plugin(tmp_path, "old-0.9.0"))
+
+    result = handshake(launch(args, cwd=project, home=home))
+    assert result["result"]["serverInfo"]["name"] == "sia"
+
+
+def test_the_launcher_fails_loudly_and_keeps_stdout_clean(tmp_path: Path) -> None:
+    """With no way to find the plugin it must exit with a reason on stderr, and
+    write nothing to stdout, which the host reads as protocol."""
+    _, args = shipped_launcher()
+    project = tmp_path / "project"
+    project.mkdir()
+    proc = launch(args, cwd=project, home=tmp_path / "empty-home")
+    stdout, stderr = proc.communicate(timeout=10)
+    assert proc.returncode != 0
+    assert stdout == ""
+    assert "cannot locate the plugin root" in stderr
 
 
 # --- feedback tools -------------------------------------------------------
