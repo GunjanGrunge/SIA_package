@@ -2,6 +2,56 @@
 
 All notable changes to the SIA package itself are recorded here.
 
+## [0.4.0] - 2026-09-24
+
+### Added
+
+- **SIA runs as an MCP server,** so every host can install it as a plugin with
+  no `pip install`. `src/sia/mcp_server.py` speaks MCP over stdio using only the
+  standard library — the official Python SDK is itself a pip dependency.
+  Every tool delegates to the CLI, so behaviour and refusals are identical.
+- **Manifests for Claude Code, Codex, Gemini CLI, Kiro and Antigravity:**
+  `.mcp.json`, root `plugin.json` (Agent Plugins schema),
+  `gemini-extension.json`, and `.agents/plugins/marketplace.json` for Codex.
+- **Verified tool annotations.** Read-only labels were checked against a
+  fingerprinted `.sia/`, and a test enforces them.
+
+### Fixed — found by installing into Codex, none of it in Codex's docs
+
+- **Codex silently drops a plugin at its marketplace root** (`"./"`, the layout
+  Claude Code's marketplace uses) and lists zero plugins, with no error. The
+  Codex marketplace now uses a `url` source.
+- **Codex gives an MCP server no way to find its plugin.** Probed directly: no
+  expansion of `${PLUGIN_ROOT}`, `${CLAUDE_PLUGIN_ROOT}` or `$PLUGIN_ROOT` in
+  arguments, no `PLUGIN_*` environment, and the working directory is the
+  user's project. `.mcp.json` now runs a self-locating launcher: the root the
+  host substituted, then the environment, then Codex's plugin cache, highest
+  version first.
+- **Tools with no annotations default to destructive and open-world** under the
+  MCP spec, so Codex required approval even for a read-only status check, and
+  per-server "approve" settings were ignored.
+- `sia_doctor` reported "not initialized yet" as a tool failure, which made an
+  agent stop at its first step. A diagnosis that runs is a result.
+- Skill examples for `record`, `capture`, `rule add` and `preflight` were
+  missing required flags or used flags that do not exist. All documented shapes
+  now run in the test suite.
+
+### Changed
+
+- Skills call the MCP tools first, with the bundled CLI as a fallback.
+  `allowed-tools` was removed: MCP tool names differ per host, so a restriction
+  list cannot be portable and would block the very tools the skills need.
+- `orchestrate run` is not exposed as a tool. Its `--approve-commands` flag is a
+  human gate, and over MCP an agent could pass it to itself.
+
+### Known issues
+
+- Gemini CLI, Kiro and Antigravity are built to their documentation but
+  untested; Gemini and Antigravity were not available to test against.
+- Hosts launch `python3`. On Windows, where often only `python` or `py` exists,
+  the plugin cannot start SIA.
+- The review's High findings (see 0.3.1) are still not re-verified.
+
 ## [0.3.1] - 2026-09-24
 
 ### Added

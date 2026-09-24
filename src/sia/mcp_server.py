@@ -231,6 +231,8 @@ READ_ONLY_TOOLS = frozenset({
 # an existing plan when `replace` is set. Everything else only adds or advances.
 DESTRUCTIVE_TOOLS = frozenset({"sia_orchestrate_configure", "sia_orchestrate_plan"})
 IDEMPOTENT_WRITE_TOOLS = frozenset({"sia_owner"})
+# Tools whose non-zero exit is a finding to report, not a failure to execute.
+REPORT_TOOLS = frozenset({"sia_doctor"})
 
 
 def annotations(name: str) -> dict[str, Any]:
@@ -327,6 +329,11 @@ def call_tool(name: str, arguments: Any) -> tuple[str, bool]:
     stdout, stderr = out.getvalue().strip(), err.getvalue().strip()
     if code == 0:
         return stdout or stderr or "ok", False
+    # `doctor` exits non-zero when any check fails -- including the ordinary
+    # "not initialized yet" before sia_init. The diagnosis itself succeeded, so
+    # report it as a result. Marking it an error made agents stop at step one.
+    if name in REPORT_TOOLS and stdout:
+        return stdout, False
     return stderr or stdout or f"{name} failed with exit code {code}", True
 
 

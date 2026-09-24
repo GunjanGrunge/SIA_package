@@ -215,6 +215,16 @@ def test_tools_labelled_read_only_really_write_nothing(client: Client, project: 
         assert fingerprint(project) == before, f"{name} is labelled read-only but changed .sia/"
 
 
+def test_doctor_on_a_fresh_project_is_a_result_not_an_error(client: Client, project: Path) -> None:
+    """Before sia_init, doctor's checks fail -- which is the expected finding.
+    Reporting it as a tool error made a Codex agent stop at step one."""
+    text, is_error = client.call("sia_doctor", project_root=str(project))
+    assert not is_error, text
+    report = json.loads(text)
+    assert report["ok"] is False
+    assert any(c["name"] == "initialized" and c["ok"] is False for c in report["checks"])
+
+
 # --- the shipped launcher in .mcp.json -------------------------------------
 #
 # Hosts disagree on how an MCP server learns where its plugin lives. Codex
