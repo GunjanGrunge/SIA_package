@@ -2,6 +2,41 @@
 
 All notable changes to the SIA package itself are recorded here.
 
+## [0.6.0] - 2026-09-26
+
+### Added
+
+- **Every subagent gets the project's learned rules.** A `SubagentStart` hook
+  injects active rules into each subagent at spawn, whoever spawns it (SIA's
+  controller, Superpowers, or the user). Previously rules reached only the main
+  session, so a subagent could repeat a mistake the user had already corrected.
+- **SIA composes with installed skill frameworks.** `sia_doctor` now detects
+  frameworks installed as plugins (Superpowers, BMAD) in Claude Code and Codex,
+  not only ones vendored in the repository. When Superpowers is present:
+  its skills author the spec and plan, SIA stays the single dispatcher, and
+  `sia-implementer` / `sia-reviewer` subagents are told at spawn to use its
+  practice skills (test-driven development, systematic debugging,
+  verification). Both agents now have the `Skill` tool.
+- **Tier routing reaches the spawn.** The orchestrate skill tells the
+  controller to pass each operation's `requested_model_id` as the subagent's
+  `model`, and offers `cheap: haiku, current: sonnet, strong: opus` as the
+  Claude Code default. Without this the plan routed to cheap models but every
+  subagent still ran on the expensive default.
+
+### Fixed
+
+- `sia_orchestrate_receipt` refuses a receipt file inside `.sia/`. In a live
+  run the controller wrote its own receipts there, and integration rejected the
+  whole run because it validates every file in that directory. The refusal
+  names a safe location (`sdd/receipts/<operation>.json`).
+
+### Verified
+
+Two live end-to-end orchestrated runs in Claude Code: status `complete`,
+integration recorded, tests passing, the implementer ran on Haiku and the
+reviewer on Sonnet as routed, rules were present in every subagent transcript,
+and the implementer invoked Superpowers' TDD and verification skills.
+
 ## [0.5.0] - 2026-09-26
 
 ### Added

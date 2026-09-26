@@ -217,3 +217,118 @@ def test_garbage_input_never_blocks_the_session() -> None:
     result = subprocess.run([sys.executable, str(HOOK), "stop"], input="not json at all",
                             capture_output=True, text=True)
     assert result.returncode == 0
+
+
+# --- subagents ----------------------------------------------------------------
+
+def test_every_subagent_receives_the_projects_rules(project: Path) -> None:
+    """Subagents start with a fresh context, so rules recalled into the main
+    session never reach them. SubagentStart fires for every spawn, whichever
+    framework launched it."""
+    learn(project, "Keep replies short.", "too long")
+    learn(project, "Never say 'leverage'.", "stop it", forbid=r"\bleverage\b")
+    result = hook("subagent-start", {"cwd": str(project), "hook_event_name": "SubagentStart",
+                                     "agent_type": "superpowers:implementer", "agent_id": "a1"})
+    output = json.loads(result.stdout)["hookSpecificOutput"]
+    assert output["hookEventName"] == "SubagentStart"
+    assert "Keep replies short." in output["additionalContext"]
+    assert "leverage" in output["additionalContext"]
+
+
+def test_a_subagent_is_not_told_to_record_rules(project: Path) -> None:
+    """A subagent never talks to the user, so it has nothing to learn from. With
+    no rules it gets nothing; with rules it gets them, but no instruction to
+    call sia_rule_learn."""
+    empty = hook("subagent-start", {"cwd": str(project)})
+    assert empty.stdout == ""
+    learn(project, "Keep replies short.", "too long")
+    context = json.loads(hook("subagent-start", {"cwd": str(project)}).stdout)["hookSpecificOutput"]["additionalContext"]
+    assert "sia_rule_learn" not in context
+
+
+def test_retired_rules_do_not_reach_subagents(project: Path) -> None:
+    rule = learn(project, "Use American spelling.", "US spelling")
+    sia(project, "rule", "retire", "--id", rule["id"], "--reason", "changed mind")
+    assert hook("subagent-start", {"cwd": str(project)}).stdout == ""
+
+
+# --- frameworks installed as plugins -------------------------------------------
+
+def test_frameworks_installed_as_host_plugins_are_detected(tmp_path: Path) -> None:
+    """A plugin-installed Superpowers leaves no folder in the project, so SIA
+    used to miss it entirely and could not coordinate with it."""
+    sys.path.insert(0, str(REPO / "src"))
+    from sia.core import installed_plugin_frameworks
+
+    home = tmp_path / "home"
+    (home / ".claude" / "plugins").mkdir(parents=True)
+    (home / ".claude" / "plugins" / "installed_plugins.json").write_text(json.dumps(
+        {"version": 2, "plugins": {"superpowers@claude-plugins-official": [], "sia@sia": []}}))
+    (home / ".codex").mkdir()
+    (home / ".codex" / "config.toml").write_text(
+        '[plugins."superpowers@openai-curated"]\nenabled = true\n\n[plugins."bmad-method@bmad"]\nenabled = true\n')
+
+    found = installed_plugin_frameworks(home)
+    assert found["superpowers"] == ["claude-code plugin superpowers@claude-plugins-official",
+                                    "codex plugin superpowers@openai-curated"]
+    assert found["bmad"] == ["codex plugin bmad-method@bmad"]
+    assert "sia" not in found
+
+
+def test_missing_or_broken_plugin_registries_contribute_nothing(tmp_path: Path) -> None:
+    sys.path.insert(0, str(REPO / "src"))
+    from sia.core import installed_plugin_frameworks
+
+    home = tmp_path / "home"
+    (home / ".claude" / "plugins").mkdir(parents=True)
+    (home / ".claude" / "plugins" / "installed_plugins.json").write_text("{broken")
+    assert installed_plugin_frameworks(home) == {}
+    assert installed_plugin_frameworks(tmp_path / "nobody") == {}
+
+
+# --- practice skills for SIA's own subagents ------------------------------------
+
+def _fake_home_with_superpowers(tmp_path: Path) -> Path:
+    home = tmp_path / "home"
+    (home / ".claude" / "plugins").mkdir(parents=True)
+    (home / ".claude" / "plugins" / "installed_plugins.json").write_text(
+        json.dumps({"version": 2, "plugins": {"superpowers@claude-plugins-official": []}}))
+    return home
+
+
+def hook_with_home(event: str, payload: dict, home: Path) -> subprocess.CompletedProcess[str]:
+    import os
+    return subprocess.run([sys.executable, str(HOOK), event], input=json.dumps(payload),
+                          capture_output=True, text=True, encoding="utf-8",
+                          env={**os.environ, "HOME": str(home)})
+
+
+def test_sia_implementers_are_told_which_superpowers_skills_to_use(project: Path, tmp_path: Path) -> None:
+    """A soft 'use relevant skills' instruction was ignored in the first live
+    run; injected guidance, like the rules, was followed. So name them."""
+    home = _fake_home_with_superpowers(tmp_path)
+    out = hook_with_home("subagent-start", {"cwd": str(project), "agent_type": "sia:sia-implementer"}, home)
+    context = json.loads(out.stdout)["hookSpecificOutput"]["additionalContext"]
+    assert "superpowers:test-driven-development" in context
+    assert "declared files" in context, "skills must not widen what the subagent may touch"
+
+
+def test_reviewers_get_the_verification_skill(project: Path, tmp_path: Path) -> None:
+    home = _fake_home_with_superpowers(tmp_path)
+    out = hook_with_home("subagent-start", {"cwd": str(project), "agent_type": "sia:sia-reviewer"}, home)
+    context = json.loads(out.stdout)["hookSpecificOutput"]["additionalContext"]
+    assert "superpowers:verification-before-completion" in context
+    assert "test-driven-development" not in context
+
+
+def test_other_subagents_are_not_told_to_do_tdd(project: Path, tmp_path: Path) -> None:
+    home = _fake_home_with_superpowers(tmp_path)
+    for agent_type in ("Explore", "general-purpose", "superpowers:code-reviewer"):
+        out = hook_with_home("subagent-start", {"cwd": str(project), "agent_type": agent_type}, home)
+        assert "test-driven-development" not in out.stdout, agent_type
+
+
+def test_no_skill_directive_without_superpowers(project: Path, tmp_path: Path) -> None:
+    out = hook_with_home("subagent-start", {"cwd": str(project), "agent_type": "sia:sia-implementer"},
+                         tmp_path / "empty-home")
+    assert out.stdout == ""

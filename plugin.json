@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "sia",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Self-Improving Agents: evidence-gated workflow and cost-aware multi-agent orchestration with durable state, file-ownership safety, and independent review.",
   "author": {
     "name": "GunjanGrunge",

@@ -1,10 +1,14 @@
 {
-  "description": "SIA: recall the rules the user taught this project at every session start, and check what the agent writes against the ones that can be checked.",
+  "description": "SIA: recall the rules the user taught this project at every session start and for every subagent, and check what agents write against the ones that can be checked.",
   "hooks": {
     "SessionStart": [
       {
         "hooks": [
-          { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/sia_hook.py\" session-start", "timeout": 10 }
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/sia_hook.py\" session-start",
+            "timeout": 10
+          }
         ]
       }
     ],
@@ -12,14 +16,33 @@
       {
         "matcher": "Write|Edit|MultiEdit|NotebookEdit|apply_patch",
         "hooks": [
-          { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/sia_hook.py\" post-tool-use", "timeout": 10 }
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/sia_hook.py\" post-tool-use",
+            "timeout": 10
+          }
         ]
       }
     ],
     "Stop": [
       {
         "hooks": [
-          { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/sia_hook.py\" stop", "timeout": 10 }
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/sia_hook.py\" stop",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/sia_hook.py\" subagent-start",
+            "timeout": 10
+          }
         ]
       }
     ]
