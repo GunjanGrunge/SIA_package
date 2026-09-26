@@ -20,6 +20,25 @@ Orchestration is only legal in `orchestrator` mode at the `execution` stage. If
 a tool refuses, read the message: it names the current stage and the remaining
 advances. Use the `sia-start` skill to get there. Do not work around the gate.
 
+## Working alongside other frameworks
+
+`sia_doctor` lists frameworks it finds, including ones installed as plugins
+(e.g. `superpowers`). When one is present, compose with it instead of
+duplicating it:
+
+- **Spec and plan:** use its skills to *author* the artifacts SIA's stages need
+  (Superpowers' brainstorming for the spec, writing-plans for the plan). SIA
+  still gates on them: advance with the written file as evidence.
+- **Execution:** SIA is the **one** dispatcher. Do not also run another
+  framework's subagent-dispatch or plan-execution skill for the same work;
+  two dispatchers would do everything twice and break file ownership.
+- **Inside each task:** subagents may and should use installed practice skills
+  (test-driven development, systematic debugging, verification). The
+  `sia-implementer` and `sia-reviewer` agents are told to.
+
+Every subagent, whoever spawns it, automatically receives the project's learned
+rules when it starts, so corrections the user made earlier are not repeated.
+
 ## Step 1 — configure model tiers
 
 Every operation routes to one of three tiers the user must name explicitly.
@@ -33,6 +52,12 @@ project, e.g. `orchestration.json`. It contains `replace-with-*` placeholders.
 - `cheap` — bounded scans, routine tests, docs, low-risk simple work
 - `current` — normal implementation and review
 - `strong` — high-risk, security, architecture, complex escalation
+
+**This is where the cost saving comes from**, so use IDs the host can actually
+run a subagent on. In Claude Code the subagent tool accepts the aliases
+`haiku`, `sonnet` and `opus`, so a sensible default to offer the user is
+`cheap: haiku`, `current: sonnet`, `strong: opus`. In other hosts, ask which
+models their subagents can use.
 
 Prices are per million tokens and may be `0`, which disables cost estimation but
 keeps token budgets working. Then call `sia_orchestrate_configure` with
@@ -68,8 +93,13 @@ work around that.
 ## Step 4 — dispatch, as the controller
 
 Launch every ready implementer **in parallel** with this host's subagent tool,
-using the `sia-implementer` agent where the host supports named agents, and each
-operation's `requested_model_id` where the host lets you choose a model.
+using the `sia-implementer` agent where the host supports named agents.
+
+**Pass each operation's `requested_model_id` as the subagent's model** (in
+Claude Code, the subagent tool's `model` parameter). Skipping this runs every
+subagent on the expensive default and throws the cost saving away: the plan's
+routing only matters if the spawn honours it. Record the model the subagent
+actually ran on in its receipt.
 
 The controller must not edit task-owned files itself. Brief, dispatch, review,
 integrate, escalate — that separation is what makes the review independent.
@@ -79,10 +109,11 @@ write a non-empty report.
 
 ## Step 5 — ingest receipts truthfully
 
-After each worker, write a receipt JSON file and call
-`sia_orchestrate_receipt` with its path. A receipt cites the plan ID and hash,
-the operation ID, agent identity, requested and actual model, the report path,
-and usage.
+After each worker, write a receipt JSON file **outside `.sia/`** — for example
+`sdd/receipts/<operation>.json` — and call `sia_orchestrate_receipt` with its
+path. SIA stores its own canonical copy inside `.sia/`; never write or edit files
+there yourself. A receipt cites the plan ID and hash, the operation ID, agent
+identity, requested and actual model, the report path, and usage.
 
 **Never fabricate telemetry.** If the host did not expose the actual model or
 token usage, set `actual_model_id` to `null` and leave telemetry empty — SIA

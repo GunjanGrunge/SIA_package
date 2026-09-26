@@ -238,3 +238,25 @@ def test_configure_rejects_the_example_placeholders(tmp_path: Path) -> None:
 
     assert refused.returncode != 0
     assert "placeholder" in refused.stderr
+
+
+def test_a_receipt_file_inside_sia_state_is_refused(tmp_path: Path) -> None:
+    """SIA keeps its own canonical receipts under .sia/ and integration checks
+    every file there. In the first live run the controller wrote its own
+    receipts into that directory and integration rejected the run."""
+    plan = project_at_execution(tmp_path)
+    operation = next(o for o in plan["operations"] if o["operation_id"] == "t1:implement")
+    report = write(tmp_path, "reports/r.md", "a real report\n")
+    receipt = {
+        "schema_version": 1, "plan_id": plan["plan_id"], "plan_hash": plan["plan_hash"],
+        "operation_id": "t1:implement", "status": "complete", "provenance": "native_attested",
+        "host": "claude", "agent_id": "a", "native_run_id": "r",
+        "requested_model_id": operation["requested_model_id"], "actual_model_id": None,
+        "report_path": report, "telemetry": {},
+    }
+    inside = write(tmp_path, ".sia/runs/hand-made-receipt.json", json.dumps(receipt))
+    refused = run(tmp_path, "orchestrate", "receipt", "--file", inside)
+    assert refused.returncode != 0 and "outside .sia/" in refused.stderr
+
+    outside = write(tmp_path, "sdd/receipts/t1-implement.json", json.dumps(receipt))
+    assert run(tmp_path, "orchestrate", "receipt", "--file", outside).returncode == 0
