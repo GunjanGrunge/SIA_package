@@ -9,7 +9,7 @@
       "name": "sia",
       "source": "./",
       "description": "Evidence-gated agent workflow and cost-aware multi-agent orchestration. Routes work across cheap/current/strong model tiers, enforces exact file ownership, and requires independent review before integration.",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "category": "workflow",
       "keywords": [
         "orchestration",

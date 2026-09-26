@@ -1,6 +1,6 @@
 ---
 name: sia-workflow
-description: SIA's workflow contract — evidence-gated stages, file-ownership safety, receipt and telemetry honesty, feedback rules and convergence. Use when working in a project that has a .sia/ directory, when recording a PASS or DEVIATION, when running preflight or convergence, or when deciding whether SIA or another framework owns a stage.
+description: SIA's workflow contract — learning standing rules from the user's corrections, evidence-gated stages, file-ownership safety, telemetry honesty, and convergence. Use when the user corrects your work or states a lasting preference ("don't do X", "always Y", "that's too long", "call it Z"), when working in a project that has a .sia/ directory, when recording a PASS or DEVIATION, when running preflight or convergence, or when deciding whether SIA or another framework owns a stage.
 ---
 
 # The SIA workflow contract
@@ -67,6 +67,45 @@ To hand a stage to another framework, call `sia_owner` with `stage` and `to`
 emits a handoff and launches nothing. Respect that — do not dispatch workers
 behind another owner's back.
 
+## Learning from the user
+
+**Whenever the user corrects your work or states a lasting preference for this
+project, call `sia_rule_learn` straight away**, before carrying on. This is how
+SIA learns. Anything counts, for example:
+
+- "don't use em dashes" / "stop saying *leverage*"
+- "your answers are too long" / "use British spelling"
+- "always write the test first" / "never touch `infra/` without asking me"
+- "call it a *stash*, not a *drive*"
+
+Pass `text` (the rule, phrased as an instruction) and `user_quote` (their exact
+words, kept as evidence). Leave `scope` as `**` unless the preference is about
+particular files, e.g. `infra/**`.
+
+**One call per preference.** If the user states three preferences at once, make
+three calls, each with its own `text`, `user_quote` and (where it applies)
+`forbid`. A merged rule cannot be retired in part: when the user later says
+"em dashes are fine now", retiring a combined rule would silently drop the
+others too.
+
+Only if the rule is **mechanical** — a banned character, word or phrase — also
+pass `forbid` as a regex (`—` for em dashes, `\\bleverage\\b`). SIA then checks
+every file you write and every reply, and pushes back on a violation. Most
+preferences are not mechanical ("keep it short"); omit `forbid` for those.
+
+Every active rule is loaded into each new session automatically, so you do not
+need to re-ask. If a rule is pushed back to you as violated, fix the output and
+carry on; do not argue with the rule. If the user says a rule no longer applies,
+retire it with `sia_rule_retire`.
+
+When you tell the user you changed something to follow a rule, describe it
+without repeating the banned text ("I dropped a word the project avoids").
+Quoting it trips the same check on your reply.
+
+Do not invent rules the user did not state, and do not record one-off
+instructions ("make this button blue") as standing rules. A rule is for
+something they want to hold from now on.
+
 ## Feedback, rules and convergence
 
 Outcomes are recorded, not remembered.
@@ -79,16 +118,8 @@ Outcomes are recorded, not remembered.
   `error_class`.
 - **`sia_convergence`** — deviation rate per error class.
 
-Standing rules are added from the CLI, because each one must cite the event that
-produced it:
-
-```bash
-python3 "${CLAUDE_PLUGIN_ROOT}/cli.py" rule add --text "<standing rule>" \
-  --scope "<glob>" --severity medium --error-class <class> --source-event <event-id>
-```
-
 A rule with no evidence behind it is an opinion, and SIA does not store
-opinions. Falling deviation rates per error class mean the loop is working. A
+opinions — which is why `sia_rule_learn` keeps the user's own words. Falling deviation rates per error class mean the loop is working. A
 class that never converges means the rule is wrong, not that the agent needs
 more discipline.
 

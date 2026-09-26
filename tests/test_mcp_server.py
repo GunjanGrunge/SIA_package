@@ -193,6 +193,8 @@ VALID_ARGS: dict[str, dict[str, Any]] = {
     "sia_owner": {"stage": "plan", "to": "sia"},
     "sia_record": {"outcome": "pass", "signal": "s", "context": "c", "severity": "low"},
     "sia_capture": {"signal": "s", "context": "c", "severity": "low", "error_class": "e"},
+    "sia_rule_learn": {"text": "t", "user_quote": "q"},
+    "sia_rule_retire": {"id": "rule-x", "reason": "r"},
 }
 VALIDATION_ERRORS = ("missing required argument", "unknown argument", "must be", "needs at least")
 
@@ -443,6 +445,40 @@ def test_the_documented_rule_add_command_works(project: Path) -> None:
     added = sia("rule", "add", "--text", "a standing rule", "--scope", "src/**",
                 "--severity", "medium", "--error-class", "probe-class", "--source-event", event_id)
     assert added.returncode == 0, added.stderr
+
+
+# --- learned rules over MCP ------------------------------------------------
+
+def test_rules_can_be_learned_listed_and_retired_over_mcp(client: Client, project: Path) -> None:
+    """Previously `rule add` was CLI-only, so in Codex or Kiro an agent could not
+    turn a correction into a rule at all."""
+    root = str(project)
+    assert not client.call("sia_init", project_root=root, mode="orchestrator")[1]
+
+    text, err = client.call("sia_rule_learn", project_root=root, text="Keep replies short.",
+                            user_quote="your answers are too long")
+    assert not err, text
+    learned = json.loads(text)
+
+    listed = json.loads(client.call("sia_rule_list", project_root=root)[0])
+    assert [r["id"] for r in listed] == [learned["id"]]
+
+    assert not client.call("sia_rule_retire", project_root=root, id=learned["id"], reason="done")[1]
+    assert json.loads(client.call("sia_rule_list", project_root=root)[0]) == []
+
+
+def test_a_gated_preflight_is_a_result_not_an_error(client: Client, project: Path) -> None:
+    """A medium rule makes preflight exit 2 until acknowledged. Reported as a tool
+    error, an agent reads "SIA broke" and may skip the rules it returned."""
+    root = str(project)
+    client.call("sia_init", project_root=root, mode="orchestrator")
+    client.call("sia_rule_learn", project_root=root, text="Ask before touching infra/.",
+                user_quote="never change infra without asking me", scope="infra/**", severity="medium")
+
+    text, err = client.call("sia_preflight", project_root=root, scope=["infra/app.ts"])
+    assert not err, text
+    report = json.loads(text)
+    assert report["clear"] is False and report["relevant_rules"]
 
 
 # --- workflow end to end over MCP ----------------------------------------
