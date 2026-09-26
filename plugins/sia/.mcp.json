@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "sia": {
+      "command": "python3",
+      "args": [
+        "-c",
+        "import glob, os, runpy, sys\ndef usable(p):\n    return bool(p) and '${' not in p and os.path.isfile(os.path.join(p, 'sia_mcp.py'))\ndef version(p):\n    try:\n        return tuple(int(x) for x in os.path.basename(os.path.normpath(p)).split('.'))\n    except ValueError:\n        return ()\nhome = os.path.expanduser('~')\ncandidates = sys.argv[1:] + [os.environ.get(k, '') for k in ('CLAUDE_PLUGIN_ROOT', 'PLUGIN_ROOT')]\ncandidates += sorted(glob.glob(os.path.join(home, '.codex', 'plugins', 'cache', '*', 'sia', '*')), key=version, reverse=True)\nfor depth in range(1, 5):\n    candidates += [os.path.dirname(p) for p in glob.glob(os.path.join(home, '.kiro', 'powers', *['*'] * depth, 'sia_mcp.py'))]\ncandidates += [os.path.join(home, '.gemini', 'extensions', 'sia')]\nroot = next((p for p in candidates if usable(p)), None)\nif root is None:\n    sys.exit('sia: cannot locate the plugin root. argv=%r cwd=%r tried=%r' % (sys.argv[1:], os.getcwd(), candidates))\nrunpy.run_path(os.path.join(root, 'sia_mcp.py'), run_name='__main__')\n",
+        "${CLAUDE_PLUGIN_ROOT}"
+      ]
+    }
+  }
+}

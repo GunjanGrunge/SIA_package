@@ -36,7 +36,7 @@ is the only prerequisite.
 | Host | Install | Status |
 |---|---|---|
 | **Claude Code** | `/plugin marketplace add GunjanGrunge/SIA_package`<br>`/plugin install sia@sia` | ✅ Verified end to end |
-| **Codex** | `codex plugin marketplace add GunjanGrunge/SIA_package`<br>`codex plugin add sia@sia` | ✅ Verified end to end (see note) |
+| **Codex** | Newer Codex: `codex plugin marketplace add GunjanGrunge/SIA_package`, then `codex plugin add sia@sia`<br>Older Codex (e.g. 0.121): `codex marketplace add GunjanGrunge/SIA_package`, then install **sia** from `/plugins` inside Codex | ✅ Verified end to end on 0.136. On 0.121 the marketplace is verified; the `/plugins` install is not yet |
 | **Gemini CLI** | `gemini extensions install https://github.com/GunjanGrunge/SIA_package` | ⚠️ Built to Gemini's docs; not yet tested |
 | **Kiro** | Install a power from the GitHub URL | ⚠️ Not yet tested |
 | **Antigravity** | `agy plugin install <path-to-a-clone>` | ⚠️ Not yet tested |
