@@ -215,6 +215,39 @@ TOOLS: dict[str, ToolSpec] = {
         _schema({}),
         lambda a: ["convergence"],
     ),
+    "sia_rule_learn": (
+        "Call this whenever the user corrects your work or states a lasting preference for this project "
+        "(tone, style, wording, formatting, process, files to avoid -- anything). It becomes a standing rule "
+        "that is loaded into every future session automatically. ONE PREFERENCE PER CALL: if the user states "
+        "several at once, call this once for each, so each can later be retired on its own. If a rule can be "
+        "checked mechanically (a banned character, word or phrase), also pass `forbid` so SIA checks every "
+        "file write and reply; omit it for preferences like 'keep it short'.",
+        _schema({
+            "text": _string("The rule as an instruction, e.g. 'Keep replies under five bullet points.'"),
+            "user_quote": _string("What the user actually said. Kept verbatim as the rule's evidence."),
+            "scope": _string("Glob of files it applies to. '**' means everywhere, including your replies. Default '**'."),
+            "severity": _enum(("low", "medium", "high"), "Default 'low'. Medium and high add an acknowledgement gate to preflight."),
+            "error_class": _string("Short category, e.g. 'style-punctuation', 'tone', 'scope'. Default 'user-preference'."),
+            "forbid": _string("Optional regex of text the rule forbids, e.g. '—' or '\\\\bleverage\\\\b'. Only for rules that are "
+                              "truly mechanical; most preferences should omit it."),
+        }, ("text", "user_quote")),
+        lambda a: ["rule", "learn", "--text", a["text"], "--user-quote", a["user_quote"],
+                   *(["--scope", a["scope"]] if a.get("scope") else []),
+                   *(["--severity", a["severity"]] if a.get("severity") else []),
+                   *(["--error-class", a["error_class"]] if a.get("error_class") else []),
+                   *(["--forbid", a["forbid"]] if a.get("forbid") else [])],
+    ),
+    "sia_rule_list": (
+        "List the project's active standing rules.",
+        _schema({}),
+        lambda a: ["rule", "list"],
+    ),
+    "sia_rule_retire": (
+        "Retire a rule the user no longer wants. It stops applying but stays on record.",
+        _schema({"id": _string("Rule ID, e.g. 'rule-dc0732d357'."),
+                 "reason": _string("Why it is being retired.")}, ("id", "reason")),
+        lambda a: ["rule", "retire", "--id", a["id"], "--reason", a["reason"]],
+    ),
 }
 
 # MCP tool annotations. A tool that declares none is treated by the spec's
@@ -226,13 +259,16 @@ TOOLS: dict[str, ToolSpec] = {
 READ_ONLY_TOOLS = frozenset({
     "sia_doctor", "sia_status", "sia_next", "sia_guide", "sia_preflight",
     "sia_convergence", "sia_orchestrate_example", "sia_orchestrate_status",
+    "sia_rule_list",
 })
 # orchestrate_configure replaces the stored config; orchestrate_plan can discard
 # an existing plan when `replace` is set. Everything else only adds or advances.
 DESTRUCTIVE_TOOLS = frozenset({"sia_orchestrate_configure", "sia_orchestrate_plan"})
 IDEMPOTENT_WRITE_TOOLS = frozenset({"sia_owner"})
 # Tools whose non-zero exit is a finding to report, not a failure to execute.
-REPORT_TOOLS = frozenset({"sia_doctor"})
+# preflight exits 2 while a medium/high rule is unacknowledged; reported as an
+# error, an agent reads "SIA broke" and may skip the very rules it returned.
+REPORT_TOOLS = frozenset({"sia_doctor", "sia_preflight"})
 
 
 def annotations(name: str) -> dict[str, Any]:

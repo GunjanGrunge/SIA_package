@@ -1,7 +1,7 @@
 # SIA (Self-Improving Agents)
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.4.0-00F2FE.svg?style=flat-square" alt="Version 0.4.0" />
+  <img src="https://img.shields.io/badge/version-0.5.0-00F2FE.svg?style=flat-square" alt="Version 0.5.0" />
   <img src="https://img.shields.io/badge/status-active-success.svg?style=flat-square" alt="Status: Active" />
   <img src="https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat-square" alt="License: MIT" />
   <img src="https://img.shields.io/badge/host--agnostic-yes-7B2CBF.svg?style=flat-square" alt="Host-agnostic" />
@@ -103,6 +103,43 @@ This is deliberate: a stage transition needs an artifact on disk, never a claim
 in conversation. Configuring orchestration before reaching `execution` succeeds
 and then refuses to dispatch — the refusal names the stage and the next
 command. Use `advisory` mode if you want SIA's feedback loop without the gates.
+
+## It learns from your corrections
+
+Tell the agent once, and it holds for the project from then on, in every
+future session and not just this one. Any correction or preference counts:
+
+> "Don't use em dashes." · "Your answers are too long." · "Never touch `infra/`
+> without asking." · "Call it a *stash*, not a *drive*." · "Always write the
+> test first."
+
+Three things make that stick:
+
+1. **Capture.** When you correct it, the agent records a standing rule with
+   your exact words as evidence. It makes one rule per preference, so each can
+   be retired on its own later.
+2. **Recall.** At the start of every session (and after `/compact`), SIA loads
+   all active rules into the agent's context automatically. The agent does not
+   have to remember to ask.
+3. **Enforcement.** Rules that can be checked mechanically (a banned character,
+   word or phrase) are checked on every file the agent writes and every reply
+   it gives. A violation is pushed back to the agent, which fixes it.
+
+Most preferences ("keep it short") can't be checked by a machine; recall is
+what makes those stick. Enforcement is the extra safety net for the ones that
+can. In an interactive session you may briefly see a reply before a violation
+in it is corrected: enforcement fixes the result, recall prevents the slip.
+
+Rules can be scoped to parts of the project (`infra/**`) or apply everywhere.
+The agent retires a rule when you say it no longer applies.
+
+**Verified live in Claude Code:** a casual *"quick note: never use em dashes,
+never say 'leverage', keep replies to three sentences"* became three separate
+rules. A brand-new session asked to explain CDNs then replied in two sentences
+with no em dashes. The same question without the rules produced a 2,488-character
+answer with 15 of them. When told to write a banned word into a file or a reply,
+the hooks pushed back and the agent rewrote it. Recall and enforcement use
+host hooks, which Codex also supports but which are **not yet tested there**.
 
 ## Core commands
 

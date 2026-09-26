@@ -2,6 +2,66 @@
 
 All notable changes to the SIA package itself are recorded here.
 
+## [0.5.0] - 2026-09-26
+
+### Added
+
+- **SIA learns from corrections.** Any correction or lasting preference the
+  user states becomes a standing rule for the project, with their exact words
+  kept as evidence:
+  - **Capture:** new `sia_rule_learn` MCP tool (and `sia rule learn`), which
+    records the correction and creates the rule in one step. Rules could
+    previously only be added from the CLI, so agents in Codex or Kiro could not
+    create them at all. Also `sia_rule_list` and `sia_rule_retire`.
+  - **Recall:** a `SessionStart` hook loads every active rule into each new
+    session, and after `/compact`, so rules no longer depend on the agent
+    remembering to run preflight.
+  - **Enforcement:** rules may carry a `forbid` regex. A `PostToolUse` hook
+    checks only the text the agent just wrote (never pre-existing content), and
+    a `Stop` hook checks replies against rules that apply everywhere. Violations
+    are pushed back to the agent. The Stop hook honours `stop_hook_active`, so
+    an unsatisfiable rule cannot loop.
+- **Kiro:** `mcp.json` (Kiro reads it; SIA shipped only `.mcp.json`), and the
+  launcher searches Kiro's powers directory. Both MCP configs are generated
+  from `tools/gen_mcp_config.py`, and a test fails if they drift.
+
+### Fixed
+
+- **Windows:** piped stdin was decoded with the legacy code page, so a project
+  at `...\José_日本` was reported missing, and every protocol line ended in
+  `\r\n`. Found by running under real Windows Python; both streams are now
+  UTF-8 with `\n`.
+- `sia_preflight` reported an unacknowledged medium or high rule as a tool
+  error, so an agent could read "SIA broke" and skip the rules it returned.
+- Guidance to make one rule per preference lives in the `sia_rule_learn` tool
+  description itself: a live test showed agents call the tool without loading
+  the skill, and merged three preferences into one rule.
+
+### Security
+
+- The MCP launcher never considers its working directory. Codex starts the
+  server with the working directory set to the user's project, so trusting it
+  would have executed any file named `sia_mcp.py` in an untrusted repository.
+
+### Verified live in Claude Code
+
+- A casual "never use em dashes, never say 'leverage', keep replies to three
+  sentences" became three separate rules, each with the right check.
+- A fresh session answered a CDN question in two sentences with no em dashes.
+  The same question without the rules produced 2,488 characters and 15 em
+  dashes.
+- Asked to put banned text in a reply and in a file, the Stop and PostToolUse
+  hooks each pushed back (confirmed in Claude Code's debug log) and the agent
+  rewrote them.
+
+### Known issues
+
+- Recall and enforcement hooks ship for Codex, which supports hooks, but are
+  untested there. Kiro uses its own hook system, so it gets capture (the MCP
+  tool) but not automatic recall or enforcement yet.
+- Kiro's agent path remains untested: the Kiro account hit its monthly usage
+  limit before a session could run.
+
 ## [0.4.0] - 2026-09-24
 
 ### Added

@@ -69,6 +69,15 @@ def parser() -> argparse.ArgumentParser:
     add_rule.add_argument("--severity", required=True, choices=("low", "medium", "high"))
     add_rule.add_argument("--error-class", required=True)
     add_rule.add_argument("--source-event", required=True)
+    add_rule.add_argument("--forbid", help="regex the rule forbids; makes the rule mechanically enforced")
+    learn = rule.add_parser("learn", help="turn a user's correction or preference into a standing rule")
+    learn.add_argument("--text", required=True, help="the rule, stated as an instruction")
+    learn.add_argument("--user-quote", required=True, help="what the user actually said; kept as evidence")
+    learn.add_argument("--scope", default="**", help="glob of files it applies to; ** means everywhere, replies included")
+    learn.add_argument("--severity", default="low", choices=("low", "medium", "high"))
+    learn.add_argument("--error-class", default="user-preference")
+    learn.add_argument("--forbid", help="regex the rule forbids; makes the rule mechanically enforced")
+    rule.add_parser("list", help="list active rules")
     retire = rule.add_parser("retire", help="retire, but do not erase, a rule")
     retire.add_argument("--id", required=True)
     retire.add_argument("--reason", required=True)
@@ -161,7 +170,15 @@ def main(argv: list[str] | None = None) -> int:
             return 0 if clear else 2
         elif args.command == "rule":
             if args.rule_command == "add":
-                result = project.add_rule(args.text, args.scope, args.severity, args.error_class, args.source_event)
+                result = project.add_rule(
+                    args.text, args.scope, args.severity, args.error_class, args.source_event, args.forbid
+                )
+            elif args.rule_command == "learn":
+                result = project.learn_rule(
+                    args.text, args.user_quote, args.scope, args.severity, args.error_class, args.forbid
+                )
+            elif args.rule_command == "list":
+                result = project.active_rules()
             else:
                 result = project.retire_rule(args.id, args.reason)
         elif args.command == "adapter":

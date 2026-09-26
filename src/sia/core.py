@@ -427,11 +427,29 @@ class Project:
         }
 
     @state_locked
-    def add_rule(self, text: str, scope: str, severity: str, error_class: str, source_event: str) -> dict[str, Any]:
+    def add_rule(
+        self,
+        text: str,
+        scope: str,
+        severity: str,
+        error_class: str,
+        source_event: str,
+        forbid: str | None = None,
+    ) -> dict[str, Any]:
         events = self.events()
         source = next((event for event in events if event.get("id") == source_event), None)
         if source is None:
             raise SiaError(f"source event not found: {source_event}")
+        if forbid is not None:
+            # A rule that can be checked mechanically is enforced by hooks on
+            # every file write and reply. Reject a bad pattern now: a regex
+            # that fails later would silently turn enforcement off.
+            try:
+                re.compile(forbid)
+            except re.error as exc:
+                raise SiaError(f"forbid is not a valid regular expression: {exc}") from exc
+            if re.fullmatch(forbid, ""):
+                raise SiaError("forbid must not match empty text; it would flag everything")
         rules = _read_json(self.rules_path, [])
         rule = {
             "id": "rule-" + uuid.uuid4().hex[:10],
@@ -444,9 +462,40 @@ class Project:
             "introduced_at": utc_now(),
             "status": "active",
         }
+        if forbid is not None:
+            rule["forbid"] = forbid
         rules.append(rule)
         _write_json(self.rules_path, rules)
         return rule
+
+    def learn_rule(
+        self,
+        text: str,
+        user_quote: str,
+        scope: str = "**",
+        severity: str = "low",
+        error_class: str = "user-preference",
+        forbid: str | None = None,
+    ) -> dict[str, Any]:
+        """Turn a user's correction into a standing rule in one step.
+
+        Records the correction as a DEVIATION event -- the user's own words are
+        the rule's evidence -- and adds a rule citing it. Doing both here, rather
+        than asking an agent to call capture and then rule-add with the event
+        ID, removes the half-finished case where the correction is logged but
+        never becomes a rule.
+
+        Preferences default to severity "low": they apply everywhere without
+        the acknowledgement gate that medium and high rules carry.
+        """
+        event = self.record_event(
+            "deviation", "user-correction", user_quote, severity, error_class
+        )
+        return self.add_rule(text, scope, severity, error_class, event["id"], forbid)
+
+    def active_rules(self) -> list[dict[str, Any]]:
+        self.require_initialized()
+        return [rule for rule in _read_json(self.rules_path, []) if rule.get("status") == "active"]
 
     @state_locked
     def retire_rule(self, rule_id: str, reason: str) -> dict[str, Any]:
