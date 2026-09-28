@@ -58,6 +58,39 @@ FRAMEWORK_MARKERS = {
 }
 
 
+# Frameworks worth coordinating with, matched against installed plugin names.
+PLUGIN_FRAMEWORKS = ("superpowers", "bmad")
+
+
+def installed_plugin_frameworks(home: Path | None = None) -> dict[str, list[str]]:
+    """Frameworks installed as host plugins, which leave no folder in the project.
+
+    Project-folder markers alone missed a plugin-installed Superpowers entirely,
+    so SIA could not coordinate with it. Reads each host's own registry:
+    Claude Code's installed_plugins.json and Codex's config.toml. Read-only and
+    tolerant: a missing or malformed registry simply contributes nothing.
+    """
+    home = home if home is not None else Path(os.path.expanduser("~"))
+    plugin_ids: list[tuple[str, str]] = []
+    try:
+        registry = json.loads((home / ".claude" / "plugins" / "installed_plugins.json").read_text(encoding="utf-8"))
+        plugin_ids += [("claude-code plugin", pid) for pid in (registry.get("plugins") or {})]
+    except (OSError, ValueError, AttributeError):
+        pass
+    try:
+        config = (home / ".codex" / "config.toml").read_text(encoding="utf-8")
+        plugin_ids += [("codex plugin", pid) for pid in re.findall(r'^\[plugins\."([^"]+)"\]', config, re.MULTILINE)]
+    except OSError:
+        pass
+    found: dict[str, list[str]] = {}
+    for host, plugin_id in plugin_ids:
+        name = plugin_id.split("@", 1)[0].lower()
+        for framework in PLUGIN_FRAMEWORKS:
+            if framework in name:
+                found.setdefault(framework, []).append(f"{host} {plugin_id}")
+    return found
+
+
 def execution_gate_message(action: str, config: dict[str, Any], state: dict[str, Any]) -> str:
     """Explain an execution-stage refusal AND name the command that fixes it.
 
@@ -197,6 +230,8 @@ class Project:
             paths = [marker for marker in markers if (self.root / marker).exists()]
             if paths:
                 found[name] = paths
+        for name, sources in installed_plugin_frameworks().items():
+            found.setdefault(name, []).extend(sources)
         return found
 
     @state_locked
@@ -865,6 +900,22 @@ class Project:
     def apply_orchestration_receipt(self, raw: Any, source_path: Path | None = None) -> dict[str, Any]:
         if not isinstance(raw, dict):
             raise SiaError("receipt must be a JSON object")
+        if source_path is not None:
+            # SIA writes its own canonical copy of every receipt under .sia/, and
+            # integration validates every file it finds there. In the first live
+            # end-to-end run the controller wrote its hand-made receipts into
+            # that directory too; integration then rejected the whole run over
+            # the stray files. Refuse at the source, where the fix is obvious.
+            try:
+                source_path.resolve().relative_to(self.sia.resolve())
+            except ValueError:
+                pass
+            else:
+                raise SiaError(
+                    "write the receipt outside .sia/, for example sdd/receipts/<operation>.json. "
+                    "SIA keeps its own canonical copy in .sia/, and a hand-written file there "
+                    "makes integration reject the run."
+                )
         config, state = self.require_initialized()
         orchestration = state.get("orchestration")
         if not isinstance(orchestration, dict):

@@ -7,6 +7,9 @@ without relying on the agent to remember to ask.
 
   session-start   Inject every active rule into the new session's context.
                   Also fires after /compact, so rules survive compaction.
+  subagent-start  Inject the same rules into every subagent, whichever
+                  framework spawned it. Subagents start with a fresh
+                  context and would otherwise never see them.
   post-tool-use   After a file write or edit, check ONLY the text the agent
                   just wrote against rules that carry a ``forbid`` pattern.
                   A violation exits 2, which hosts feed back to the agent.
@@ -132,6 +135,91 @@ def session_start(payload: dict[str, Any]) -> dict[str, Any] | None:
         return None  # not a SIA project: say nothing
     text = recall_text(load_active_rules(root))
     return {"hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": text}}
+
+
+def subagent_recall_text(rules: list[dict[str, Any]]) -> str:
+    lines = [
+        "The user has set standing rules for this project. You did not see them give these "
+        "corrections, but they apply to your work exactly as if they had told you directly:",
+    ]
+    for rule in rules:
+        where = "everywhere, including anything you report back" if applies_everywhere(rule) else f"files matching {rule.get('scope')}"
+        enforced = " (automatically checked)" if rule.get("forbid") else ""
+        lines.append(f"- {rule['text']} [applies to {where}{enforced}]")
+    return "\n".join(lines)
+
+
+def subagent_start(payload: dict[str, Any]) -> dict[str, Any] | None:
+    """Give every subagent the project's rules, whichever framework spawned it.
+
+    A subagent starts with a fresh context: rules recalled into the main
+    session at SessionStart never reach it, so without this a subagent repeats
+    exactly the mistakes the user already corrected. SubagentStart fires for
+    every spawn -- SIA's own implementers, Superpowers' dispatcher, anything --
+    so the lessons follow the work rather than one framework.
+
+    Unlike session_start, no rules means no output: a subagent never talks to
+    the user, so it has nothing to learn and must not be told to record rules.
+
+    Verified in Claude Code with a probe: context returned here reached the
+    subagent and was invisible to the parent.
+    """
+    root = find_project_root(Path(payload.get("cwd") or "."))
+    if root is None:
+        return None
+    parts = []
+    rules = load_active_rules(root)
+    if rules:
+        parts.append(subagent_recall_text(rules))
+    directive = practice_skill_directive(payload.get("agent_type") or "")
+    if directive:
+        parts.append(directive)
+    if not parts:
+        return None
+    return {"hookSpecificOutput": {"hookEventName": "SubagentStart",
+                                   "additionalContext": "\n\n".join(parts)}}
+
+
+def _is_sia_agent(agent_type: str, role: str) -> bool:
+    return agent_type == role or agent_type.endswith(":" + role)
+
+
+def practice_skill_directive(agent_type: str) -> str | None:
+    """Tell SIA's own subagents which installed practice skills to use.
+
+    In the first live end-to-end run the implementer and reviewer had the Skill
+    tool and an instruction to "use relevant installed skills", and invoked
+    none. The learned rules, injected the same way as this, were followed
+    12 of 12 times. So when Superpowers is installed, name the skills outright.
+
+    Only SIA's implementer and reviewer get this. Other subagents -- a search
+    agent, another framework's workers -- must not be told to do test-driven
+    development.
+    """
+    if not (_is_sia_agent(agent_type, "sia-implementer") or _is_sia_agent(agent_type, "sia-reviewer")):
+        return None
+    try:
+        from .core import installed_plugin_frameworks
+        installed = installed_plugin_frameworks()
+    except Exception:
+        return None
+    if "superpowers" not in installed:
+        return None
+    if _is_sia_agent(agent_type, "sia-implementer"):
+        return (
+            "Superpowers is installed in this project's host. Use its practice skills for this task:\n"
+            "- Before writing any code, invoke the superpowers:test-driven-development skill and follow it.\n"
+            "- If a test fails for a reason you do not understand, invoke superpowers:systematic-debugging.\n"
+            "- Before you report back, invoke superpowers:verification-before-completion.\n"
+            "These govern how you work. They never widen what you may touch: stay inside your declared "
+            "files, and do not dispatch subagents of your own."
+        )
+    return (
+        "Superpowers is installed in this project's host. Invoke the "
+        "superpowers:verification-before-completion skill and apply it to every claim in the "
+        "implementer's report: accept nothing you have not checked yourself. You still only report "
+        "findings; you do not fix them."
+    )
 
 
 # --- post tool use: check what was just written -------------------------------
@@ -296,6 +384,11 @@ def main(argv: list[str], stdin: TextIO, stdout: TextIO, stderr: TextIO) -> int:
             return 0
         if event == "session-start":
             result = session_start(payload)
+            if result:
+                stdout.write(json.dumps(result))
+            return 0
+        if event == "subagent-start":
+            result = subagent_start(payload)
             if result:
                 stdout.write(json.dumps(result))
             return 0
