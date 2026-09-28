@@ -248,6 +248,46 @@ TOOLS: dict[str, ToolSpec] = {
                  "reason": _string("Why it is being retired.")}, ("id", "reason")),
         lambda a: ["rule", "retire", "--id", a["id"], "--reason", a["reason"]],
     ),
+    "sia_skill_context": (
+        "Start here before writing project skills. Returns the project's requirement sources (spec, plan, "
+        "intake, agent instructions), its dependencies and layout, the skills and frameworks already installed, "
+        "and the active rules. Project skills come from what the requirements call for, never from a guess.",
+        _schema({}),
+        lambda a: ["skill", "context"],
+    ),
+    "sia_skill_write": (
+        "Write or update ONE project skill where Claude Code (.claude/skills) and Codex (.agents/skills) discover "
+        "it, so the main agent, every subagent and collaborating plugins can use it. Write one per distinct "
+        "capability the project's requirements call for that no existing skill covers. Each skill must cite, "
+        "verbatim, the requirement text it serves; SIA checks the quote is in a requirement source and refuses "
+        "otherwise. The body is the skill's instructions: ground it in this project's real commands, paths and "
+        "conventions, and point to installed skills (e.g. superpowers:test-driven-development) instead of "
+        "repeating them. Learned rules are appended and kept current automatically.",
+        _schema({
+            "name": _string("kebab-case skill name, e.g. 'loss-monitoring'."),
+            "description": _string("What the skill does and 'Use when ...' it should trigger. Max 1024 chars."),
+            "body": _string("Markdown instructions: steps, exact commands, files, checks, definition of done."),
+            "requirements": {
+                "type": "array", "minItems": 1,
+                "items": {"type": "object", "properties": {"source": {"type": "string"}, "quote": {"type": "string"}},
+                          "required": ["source", "quote"]},
+                "description": "Requirements this skill serves: a requirement-source path and a verbatim quote from it.",
+            },
+            "paths": _string_list("Globs of files the skill applies to (selects which rules it carries). Default ['**'].", min_items=0),
+            "hosts": _string_list("Where to install: 'claude', 'codex'. Default both.", min_items=0),
+        }, ("name", "description", "body", "requirements")),
+        lambda a: ["skill", "write", "--spec-json", json.dumps({k: v for k, v in a.items() if k != "project_root"})],
+    ),
+    "sia_skill_list": (
+        "List the project skills SIA generated, with the requirements each one serves.",
+        _schema({}),
+        lambda a: ["skill", "list"],
+    ),
+    "sia_skill_retire": (
+        "Remove a SIA-generated project skill the project no longer needs. Hand-edited copies are kept.",
+        _schema({"name": _string("Skill name."), "reason": _string("Why it is no longer needed.")}, ("name", "reason")),
+        lambda a: ["skill", "retire", "--name", a["name"], "--reason", a["reason"]],
+    ),
 }
 
 # MCP tool annotations. A tool that declares none is treated by the spec's
@@ -259,11 +299,12 @@ TOOLS: dict[str, ToolSpec] = {
 READ_ONLY_TOOLS = frozenset({
     "sia_doctor", "sia_status", "sia_next", "sia_guide", "sia_preflight",
     "sia_convergence", "sia_orchestrate_example", "sia_orchestrate_status",
-    "sia_rule_list",
+    "sia_rule_list", "sia_skill_context", "sia_skill_list",
 })
 # orchestrate_configure replaces the stored config; orchestrate_plan can discard
 # an existing plan when `replace` is set. Everything else only adds or advances.
-DESTRUCTIVE_TOOLS = frozenset({"sia_orchestrate_configure", "sia_orchestrate_plan"})
+# skill_retire deletes generated SKILL.md files.
+DESTRUCTIVE_TOOLS = frozenset({"sia_orchestrate_configure", "sia_orchestrate_plan", "sia_skill_retire"})
 IDEMPOTENT_WRITE_TOOLS = frozenset({"sia_owner"})
 # Tools whose non-zero exit is a finding to report, not a failure to execute.
 # preflight exits 2 while a medium/high rule is unacknowledged; reported as an
@@ -307,6 +348,11 @@ def _validate_arguments(schema: dict[str, Any], args: Any) -> str | None:
                 return f"{key} must be a non-empty string"
             if "enum" in spec and value not in spec["enum"]:
                 return f"{key} must be one of: {', '.join(spec['enum'])}"
+        elif kind == "array" and spec.get("items", {}).get("type") == "object":
+            if not isinstance(value, list) or not all(isinstance(v, dict) for v in value):
+                return f"{key} must be an array of objects"
+            if len(value) < spec.get("minItems", 0):
+                return f"{key} needs at least {spec['minItems']} item(s)"
         elif kind == "array":
             if not isinstance(value, list) or not all(isinstance(v, str) and v.strip() for v in value):
                 return f"{key} must be an array of non-empty strings"

@@ -2,6 +2,79 @@
 
 All notable changes to the SIA package itself are recorded here.
 
+## [0.7.0] - 2026-09-28
+
+### Added
+
+- **SIA writes the skills your project needs.** At the `skills` stage, new
+  tools `sia_skill_context` and `sia_skill_write` (CLI: `sia skill context |
+  write | list | retire`) turn the project's requirements into skills,
+  installed where hosts discover them: `.claude/skills/` for Claude Code and
+  `.agents/skills/` for Codex. The main agent, every subagent and collaborating
+  plugins can all use them.
+  - **Grounded, not guessed:** every skill must cite, verbatim, the requirement
+    it serves from the recorded intake, spec, project-instructions or plan
+    evidence, or from AGENTS.md / CLAUDE.md. SIA refuses a skill it cannot
+    trace. There is no built-in catalog of domains; dependencies inform *how*,
+    never *what*.
+  - **Complements what is installed:** context lists existing project skills
+    and installed frameworks, so skills point to Superpowers instead of
+    repeating it.
+  - **Keeps improving:** each skill carries the learned rules whose scope
+    overlaps its paths, re-rendered whenever a rule is learned or retired.
+  - **Safe:** never overwrites a skill SIA did not write, stops updating one
+    edited by hand, refuses text that looks like a credential, and regenerates
+    `sdd/skill-manifest.md` as the stage's evidence.
+- Subagents are told at spawn which project skills exist, as a required first
+  step.
+
+### Verified
+
+Live in Claude Code on a churn-model project whose spec asks for data
+profiling, loss logging with early stopping, and F1-gated evaluation, and fixes
+the hyperparameters, while `requirements.txt` includes `optuna`. From a neutral
+"complete the current stage" prompt the agent wrote exactly three skills, one
+per spec section, and **no** hyperparameter skill, citing the spec. A learned
+rule appeared in every skill immediately. A Haiku subagent invoked the project
+skill after the directive was made a required first step (with softer wording
+it saw the list and skipped it). The first run also surfaced a manifest bug
+with multi-line quotes, now fixed with a regression test.
+
+## [0.6.0] - 2026-09-26
+
+### Added
+
+- **Every subagent gets the project's learned rules.** A `SubagentStart` hook
+  injects active rules into each subagent at spawn, whoever spawns it (SIA's
+  controller, Superpowers, or the user). Previously rules reached only the main
+  session, so a subagent could repeat a mistake the user had already corrected.
+- **SIA composes with installed skill frameworks.** `sia_doctor` now detects
+  frameworks installed as plugins (Superpowers, BMAD) in Claude Code and Codex,
+  not only ones vendored in the repository. When Superpowers is present:
+  its skills author the spec and plan, SIA stays the single dispatcher, and
+  `sia-implementer` / `sia-reviewer` subagents are told at spawn to use its
+  practice skills (test-driven development, systematic debugging,
+  verification). Both agents now have the `Skill` tool.
+- **Tier routing reaches the spawn.** The orchestrate skill tells the
+  controller to pass each operation's `requested_model_id` as the subagent's
+  `model`, and offers `cheap: haiku, current: sonnet, strong: opus` as the
+  Claude Code default. Without this the plan routed to cheap models but every
+  subagent still ran on the expensive default.
+
+### Fixed
+
+- `sia_orchestrate_receipt` refuses a receipt file inside `.sia/`. In a live
+  run the controller wrote its own receipts there, and integration rejected the
+  whole run because it validates every file in that directory. The refusal
+  names a safe location (`sdd/receipts/<operation>.json`).
+
+### Verified
+
+Two live end-to-end orchestrated runs in Claude Code: status `complete`,
+integration recorded, tests passing, the implementer ran on Haiku and the
+reviewer on Sonnet as routed, rules were present in every subagent transcript,
+and the implementer invoked Superpowers' TDD and verification skills.
+
 ## [0.5.0] - 2026-09-26
 
 ### Added

@@ -1,60 +1,85 @@
 # Writing Project-Specific Skills
 
-Generate these only after Intake, the approved spec, and the project's own
-agent instructions exist. A project skill is a thin, evidence-derived operating
-contract; it is not a copy of SIA's generic guides.
+A project-specific skill teaches the agent, its subagents and any collaborating plugin
+how to do one kind of work **this project's requirements call for**, using this
+project's real commands, paths and conventions. SIA writes them; the user never
+designs the pack by hand. They are not copies of SIA's generic guides, and they
+are never generated from a catalog: a skill exists because a requirement asks
+for the capability.
 
 ## When To Generate
 
-Generate or refresh skills after the project contract changes. Never infer a
-host or install an adapter without the user's choice. In coexistence mode,
-identify BMAD, Superpowers, and other agent tooling and leave their files and
-workflow ownership untouched.
+At the `skills` stage, after intake, the approved spec and the project's own
+agent instructions exist. Refresh them when the plan or spec changes: update a
+skill whose requirement changed, write one for a new requirement, retire one
+whose requirement was dropped.
+
+1. Call `sia_skill_context` (`sia skill context`). It returns the requirement
+   sources (intake, spec, project-instructions and plan evidence, plus
+   AGENTS.md/CLAUDE.md/AGENT.md/GEMINI.md), dependencies and layout, the skills
+   and frameworks already installed, and the active rules.
+2. Read every requirement source. List the distinct capabilities the
+   requirements demand. For example, a spec that says "track training loss and
+   validation accuracy after every epoch" demands a loss-and-accuracy
+   monitoring skill; a spec for a REST service that says "every endpoint is
+   rate limited" demands a rate-limiting skill. Different projects produce
+   entirely different packs.
+3. Drop any capability an existing project skill or installed framework already
+   covers. Superpowers already covers TDD, debugging and verification: a
+   project skill points to those (`superpowers:test-driven-development`)
+   instead of restating them.
+4. Write each remaining capability with `sia_skill_write`, one call per skill.
+5. Advance with `sdd/skill-manifest.md` as evidence.
+
+Dependencies and layout tell you *how* to do the work (the real test command,
+the real metrics file), never *what* work to do. A dependency on a library is
+not a requirement.
 
 ## Output Locations
 
-Keep the canonical project skill under `skills/<project-slug>-sia/SKILL.md`.
-Install host discovery copies only through `sia adapter install --host <host>`.
-Record every canonical skill and adapter in `sdd/skill-manifest.md`. Never
-replace an existing host file: use a namespaced SIA path or stop on collision.
+`sia_skill_write` installs each skill where hosts discover project skills:
+`.claude/skills/<name>/SKILL.md` (Claude Code) and
+`.agents/skills/<name>/SKILL.md` (Codex); pass `hosts` to limit it. SIA keeps
+a registry in `.sia/skills.json` and regenerates `sdd/skill-manifest.md`.
+
+SIA never overwrites a skill it did not write, and stops updating a SIA skill
+the user edited by hand. Choose another name on collision.
 
 ## Required Contents
 
-Every project-specific skill must state:
+Each call supplies:
 
-- its project goal and links to the approved spec and plan;
-- the selected SIA mode: `advisory`, `planning`, or `orchestrator`;
-- the artifact ownership boundary between SIA and other frameworks;
-- the exact validation commands and definition of done;
-- applicable accumulated feedback rules and their provenance;
-- the Execution gate: prepare a task, dispatch a real host-native subagent,
-  record host evidence, obtain a separate review, and complete integration;
-- `sia next --json` as the durable re-entry point after a new session or
-  context compaction.
+- `name`: kebab-case, specific (`loss-monitoring`, not `ml`);
+- `description`: what it does and `Use when ...`, so hosts trigger it;
+- `body`: the instructions, meaning steps, exact commands, files to read or
+  write, checks, and the definition of done for this capability;
+- `requirements`: one or more `{source, quote}` pairs. The quote must appear
+  verbatim (line breaks aside) in a requirement source, or SIA refuses the
+  skill;
+- `paths`: globs the skill applies to, which selects the standing rules it
+  carries.
+
+SIA appends a "Why this skill exists" section with the cited requirements and a
+standing-rules block. The rules block is re-rendered whenever a rule is learned
+or retired, so every skill keeps up with the user's corrections. The
+Execution gate is unchanged: skills guide the work inside a task; they never replace
+prepare, dispatch, independent review and integration. `sia next --json`
+remains the re-entry point after a new session or compaction.
 
 Do not put secrets, provider tokens, or a duplicated generic SIA pipeline in a
-skill.
+skill. SIA refuses text that looks like a credential.
 
 ## Skill Manifest
 
-Write `sdd/skill-manifest.md` with one row per skill or adapter: logical name,
-path, host, evidence sources, generated timestamp, SIA mode, and owner. Include
-competing frameworks discovered at Intake and the stages they own. This makes
-parallel plugin use explicit rather than relying on whichever prompt loaded
-last.
+`sdd/skill-manifest.md` is generated: one row per skill with status, version,
+hosts, paths, the requirement it serves and when it was updated, plus the
+installed frameworks the pack complements. It is the evidence for advancing
+the `skills` stage and makes parallel plugin use explicit rather than relying
+on whichever prompt loaded last.
 
 ## Modular Skill Decomposition And Attribution
 
-Generate one core operating skill plus only evidence-justified feature/domain
-skills. Goal-first or conversational intake limits skill generation to the
-confirmed goal and evidence actually read; do not invent a broad pack. Refresh
-execution-facing skills after the approved plan changes. Every skill records
-its purpose, evidence, runtime mode, stage owner, relevant standing rules,
-exact checks, and attribution policy. Host discovery copies are selected by the
-user/host, namespaced, collision-safe, and distinct from the generic SIA
-launcher adapter.
-
-Extend the manifest with each canonical path, host copy, purpose, evidence,
-generation reason/time, owner, competing framework stages, attribution mode,
-README path, and reviewer note. Prefer a small modular pack over a monolithic
-context dump.
+Prefer a small modular pack, one skill per capability, over a monolithic
+context dump. Every subagent is told at spawn which project skills exist, so a
+skill that is too broad gets loaded for work it does not fit. Record
+attribution per `guides/attribution.md`.

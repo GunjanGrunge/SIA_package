@@ -42,7 +42,7 @@ STAGE_ACTIONS = {
     "intake": "Inspect requirements and existing tooling; confirm project type, boundaries, and stage ownership.",
     "spec": "Author and obtain approval for the project spec under docs/specs/.",
     "project-instructions": "Create or update the project's own agent instructions without replacing competing framework files.",
-    "skills": "Generate evidence-derived project skills and sdd/skill-manifest.md.",
+    "skills": "Call sia_skill_context, then write one project skill per capability the requirements call for with sia_skill_write (each cites the requirement it serves). Advance with sdd/skill-manifest.md as evidence.",
     "plan": "Write an approved plan with exact file ownership and interfaces.",
     "execution": "Prepare tasks, dispatch real native host subagents, independently review them, then record integration evidence.",
     "feedback": "Record PASS/DEVIATION outcomes, run preflight, and review convergence before the next proposal.",
@@ -56,6 +56,39 @@ FRAMEWORK_MARKERS = {
     "gemini-cli": (".gemini",),
     "antigravity": (".antigravity",),
 }
+
+
+# Frameworks worth coordinating with, matched against installed plugin names.
+PLUGIN_FRAMEWORKS = ("superpowers", "bmad")
+
+
+def installed_plugin_frameworks(home: Path | None = None) -> dict[str, list[str]]:
+    """Frameworks installed as host plugins, which leave no folder in the project.
+
+    Project-folder markers alone missed a plugin-installed Superpowers entirely,
+    so SIA could not coordinate with it. Reads each host's own registry:
+    Claude Code's installed_plugins.json and Codex's config.toml. Read-only and
+    tolerant: a missing or malformed registry simply contributes nothing.
+    """
+    home = home if home is not None else Path(os.path.expanduser("~"))
+    plugin_ids: list[tuple[str, str]] = []
+    try:
+        registry = json.loads((home / ".claude" / "plugins" / "installed_plugins.json").read_text(encoding="utf-8"))
+        plugin_ids += [("claude-code plugin", pid) for pid in (registry.get("plugins") or {})]
+    except (OSError, ValueError, AttributeError):
+        pass
+    try:
+        config = (home / ".codex" / "config.toml").read_text(encoding="utf-8")
+        plugin_ids += [("codex plugin", pid) for pid in re.findall(r'^\[plugins\."([^"]+)"\]', config, re.MULTILINE)]
+    except OSError:
+        pass
+    found: dict[str, list[str]] = {}
+    for host, plugin_id in plugin_ids:
+        name = plugin_id.split("@", 1)[0].lower()
+        for framework in PLUGIN_FRAMEWORKS:
+            if framework in name:
+                found.setdefault(framework, []).append(f"{host} {plugin_id}")
+    return found
 
 
 def execution_gate_message(action: str, config: dict[str, Any], state: dict[str, Any]) -> str:
@@ -197,6 +230,8 @@ class Project:
             paths = [marker for marker in markers if (self.root / marker).exists()]
             if paths:
                 found[name] = paths
+        for name, sources in installed_plugin_frameworks().items():
+            found.setdefault(name, []).extend(sources)
         return found
 
     @state_locked
@@ -280,6 +315,8 @@ class Project:
                 "sia integration --evidence <file>",
                 "sia advance",
             ]
+        if stage == "skills":
+            return ["sia skill context", "sia skill write --file <skill.json>", "sia advance --evidence sdd/skill-manifest.md"]
         if stage == "feedback":
             return ["sia record --outcome pass ...", "sia capture ...", "sia preflight --scope <path>", "sia convergence", "sia advance"]
         return ["sia advance --evidence <artifact> [...]"]
@@ -426,8 +463,18 @@ class Project:
             },
         }
 
+    def add_rule(self, *args, **kwargs) -> dict[str, Any]:
+        rule = self._add_rule(*args, **kwargs)
+        self._refresh_skill_rules()
+        return rule
+
+    def _refresh_skill_rules(self) -> None:
+        """Carry rule changes into every SIA-generated project skill."""
+        from .project_skills import refresh_rules
+        refresh_rules(self)
+
     @state_locked
-    def add_rule(
+    def _add_rule(
         self,
         text: str,
         scope: str,
@@ -497,8 +544,13 @@ class Project:
         self.require_initialized()
         return [rule for rule in _read_json(self.rules_path, []) if rule.get("status") == "active"]
 
-    @state_locked
     def retire_rule(self, rule_id: str, reason: str) -> dict[str, Any]:
+        rule = self._retire_rule(rule_id, reason)
+        self._refresh_skill_rules()
+        return rule
+
+    @state_locked
+    def _retire_rule(self, rule_id: str, reason: str) -> dict[str, Any]:
         self.require_initialized()
         rules = _read_json(self.rules_path, [])
         rule = next((item for item in rules if item.get("id") == rule_id), None)
@@ -865,6 +917,22 @@ class Project:
     def apply_orchestration_receipt(self, raw: Any, source_path: Path | None = None) -> dict[str, Any]:
         if not isinstance(raw, dict):
             raise SiaError("receipt must be a JSON object")
+        if source_path is not None:
+            # SIA writes its own canonical copy of every receipt under .sia/, and
+            # integration validates every file it finds there. In the first live
+            # end-to-end run the controller wrote its hand-made receipts into
+            # that directory too; integration then rejected the whole run over
+            # the stray files. Refuse at the source, where the fix is obvious.
+            try:
+                source_path.resolve().relative_to(self.sia.resolve())
+            except ValueError:
+                pass
+            else:
+                raise SiaError(
+                    "write the receipt outside .sia/, for example sdd/receipts/<operation>.json. "
+                    "SIA keeps its own canonical copy in .sia/, and a hand-written file there "
+                    "makes integration reject the run."
+                )
         config, state = self.require_initialized()
         orchestration = state.get("orchestration")
         if not isinstance(orchestration, dict):

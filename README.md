@@ -1,7 +1,7 @@
 # SIA (Self-Improving Agents)
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.5.0-00F2FE.svg?style=flat-square" alt="Version 0.5.0" />
+  <img src="https://img.shields.io/badge/version-0.7.0-00F2FE.svg?style=flat-square" alt="Version 0.7.0" />
   <img src="https://img.shields.io/badge/status-active-success.svg?style=flat-square" alt="Status: Active" />
   <img src="https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat-square" alt="License: MIT" />
   <img src="https://img.shields.io/badge/host--agnostic-yes-7B2CBF.svg?style=flat-square" alt="Host-agnostic" />
@@ -194,6 +194,56 @@ integrations/                    # source shims for supported hosts
 capture-interface.md             # feedback and convergence semantics
 tests/validate_sia.py            # package contract validator
 ```
+
+## Skills written for your project
+
+SIA doesn't hand every project the same skill pack. At the `skills` stage it
+reads your spec, plan and agent instructions and writes one skill per
+capability they call for, installed where Claude Code (`.claude/skills/`) and
+Codex (`.agents/skills/`) find them. A spec that asks for per-epoch loss
+logging and an F1 ship gate gets training and evaluation skills; a REST service
+that must rate-limit every endpoint gets a rate-limiting skill.
+
+- **Every skill cites its requirement,** verbatim. SIA refuses a skill it can't
+  trace to one, so nothing is generated "just in case".
+- **It builds on what you have.** Skills point to installed frameworks such as
+  Superpowers instead of repeating them.
+- **They keep improving.** Rules SIA learns from your corrections are written
+  into the matching skills automatically, and subagents are told to load the
+  skills before they start.
+- **Your files are safe.** SIA never overwrites a skill it didn't write, and
+  stops updating one you've edited.
+
+**Verified live in Claude Code:** a churn-model spec with fixed hyperparameters
+produced data-profiling, training-loop and evaluation skills and no tuning
+skill, even though `optuna` was installed.
+
+## Subagents: right model, same rules, your skills
+
+In orchestrator mode SIA plans the work, then the host (Claude Code, Codex)
+spawns the subagents. Three things keep that cheap and on track:
+
+1. **Cost routing.** Each task is routed to a `cheap`, `current` or `strong`
+   tier by risk and complexity, and the subagent is spawned on that tier's
+   model. In Claude Code a sensible default is `haiku` / `sonnet` / `opus`.
+   Budget ceilings are hard: an overrun stops the run.
+2. **Rules follow every subagent.** Learned rules are injected into each
+   subagent when it starts, whoever spawned it, so a correction you made once
+   is not repeated by a worker that never saw the conversation.
+3. **It uses the skills you already have.** SIA detects Superpowers and BMAD
+   whether vendored or installed as plugins. With Superpowers installed, its
+   skills write the spec and plan, SIA is the single dispatcher, and SIA's
+   implementer and reviewer subagents are told to use its test-driven
+   development, debugging and verification skills.
+
+**Verified live in Claude Code:** an orchestrated run completed with integration
+recorded and tests passing. The implementer ran on Haiku and the reviewer on
+Sonnet as routed; the rules were present in both subagents; the implementer
+invoked Superpowers' TDD and verification skills. Honest caveats: on a task this
+small the controller's own tokens dominated the cost (about $0.97 total), so the
+saving grows with the amount of delegated work; token figures are labelled
+`estimated` because the host does not report subagent usage back to SIA; and
+the reviewer did not invoke a skill in that run.
 
 ## Coexistence
 
