@@ -2,6 +2,44 @@
 
 All notable changes to the SIA package itself are recorded here.
 
+## [0.7.0] - 2026-09-28
+
+### Added
+
+- **SIA writes the skills your project needs.** At the `skills` stage, new
+  tools `sia_skill_context` and `sia_skill_write` (CLI: `sia skill context |
+  write | list | retire`) turn the project's requirements into skills,
+  installed where hosts discover them: `.claude/skills/` for Claude Code and
+  `.agents/skills/` for Codex. The main agent, every subagent and collaborating
+  plugins can all use them.
+  - **Grounded, not guessed:** every skill must cite, verbatim, the requirement
+    it serves from the recorded intake, spec, project-instructions or plan
+    evidence, or from AGENTS.md / CLAUDE.md. SIA refuses a skill it cannot
+    trace. There is no built-in catalog of domains; dependencies inform *how*,
+    never *what*.
+  - **Complements what is installed:** context lists existing project skills
+    and installed frameworks, so skills point to Superpowers instead of
+    repeating it.
+  - **Keeps improving:** each skill carries the learned rules whose scope
+    overlaps its paths, re-rendered whenever a rule is learned or retired.
+  - **Safe:** never overwrites a skill SIA did not write, stops updating one
+    edited by hand, refuses text that looks like a credential, and regenerates
+    `sdd/skill-manifest.md` as the stage's evidence.
+- Subagents are told at spawn which project skills exist, as a required first
+  step.
+
+### Verified
+
+Live in Claude Code on a churn-model project whose spec asks for data
+profiling, loss logging with early stopping, and F1-gated evaluation, and fixes
+the hyperparameters, while `requirements.txt` includes `optuna`. From a neutral
+"complete the current stage" prompt the agent wrote exactly three skills, one
+per spec section, and **no** hyperparameter skill, citing the spec. A learned
+rule appeared in every skill immediately. A Haiku subagent invoked the project
+skill after the directive was made a required first step (with softer wording
+it saw the list and skipped it). The first run also surfaced a manifest bug
+with multi-line quotes, now fixed with a regression test.
+
 ## [0.6.0] - 2026-09-26
 
 ### Added

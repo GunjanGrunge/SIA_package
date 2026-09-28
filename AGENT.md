@@ -110,8 +110,10 @@ on it if neither option is available.
    this project's own `AGENT.md`/`AGENTS.md`.
 5. **Project-skill synthesis** — using
    `guides/writing-project-skills.md`, generate the host-discoverable,
-   project-specific skills required for this project. Record their
-   provenance in a skill manifest. The user never has to design this
+   project-specific skills required for this project with
+   `sia_skill_context` and `sia_skill_write`. Every skill cites the
+   requirement it serves (SIA refuses one it cannot trace), and SIA records
+   provenance in `sdd/skill-manifest.md`. The user never has to design this
    skill pack manually.
 6. **Plan authoring** — using `guides/writing-plan.md`, break the spec
    into an implementation plan, saved into this project's own
