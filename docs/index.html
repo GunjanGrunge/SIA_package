@@ -144,6 +144,10 @@
     .footer-inner { max-width: 1220px; margin: auto; padding: 38px 24px; display: flex; justify-content: space-between; gap: 30px; color: var(--muted); font-size: 13px; }
     .footer-links { display: flex; flex-wrap: wrap; gap: 18px; }
     .mobile-menu { display: none; }
+    /* Grid items default to min-width:auto, so a wide <pre> stretched its column past the screen on phones. */
+    .hero > *, .grid > *, .hosts > *, .step > *, .command-block { min-width: 0; }
+    .actions { flex-wrap: wrap; }
+    p code, li code, summary code, details code { overflow-wrap: anywhere; }
     @media (max-width: 980px) {
       .hero { grid-template-columns: 1fr; padding-top: 70px; }
       .hero-panel { max-width: 680px; }
@@ -157,7 +161,9 @@
       .hero, main { padding-left: 16px; padding-right: 16px; }
       .hero { padding-top: 54px; }
       .grid, .grid.two, .hosts, .flow { grid-template-columns: 1fr; }
-      h1 { font-size: 46px; }
+      h1 { font-size: 40px; }
+      .eyebrow { white-space: normal; line-height: 1.4; }
+      .hero p { font-size: 17px; }
       section { padding-top: 52px; }
       table { display: block; overflow-x: auto; }
       .footer-inner { flex-direction: column; }
@@ -175,6 +181,7 @@
     </a>
     <nav aria-label="Primary navigation">
       <a href="#capabilities">Capabilities</a>
+      <a href="#skills">Skills</a>
       <a href="#cost-routing">Cost routing</a>
       <a href="#hosts">Hosts</a>
       <a href="#workflow">Workflow</a>
@@ -186,13 +193,13 @@
 
 <div id="top" class="hero">
   <div>
-    <span class="eyebrow"><span class="pulse"></span> SIA 0.3 · cost-aware multi-agent orchestration</span>
+    <span class="eyebrow"><span class="pulse"></span> SIA 0.7 · workflow, memory and orchestration for coding agents</span>
     <h1>Your coding agents,<br><span>working as a system.</span></h1>
-    <p>SIA decomposes approved work into ownership-safe operations, routes simple work to cheaper models, preserves the selected/current model for normal coordination, escalates high-risk work, launches independent workers in parallel, and binds every result to a receipt that survives new chats.</p>
+    <p>SIA keeps your coding assistant on an evidence-gated plan, learns from every correction you make, writes skills from your project&rsquo;s own requirements, and hands routine work to cheaper subagents that start with your rules. State lives in <code>.sia/</code> and survives new chats.</p>
     <div class="actions">
       <a class="button primary" href="#quickstart">Start in 3 minutes</a>
       <a class="button" href="#hosts">Choose your coding tool</a>
-      <a class="button" href="https://pypi.org/project/sia-package/">PyPI ↗</a>
+      <a class="button" href="https://github.com/GunjanGrunge/SIA_package/blob/main/CHANGELOG.md">What&rsquo;s new ↗</a>
     </div>
   </div>
   <div class="hero-panel" aria-label="SIA quick start terminal">
@@ -206,21 +213,13 @@
 <span class="prompt">$</span> <span class="command">codex plugin add sia@sia</span>
 <span class="comment"># Older Codex: codex marketplace add GunjanGrunge/SIA_package, then /plugins</span>
 
-<span class="comment"># Or drive the CLI directly, outside any host</span>
-<span class="prompt">PS&gt;</span> <span class="command">python -m pip install "git+https://github.com/GunjanGrunge/SIA_package"</span>
+<span class="comment"># Then, in your project, just ask:</span>
+<span class="prompt">&gt;</span> <span class="command">set up SIA on this project</span>
 
-<span class="comment"># Initialize this project</span>
-<span class="prompt">PS&gt;</span> <span class="command">sia init --mode orchestrator</span>
-
-<span class="comment"># Pick your host adapter</span>
-<span class="prompt">PS&gt;</span> <span class="command">sia adapter install --host claude</span>
-
-<span class="comment"># Configure exact cheap/current/strong models + budgets</span>
-<span class="prompt">PS&gt;</span> <span class="command">sia orchestrate example &gt; orchestration.json</span>
-<span class="prompt">PS&gt;</span> <span class="command">sia orchestrate configure --file orchestration.json</span>
-
-<span class="comment"># Resume from durable state</span>
-<span class="prompt">PS&gt;</span> <span class="command">sia next --json</span></pre>
+<span class="comment"># SIA walks intake → spec → skills → plan → execution,</span>
+<span class="comment"># learns your corrections, and writes project skills.</span>
+<span class="comment"># Resume any time, from any host:</span>
+<span class="prompt">&gt;</span> <span class="command">where is SIA on this project?</span></pre>
   </div>
 </div>
 
@@ -230,12 +229,12 @@
     <h2>A control plane for agentic work</h2>
     <p class="lead">SIA does not replace your model or IDE. It gives the host a shared, inspectable contract and saves workflow state under <code>.sia/</code>.</p>
     <div class="grid">
-      <article class="card"><div class="icon">↻</div><h3>Durable re-entry</h3><p><code>sia next --json</code> restores the current mode, stage, owner, tasks, and required action after a fresh chat or context compaction.</p></article>
-      <article class="card"><div class="icon">⋈</div><h3>Real parallel workers</h3><p>Native-host plans make the active assistant spawn its subagents; standalone plans make SIA launch approved command-array workers itself. Disjoint ownership prevents write collisions.</p></article>
-      <article class="card"><div class="icon">✓</div><h3>Independent review</h3><p>Implementation and review carry separate caller-attested host run identities. Integration is blocked until every task is reviewed.</p></article>
-      <article class="card"><div class="icon">◇</div><h3>Evidence-gated stages</h3><p>Specs, plans, skills, reports, and integration records must exist before the workflow advances. Chat claims are not evidence.</p></article>
-      <article class="card"><div class="icon">∞</div><h3>Learns from your corrections</h3><p>Tell the agent once (&ldquo;don&rsquo;t use em dashes&rdquo;, &ldquo;keep answers short&rdquo;, &ldquo;never touch infra/ without asking&rdquo;) and it becomes a standing rule for the project. Rules load into every new session automatically, and ones that can be checked, like a banned word, are checked on every file write and reply. Verified in Claude Code: the same question produced 15 em dashes without the rule and none with it.</p></article>
-      <article class="card"><div class="icon">⇄</div><h3>Plugin coexistence</h3><p>BMAD, Superpowers, MCP, native skills, and custom instructions remain available. Assign stage ownership instead of replacing another framework.</p></article>
+      <article class="card"><div class="icon">↻</div><h3>Durable re-entry</h3><p>The current mode, stage, tasks and next action are stored in <code>.sia/</code>. A fresh chat, a compacted context or a different host picks up exactly where the last one stopped.</p></article>
+      <article class="card"><div class="icon">◇</div><h3>Evidence-gated stages</h3><p>Specs, instructions, skills, plans and integration records must exist on disk before the workflow advances. A claim in conversation is never evidence.</p></article>
+      <article class="card"><div class="icon">∞</div><h3>Learns from your corrections</h3><p>Say it once (&ldquo;keep answers short&rdquo;, &ldquo;never touch infra/ without asking&rdquo;) and it becomes a standing rule. Rules load into every session and every subagent, and ones a machine can check, like a banned word, are checked on every file write and reply.</p></article>
+      <article class="card"><div class="icon">✎</div><h3>Skills for your project</h3><p>SIA reads your spec and writes one skill per capability it asks for, where Claude Code and Codex find them. Each skill quotes the requirement it serves; SIA refuses one it cannot trace.</p></article>
+      <article class="card"><div class="icon">⋈</div><h3>Cheaper subagents, independent review</h3><p>Tasks own exact files and route to cheap, current or strong models by risk, under hard budgets. Every task is reviewed by a different agent before integration.</p></article>
+      <article class="card"><div class="icon">⇄</div><h3>Works with your plugins</h3><p>SIA detects Superpowers and BMAD, vendored or installed as plugins. Superpowers writes the spec and plan, SIA dispatches, and subagents use its TDD and verification skills.</p></article>
     </div>
   </section>
 
@@ -282,9 +281,9 @@ sia advance --evidence &lt;path&gt;    # once that artifact exists</pre></div><p
     <h2>Use the cheapest model that can safely do the job</h2>
     <p class="lead">SIA does not hard-code vendor aliases or guess the model selected in your IDE. You configure exact IDs once; every plan persists the tier, model, reason, reservation, and fallback policy.</p>
     <div class="grid">
-      <article class="card mode"><span class="pill">CHEAP</span><h3>Bounded workers</h3><p>Low-risk/simple implementation, exploration, routine tests, documentation, triage, and high-volume supporting work.</p></article>
-      <article class="card mode"><span class="pill">CURRENT</span><h3>Selected capable model</h3><p>Normal implementation, coordination, and independent review. Set this to the exact model you selected or approved for the project.</p></article>
-      <article class="card mode"><span class="pill">STRONG</span><h3>Risk and escalation</h3><p>Complex architecture, security/high-risk implementation, high-risk review, and configured escalation after a cheaper attempt fails.</p></article>
+      <article class="card mode"><span class="pill">CHEAP</span><h3>Bounded workers</h3><p>Low-risk/simple implementation, exploration, routine tests, documentation, triage, and high-volume supporting work.</p><p><strong>Claude Code:</strong> <code>haiku</code></p></article>
+      <article class="card mode"><span class="pill">CURRENT</span><h3>Selected capable model</h3><p>Normal implementation, coordination, and independent review. Set this to the exact model you selected or approved for the project.</p><p><strong>Claude Code:</strong> <code>sonnet</code></p></article>
+      <article class="card mode"><span class="pill">STRONG</span><h3>Risk and escalation</h3><p>Complex architecture, security/high-risk implementation, high-risk review, and configured escalation after a cheaper attempt fails.</p><p><strong>Claude Code:</strong> <code>opus</code></p></article>
     </div>
     <div class="grid two" style="margin-top:18px">
       <div class="card"><h3>One router, two backends</h3><pre># The active assistant spawns native subagents
@@ -295,6 +294,7 @@ sia orchestrate plan --backend standalone --host provider-cli
 sia orchestrate run --approve-commands</pre></div>
       <div class="card"><h3>Budget and telemetry truth</h3><p>Plan estimates reserve tokens and USD atomically before dispatch. Warnings trigger at the configured fraction; hard ceilings reject plans and stop new standalone review scheduling. Receipts label usage as <strong>actual</strong>, <strong>calculated</strong>, <strong>estimated</strong>, or <strong>unknown</strong>. Savings require an explicit baseline.</p><pre>sia orchestrate status</pre></div>
     </div>
+    <div class="notice info" style="margin-bottom:14px"><strong>The routing reaches the spawn.</strong> The controller passes each task&rsquo;s model to the host&rsquo;s subagent tool, so a cheap task really runs on the cheap model. Verified in Claude Code: the implementer ran on Haiku and the reviewer on Sonnet. On very small tasks the main session&rsquo;s own planning outweighs the saving; it grows with the amount of work delegated.</div>
     <div class="notice"><strong>Security boundary:</strong> standalone command arrays use <code>shell=False</code>, whole-argument placeholders, minimal environment allowlists, no stdin, bounded logs, and timeouts. They still run with your OS user permissions and are not a filesystem/network sandbox.</div>
   </section>
 
@@ -302,6 +302,7 @@ sia orchestrate run --approve-commands</pre></div>
     <span class="section-tag">Coding tool setup</span>
     <h2>Use SIA with your preferred host</h2>
     <p class="lead">The logos below are loaded from each tool's official domain. SIA and its authors are not affiliated with or endorsed by these vendors.</p>
+    <div class="notice info" style="margin-bottom:18px"><strong>Prefer the plugin.</strong> The <a href="#quickstart">plugin install</a> gives you SIA&rsquo;s tools, hooks, skills and agents with no CLI setup. The per-host adapters below are the older CLI-based route, kept for hosts or setups where the plugin is not available.</div>
     <div class="hosts">
       <article class="host" id="claude-code">
         <div class="host-head"><img class="host-logo" src="https://claude.com/favicon.ico" alt="Claude logo"><div class="host-title"><strong>Claude Code</strong><span>Project skill · explicit <code>/sia</code></span></div></div>
@@ -380,7 +381,7 @@ sia next --json</pre>
       <div class="stage"><b>01</b><strong>Intake</strong><span>Goal, evidence, boundaries</span></div>
       <div class="stage"><b>02</b><strong>Spec</strong><span>Approved architecture</span></div>
       <div class="stage"><b>03</b><strong>Instructions</strong><span>Project rules</span></div>
-      <div class="stage"><b>04</b><strong>Skills</strong><span>Evidence-derived pack</span></div>
+      <div class="stage"><b>04</b><strong>Skills</strong><span>Requirement-backed pack</span></div>
       <div class="stage"><b>05</b><strong>Plan</strong><span>Files and interfaces</span></div>
       <div class="stage"><b>06</b><strong>Execution</strong><span>Dispatch and review</span></div>
       <div class="stage"><b>07</b><strong>Feedback</strong><span>Rules and convergence</span></div>
@@ -391,6 +392,23 @@ sia next --json</pre>
       <div class="card"><h3>Ask what comes next</h3><pre>sia status
 sia next --json</pre><p>Every host follows the same packet, so changing tools does not reset the process.</p></div>
       <div class="card"><h3>Attach the artifact</h3><pre>sia advance --evidence docs/specs/export.md</pre><p>Specification, instructions, skills, and plan stages require project-local evidence paths.</p></div>
+    </div>
+  </section>
+
+  <section id="skills">
+    <span class="section-tag">Skills stage</span>
+    <h2>Skills written from your project&rsquo;s requirements</h2>
+    <p class="lead">SIA does not hand every project the same pack. It reads the recorded intake, spec, plan and agent instructions, and writes one skill per capability they call for.</p>
+    <div class="grid">
+      <article class="card"><h3>Grounded, not guessed</h3><p>Every skill quotes, word for word, the requirement it serves. SIA checks the quote is in a requirement source and refuses the skill otherwise. Dependencies only shape <em>how</em> a skill works, never <em>whether</em> it exists.</p></article>
+      <article class="card"><h3>Used everywhere</h3><p>Skills are installed in <code>.claude/skills/</code> and <code>.agents/skills/</code>, so the main agent, every subagent and collaborating plugins can load them. Subagents are told to load the relevant ones first.</p></article>
+      <article class="card"><h3>Kept current, kept safe</h3><p>Rules learned from your corrections are written into matching skills automatically. SIA never overwrites a skill it did not write, and stops updating one you edited.</p></article>
+    </div>
+    <div class="grid two" style="margin-top:18px">
+      <div class="card"><h3>How the agent does it</h3><pre>sia_skill_context   # requirements, deps, existing skills
+sia_skill_write     # one call per skill, with citations
+sia advance --evidence sdd/skill-manifest.md</pre></div>
+      <div class="card"><h3>Verified in Claude Code</h3><p>A churn-model spec asking for data profiling, per-epoch loss logging and an F1 ship gate, with hyperparameters fixed, produced exactly three skills: profiling, training loop and evaluation. No tuning skill was written, even though <code>optuna</code> was installed.</p></div>
     </div>
   </section>
 
@@ -429,7 +447,14 @@ sia advance</pre></div>
 
   <section id="learning">
     <span class="section-tag">Feedback loop</span>
-    <h2>Turn verified mistakes into scoped rules</h2>
+    <h2>Turn corrections into standing rules</h2>
+    <p class="lead">You do not run these commands yourself. When you correct the agent or state a preference, it records a rule with your words as evidence, one rule per preference.</p>
+    <div class="grid">
+      <article class="card"><h3>Recall</h3><p>Every active rule loads at the start of each session and after <code>/compact</code>. The agent does not have to remember to ask.</p></article>
+      <article class="card"><h3>Enforcement</h3><p>Rules a machine can check, such as a banned word or character, are checked on every file the agent writes and every reply. Violations go back to the agent to fix.</p></article>
+      <article class="card"><h3>Every subagent</h3><p>Each subagent receives the rules when it starts, whoever spawned it, so a worker that never saw your conversation still avoids the mistake.</p></article>
+    </div>
+    <h3 style="margin-top:28px">Under the hood</h3>
     <div class="grid two">
       <div class="card"><h3>Record outcomes</h3><pre>sia record \
   --outcome pass \
@@ -442,7 +467,11 @@ sia capture \
   --context "Controller touched an owned file" \
   --severity high \
   --error-class ownership-breach</pre></div>
-      <div class="card"><h3>Add and apply an approved rule</h3><pre>sia rule add \
+      <div class="card"><h3>Learn, add and apply rules</h3><pre>sia rule learn \
+  --text "Keep replies under five bullets" \
+  --user-quote "your answers are too long"
+
+sia rule add \
   --text "Never edit dispatched task files" \
   --scope "src/*.py" \
   --severity high \
@@ -459,6 +488,7 @@ sia convergence</pre></div>
     <span class="section-tag">BMAD, Superpowers, MCP</span>
     <h2>Share ownership instead of replacing tools</h2>
     <p class="lead">SIA's default framework policy is <code>bridge</code>. Existing framework files remain off limits.</p>
+    <div class="card" style="margin-bottom:18px"><h3>With Superpowers installed</h3><p>Superpowers&rsquo; brainstorming and writing-plans skills author the spec and plan; SIA still gates on them. SIA is the only dispatcher, so work is never done twice, and SIA&rsquo;s implementer and reviewer subagents are told to use Superpowers&rsquo; test-driven development, debugging and verification skills. Project skills point to Superpowers instead of repeating it.</p></div>
     <div class="grid two">
       <div class="card"><h3>Let BMAD own planning</h3><pre>sia owner --stage plan --to bmad
 sia next --json</pre><p>The packet tells the host to obtain BMAD's artifact before SIA advances.</p></div>
@@ -483,7 +513,7 @@ sia convergence</pre><p>Other frameworks own the delivery process while SIA main
           <tr><td><code>sia doctor</code></td><td>Check initialization and complete policy availability.</td><td>After install/update</td></tr>
           <tr><td><code>sia owner</code></td><td>Assign one stage to SIA or another framework.</td><td>When bridging tools</td></tr>
           <tr><td><code>sia advance</code></td><td>Validate evidence and complete the current stage.</td><td>Stage boundary</td></tr>
-          <tr><td><code>sia adapter install/remove</code></td><td>Manage collision-safe host launchers.</td><td>Host setup</td></tr>
+          <tr><td><code>sia adapter install/remove</code></td><td>Manage collision-safe host launchers (older route; the plugin replaces this).</td><td>Host setup</td></tr>
           <tr><td><code>sia task prepare</code></td><td>Define task brief, exclusive paths, risk, complexity, and estimate.</td><td>Before planning</td></tr>
           <tr><td><code>sia orchestrate configure</code></td><td>Validate/store exact models, prices, budgets, routing, concurrency, and workers.</td><td>Project/run setup</td></tr>
           <tr><td><code>sia orchestrate plan</code></td><td>Route operations, reserve budget, and persist immutable plan/hash.</td><td>Before workers</td></tr>
@@ -493,7 +523,10 @@ sia convergence</pre><p>Other frameworks own the delivery process while SIA main
           <tr><td><code>sia task dispatch/finish</code></td><td>Legacy/manual evidence flow retained for backward compatibility.</td><td>Non-managed tasks</td></tr>
           <tr><td><code>sia integration</code></td><td>Bind combined evidence to the complete reviewed task set.</td><td>End of execution</td></tr>
           <tr><td><code>sia record / capture</code></td><td>Persist PASS or DEVIATION outcomes.</td><td>After proposals/reviews</td></tr>
-          <tr><td><code>sia rule add/retire</code></td><td>Manage provenance-bearing standing rules.</td><td>After approved learning</td></tr>
+          <tr><td><code>sia rule learn</code></td><td>Turn a user correction into a standing rule in one step.</td><td>Whenever the user corrects</td></tr>
+          <tr><td><code>sia rule add/list/retire</code></td><td>Manage provenance-bearing standing rules.</td><td>After approved learning</td></tr>
+          <tr><td><code>sia skill context</code></td><td>Requirement sources, dependencies, existing skills and rules.</td><td>Skills stage</td></tr>
+          <tr><td><code>sia skill write/list/retire</code></td><td>Write, list or remove requirement-backed project skills.</td><td>Skills stage, after spec changes</td></tr>
           <tr><td><code>sia preflight</code></td><td>Load matching active rules before related work.</td><td>Before proposals/changes</td></tr>
           <tr><td><code>sia convergence</code></td><td>Compute overall and per-error-class deviation rates.</td><td>Milestones/reviews</td></tr>
         </tbody>
@@ -510,13 +543,18 @@ sia convergence</pre><p>Other frameworks own the delivery process while SIA main
 ├── state.json        # stage, operations, telemetry
 ├── events.jsonl      # append-only outcomes
 ├── rules.json        # active and retired rules
+├── skills.json       # generated project skills
 ├── project.lock      # atomic reservations/transitions
 └── runs/&lt;run-id&gt;/
     ├── dispatch-plan.json
     ├── integration.md
     └── tasks/&lt;task-id&gt;/
         ├── attempts/
-        └── receipts/</div>
+        └── receipts/
+
+.claude/skills/&lt;name&gt;/SKILL.md  # project skills (Claude Code)
+.agents/skills/&lt;name&gt;/SKILL.md  # project skills (Codex)
+sdd/skill-manifest.md           # requirement behind each skill</div>
       <div class="card"><h3>Commit intentionally</h3><p>SIA runtime evidence can contain user corrections, paths, and review context. Review it for secrets before committing. Generated project artifacts—specs, plans, skills, and selected <code>sdd/</code> mirrors—are normal project history.</p><h3 style="margin-top:24px">Trust boundary</h3><p>SIA checks ordering, path ownership, evidence presence, reviewer separation, and state consistency. It cannot cryptographically prove a vendor agent ran; native IDs are supplied by the host/controller.</p></div>
     </div>
   </section>
@@ -535,12 +573,13 @@ cd extension &amp;&amp; npm install &amp;&amp; npx vsce package
     <span class="section-tag">Troubleshooting</span>
     <h2>Common questions</h2>
     <details><summary>SIA says the project is not initialized</summary><div>Run <code>sia init --mode advisory|planning|orchestrator</code> from the project root, then <code>sia doctor</code>.</div></details>
-    <details><summary>The host did not invoke SIA automatically</summary><div>This is intentional. Adapters are explicit to avoid monopolizing unrelated prompts. Invoke <code>/sia</code> where supported, or ask the host to run <code>sia next --json</code>.</div></details>
+    <details><summary>The host did not invoke SIA automatically</summary><div>This is intentional: SIA does not take over unrelated prompts. Say &ldquo;set up SIA on this project&rdquo; or &ldquo;where is SIA on this project?&rdquo;, or use <code>/sia:sia-start</code> in Claude Code. Rules still load automatically in every session.</div></details>
     <details><summary>How does SIA choose cheap versus current/strong?</summary><div>The approved orchestration config maps low/simple, normal, high/complex, and review roles to explicit model tiers. Every decision and exact provider model ID is persisted in the immutable plan.</div></details>
     <details><summary>Can SIA spawn agents by itself?</summary><div>Yes, in standalone mode it launches explicitly approved provider CLI command arrays concurrently with <code>shell=False</code>. In native-host mode, the active coding assistant uses its own subagent tool from SIA's plan. Native IDs remain caller-attested.</div></details>
     <details><summary>SIA blocks a second parallel task</summary><div>Its owned path intersects an active task. Sequence the work or give a later integration task exclusive ownership of the shared file.</div></details>
     <details><summary>Preflight exits with code 2</summary><div>A matching medium/high standing rule needs acknowledgment. Review the rule and use <code>--acknowledge &lt;rule-id&gt;</code> only after approval.</div></details>
-    <details><summary>I use BMAD or Superpowers</summary><div>Choose advisory mode or assign individual stages with <code>sia owner</code>. SIA should not edit those frameworks' files.</div></details>
+    <details><summary>I use BMAD or Superpowers</summary><div>Keep them. SIA detects both, lets Superpowers author the spec and plan, tells subagents to use its practice skills, and never edits either framework&rsquo;s files. For full hand-off use advisory mode, or assign single stages with <code>sia owner</code>.</div></details>
+    <details><summary>Why didn&rsquo;t SIA write a skill for something my project uses?</summary><div>Skills come from requirements, not dependencies. If the spec, plan or agent instructions do not ask for a capability, SIA will not write a skill for it. Add the requirement to the spec, and the next skills refresh can cite it.</div></details>
   </section>
 
   <section id="resources">
@@ -551,7 +590,7 @@ cd extension &amp;&amp; npm install &amp;&amp; npx vsce package
       <a class="card" href="https://github.com/GunjanGrunge/SIA_package/blob/main/HOST-INTEGRATION.md"><h3>Host contract</h3><p>Modes, re-entry protocol, adapter paths, and native-agent boundary.</p></a>
       <a class="card" href="https://github.com/GunjanGrunge/SIA_package/blob/main/VALIDATION.md"><h3>Validation</h3><p>Dogfood scenarios and runtime safety boundaries.</p></a>
       <a class="card" href="https://github.com/GunjanGrunge/SIA_package"><h3>Source code</h3><p>Runtime, adapters, guides, extension, issues, and release history.</p></a>
-      <a class="card" href="https://pypi.org/project/sia-package/"><h3>PyPI package</h3><p>Published Python package and installation metadata.</p></a>
+      <a class="card" href="https://github.com/GunjanGrunge/SIA_package/blob/main/CHANGELOG.md"><h3>Changelog</h3><p>What changed in each release, and how it was verified.</p></a>
       <a class="card" href="https://github.com/GunjanGrunge/SIA_package/issues"><h3>Report an issue</h3><p>Questions, bugs, integration gaps, and host adapter requests.</p></a>
     </div>
   </section>
@@ -560,7 +599,7 @@ cd extension &amp;&amp; npm install &amp;&amp; npx vsce package
 <footer>
   <div class="footer-inner">
     <div><strong style="color:var(--text)">SIA · Self-Improving Agents</strong><br>MIT licensed · human approval remains the highest project authority.</div>
-    <div class="footer-links"><a href="#top">Back to top</a><a href="https://github.com/GunjanGrunge/SIA_package">GitHub</a><a href="https://pypi.org/project/sia-package/">PyPI</a></div>
+    <div class="footer-links"><a href="#top">Back to top</a><a href="https://github.com/GunjanGrunge/SIA_package">GitHub</a><a href="https://github.com/GunjanGrunge/SIA_package/blob/main/CHANGELOG.md">Changelog</a></div>
   </div>
   <div style="max-width:1220px;margin:auto;padding:0 24px 30px;color:#6f849e;font-size:11px">Claude, OpenAI, Gemini, Antigravity, and Kiro names/logos belong to their respective owners. Host behavior was summarized from linked official documentation. Content was rephrased for compliance with licensing restrictions.</div>
 </footer>
