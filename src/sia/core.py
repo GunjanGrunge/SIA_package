@@ -42,7 +42,7 @@ STAGE_ACTIONS = {
     "intake": "Inspect requirements and existing tooling; confirm project type, boundaries, and stage ownership.",
     "spec": "Author and obtain approval for the project spec under docs/specs/.",
     "project-instructions": "Create or update the project's own agent instructions without replacing competing framework files.",
-    "skills": "Generate evidence-derived project skills and sdd/skill-manifest.md.",
+    "skills": "Call sia_skill_context, then write one project skill per capability the requirements call for with sia_skill_write (each cites the requirement it serves). Advance with sdd/skill-manifest.md as evidence.",
     "plan": "Write an approved plan with exact file ownership and interfaces.",
     "execution": "Prepare tasks, dispatch real native host subagents, independently review them, then record integration evidence.",
     "feedback": "Record PASS/DEVIATION outcomes, run preflight, and review convergence before the next proposal.",
@@ -315,6 +315,8 @@ class Project:
                 "sia integration --evidence <file>",
                 "sia advance",
             ]
+        if stage == "skills":
+            return ["sia skill context", "sia skill write --file <skill.json>", "sia advance --evidence sdd/skill-manifest.md"]
         if stage == "feedback":
             return ["sia record --outcome pass ...", "sia capture ...", "sia preflight --scope <path>", "sia convergence", "sia advance"]
         return ["sia advance --evidence <artifact> [...]"]
@@ -461,8 +463,18 @@ class Project:
             },
         }
 
+    def add_rule(self, *args, **kwargs) -> dict[str, Any]:
+        rule = self._add_rule(*args, **kwargs)
+        self._refresh_skill_rules()
+        return rule
+
+    def _refresh_skill_rules(self) -> None:
+        """Carry rule changes into every SIA-generated project skill."""
+        from .project_skills import refresh_rules
+        refresh_rules(self)
+
     @state_locked
-    def add_rule(
+    def _add_rule(
         self,
         text: str,
         scope: str,
@@ -532,8 +544,13 @@ class Project:
         self.require_initialized()
         return [rule for rule in _read_json(self.rules_path, []) if rule.get("status") == "active"]
 
-    @state_locked
     def retire_rule(self, rule_id: str, reason: str) -> dict[str, Any]:
+        rule = self._retire_rule(rule_id, reason)
+        self._refresh_skill_rules()
+        return rule
+
+    @state_locked
+    def _retire_rule(self, rule_id: str, reason: str) -> dict[str, Any]:
         self.require_initialized()
         rules = _read_json(self.rules_path, [])
         rule = next((item for item in rules if item.get("id") == rule_id), None)

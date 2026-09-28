@@ -75,6 +75,17 @@ project-relative path.
 Work each stage properly rather than manufacturing a file to satisfy the gate.
 A claim in conversation is never evidence — only a path is.
 
+### The `skills` stage: write the skills this project needs
+
+Call `sia_skill_context`, read every requirement source it lists, and write one
+project skill per capability the requirements call for with `sia_skill_write`.
+Each skill cites, verbatim, the requirement it serves; SIA refuses a skill it
+cannot trace to one. Skip capabilities already covered by existing skills or
+installed frameworks such as Superpowers, and point to those instead. Skills are
+installed where Claude Code and Codex discover them, every subagent is told they
+exist, and learned rules are kept current inside them. Advance with
+`sdd/skill-manifest.md`. `guides/writing-project-skills.md` has the details.
+
 If the user wants to skip planning for a small change, say plainly that SIA's
 gates are the product, and offer `advisory` mode instead, which does not pretend
 to plan.

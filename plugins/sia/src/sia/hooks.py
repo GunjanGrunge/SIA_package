@@ -171,6 +171,9 @@ def subagent_start(payload: dict[str, Any]) -> dict[str, Any] | None:
     rules = load_active_rules(root)
     if rules:
         parts.append(subagent_recall_text(rules))
+    skills = project_skill_directive(root)
+    if skills:
+        parts.append(skills)
     directive = practice_skill_directive(payload.get("agent_type") or "")
     if directive:
         parts.append(directive)
@@ -178,6 +181,30 @@ def subagent_start(payload: dict[str, Any]) -> dict[str, Any] | None:
         return None
     return {"hookSpecificOutput": {"hookEventName": "SubagentStart",
                                    "additionalContext": "\n\n".join(parts)}}
+
+
+def project_skill_directive(root: Path) -> str | None:
+    """Name the project skills SIA generated from this project's requirements.
+
+    The host already discovers them, but a live run showed subagents skip
+    skills they are merely able to load; naming them is what gets them used.
+    """
+    try:
+        registry = json.loads((root / ".sia" / "skills.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(registry, list):
+        return None
+    active = [item for item in registry if isinstance(item, dict) and item.get("status") == "active" and item.get("name")]
+    if not active:
+        return None
+    lines = [f"- {item['name']}: {item.get('description', '')}" for item in active]
+    # A live probe with the softer "invoke each one relevant" wording: a Haiku
+    # subagent saw the list, used none, and missed a step the skill required.
+    return ("REQUIRED FIRST STEP: this project has skills written from its own requirements. "
+            "Before any other action, call the Skill tool for EVERY skill below whose description "
+            "overlaps your task, even if you are only planning or describing work. They hold "
+            "requirements you will otherwise miss.\n" + "\n".join(lines))
 
 
 def _is_sia_agent(agent_type: str, role: str) -> bool:

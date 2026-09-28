@@ -82,6 +82,17 @@ def parser() -> argparse.ArgumentParser:
     retire.add_argument("--id", required=True)
     retire.add_argument("--reason", required=True)
 
+    skill = commands.add_parser("skill", help="project skills derived from the project's requirements").add_subparsers(dest="skill_command", required=True)
+    skill.add_parser("context", help="requirement sources, repository evidence and existing skills")
+    skill_write = skill.add_parser("write", help="write or update a requirement-backed project skill")
+    source = skill_write.add_mutually_exclusive_group(required=True)
+    source.add_argument("--file", help="JSON file: name, description, body, requirements[{source, quote}], paths, hosts")
+    source.add_argument("--spec-json", help="the same JSON, inline")
+    skill.add_parser("list", help="list SIA-generated project skills")
+    skill_retire = skill.add_parser("retire", help="remove a SIA-generated project skill")
+    skill_retire.add_argument("--name", required=True)
+    skill_retire.add_argument("--reason", required=True)
+
     adapter = commands.add_parser("adapter", help="manage explicit host launchers").add_subparsers(dest="adapter_command", required=True)
     install = adapter.add_parser("install")
     install.add_argument("--host", required=True, choices=tuple(ADAPTERS))
@@ -181,6 +192,28 @@ def main(argv: list[str] | None = None) -> int:
                 result = project.active_rules()
             else:
                 result = project.retire_rule(args.id, args.reason)
+        elif args.command == "skill":
+            from . import project_skills
+            if args.skill_command == "context":
+                result = project_skills.skill_context(project)
+            elif args.skill_command == "write":
+                try:
+                    spec = json.loads(Path(args.file).read_text(encoding="utf-8") if args.file else args.spec_json)
+                except (OSError, ValueError) as exc:
+                    raise SiaError(f"cannot read skill spec: {exc}") from exc
+                if not isinstance(spec, dict):
+                    raise SiaError("skill spec must be a JSON object")
+                unknown = set(spec) - {"name", "description", "body", "requirements", "paths", "hosts"}
+                if unknown:
+                    raise SiaError(f"unknown skill spec field(s): {', '.join(sorted(unknown))}")
+                result = project_skills.write_skill(
+                    project, spec.get("name"), spec.get("description"), spec.get("body"),
+                    spec.get("requirements"), spec.get("paths"), spec.get("hosts"),
+                )
+            elif args.skill_command == "list":
+                result = project_skills.list_skills(project)
+            else:
+                result = project_skills.retire_skill(project, args.name, args.reason)
         elif args.command == "adapter":
             if args.adapter_command == "install":
                 status, path = install_adapter(project.root, args.host, args.upgrade)
