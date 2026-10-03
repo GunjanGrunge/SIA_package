@@ -17,6 +17,19 @@
         "workflow",
         "cost-control"
       ]
+    },
+    {
+      "name": "sia-dashboard",
+      "source": "./plugins/sia-dashboard",
+      "description": "Live SIA dashboard for Claude Code: agents at work, tokens handled by subagents and the estimated saving from cheaper models, project skills and how often they are used, and every SIA call. Needs Claude Code 2.1.287 or later.",
+      "version": "0.1.0",
+      "category": "workflow",
+      "keywords": [
+        "dashboard",
+        "subagents",
+        "cost-control",
+        "mods"
+      ]
     }
   ]
 }

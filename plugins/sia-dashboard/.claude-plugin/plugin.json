@@ -1,0 +1,6 @@
+{
+  "name": "sia-dashboard",
+  "version": "0.1.0",
+  "description": "Live SIA dashboard pane for Claude Code",
+  "author": { "name": "GunjanGrunge" }
+}

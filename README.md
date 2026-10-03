@@ -142,6 +142,53 @@ the only dispatcher, and SIA's subagents use its test-driven development,
 debugging and verification skills. You can also hand a whole stage to another
 framework with `sia owner --stage plan --to bmad`.
 
+### 6. A live dashboard (Claude Code)
+
+Install `sia-dashboard` from the same marketplace to see SIA at work:
+
+```text
+/plugin install sia-dashboard@sia
+```
+
+A line above the prompt shows the stage, agents running, the estimated saving,
+skills and rules. `/sia-dashboard` opens a pane with tabs for an overview, every
+agent and the model it ran on, the skills SIA wrote and how often they're used,
+and every SIA call. Token figures are measured from each model request; the
+saving is an estimate against your main model's prices.
+[Details](./plugins/sia-dashboard/README.md).
+
+## What you can ask SIA to do
+
+Your assistant calls these for you. You can also ask for one by name ("run
+`sia_next`"), or pick one from the dashboard's Calls tab.
+
+| Area | Call | What it does |
+|---|---|---|
+| Workflow | `sia_init` | Set up SIA in a project |
+| | `sia_status` | Where the project is: mode, stage, tasks |
+| | `sia_next` | What the current stage needs and how to advance |
+| | `sia_advance` | Complete the current stage, citing a file as evidence |
+| | `sia_owner` | Hand a stage to another framework, such as BMAD |
+| | `sia_doctor` | Check the setup and list other frameworks found |
+| | `sia_guide` | Print SIA's full workflow contract |
+| Learning | `sia_rule_learn` | Turn a correction or preference into a standing rule |
+| | `sia_rule_list` | List the active rules |
+| | `sia_rule_retire` | Retire a rule that no longer applies |
+| | `sia_preflight` | Load the rules that apply to files about to change |
+| | `sia_record`, `sia_capture` | Record an outcome or a deviation |
+| | `sia_convergence` | Deviation rate per error class, to see the loop working |
+| Project skills | `sia_skill_context` | Requirements, dependencies and existing skills, before writing |
+| | `sia_skill_write` | Write one requirement-backed skill |
+| | `sia_skill_list` | List the skills SIA wrote and what each serves |
+| | `sia_skill_retire` | Remove a skill the project no longer needs |
+| Orchestration | `sia_orchestrate_example` | A config template for model tiers and budgets |
+| | `sia_orchestrate_configure` | Store model tiers, prices and budget limits |
+| | `sia_task_prepare` | Define one task and the exact files it owns |
+| | `sia_orchestrate_plan` | Route tasks to tiers and reserve the budget |
+| | `sia_orchestrate_receipt` | Record a subagent's result |
+| | `sia_orchestrate_status` | Progress, budget use and telemetry quality |
+| | `sia_integration` | Record validation of the combined changes |
+
 ## What has been verified
 
 | | Claude Code | Codex | Kiro | Gemini / Antigravity |
@@ -151,6 +198,7 @@ framework with `sia owner --stage plan --to bmad`.
 | Rules and skills reach subagents | ✅ | not tested | not tested | not tested |
 | Project skills | ✅ | written, not tested live | not yet | not yet |
 | Model routing | ✅ Haiku / Sonnet | not tested | not tested | not tested |
+| Live dashboard | ✅ | not available | not available | not available |
 
 Results from live Claude Code runs:
 

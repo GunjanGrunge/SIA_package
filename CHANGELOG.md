@@ -2,6 +2,36 @@
 
 All notable changes to the SIA package itself are recorded here.
 
+## [sia-dashboard 0.1.0] - 2026-10-03
+
+### Added
+
+- **Live SIA dashboard for Claude Code**, a new `sia-dashboard` plugin in the
+  same marketplace, built as a Claude Code mod (needs 2.1.287 or later). A line
+  above the prompt shows the stage, agents running, the estimated saving, skills
+  and rules. `/sia-dashboard` opens a pane with Overview, Agents, Skills and
+  Calls tabs.
+  - Token figures are measured from every model request, tagged by agent. The
+    saving is an estimate: subagent requests priced at the main model's rates
+    minus their price on the model they ran on, using SIA's configured tier
+    prices or Anthropic list prices.
+  - Skill use counts Skill tool calls in the main loop and inside subagents,
+    with a per-project total.
+  - The Calls tab lists every SIA tool live and starts a prompt for the chosen
+    one.
+- README: a table of every call you can make with SIA.
+
+The main `sia` plugin is unchanged, so hosts without mods are unaffected.
+
+### Verified
+
+14 tests under `claude plugin test`. Each guard was checked by breaking it on
+purpose and watching a test fail. Live in an interactive Claude Code 2.1.288
+session in `tmux`: the band went from `0 agents running` to `1 agent running`
+and back while a Haiku subagent worked, then showed the saving, and every tab
+rendered real data. That run found a bug, now fixed with a test: Claude Code's
+agent list drops a finished subagent, so the dashboard keeps its own record.
+
 ## [0.7.0] - 2026-09-28
 
 ### Added
