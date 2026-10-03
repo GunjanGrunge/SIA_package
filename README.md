@@ -47,7 +47,7 @@ starts it for you. The only prerequisite is Python 3.10 or newer, available as
 | Claude Code | `/plugin marketplace add GunjanGrunge/SIA_package`<br>`/plugin install sia@sia` |
 | Codex | `codex plugin marketplace add GunjanGrunge/SIA_package`<br>`codex plugin add sia@sia`<br>Older Codex (e.g. 0.121): `codex marketplace add GunjanGrunge/SIA_package`, then install **sia** from `/plugins` |
 | Gemini CLI | `gemini extensions install https://github.com/GunjanGrunge/SIA_package` |
-| Kiro | Add a power from the GitHub URL |
+| Kiro | Powers panel → **Add Custom Power** → **Import power from GitHub** → paste `https://github.com/GunjanGrunge/SIA_package` → **Install** |
 | Antigravity | `agy plugin install <path-to-a-clone>` |
 
 Then, in your project, say **"set up SIA on this project"**.
@@ -66,6 +66,39 @@ allow SIA's own tools (and only those) with:
 **Windows** hosts launch `python3`. If only `python` or `py` is on your `PATH`,
 SIA cannot start. Check with `python3 --version`; the Microsoft Store build of
 Python provides it.
+
+</details>
+
+## Update
+
+Pull the latest SIA into a host that already has it:
+
+| Host | Update |
+|---|---|
+| Claude Code | `claude plugin marketplace update sia`<br>`claude plugin update sia@sia`<br>Or inside a session: `/plugin marketplace update sia`, then update **sia** from `/plugin` |
+| Codex | `codex plugin marketplace upgrade sia`<br>`codex plugin add sia@sia` (reinstalls over the old copy)<br>Older Codex (e.g. 0.121): reinstall **sia** from `/plugins` |
+| Gemini CLI | `gemini extensions update sia` (or `--all`) |
+| Kiro | Powers panel → select **sia** → **Check for updates** → **Install updates** |
+| Antigravity | `git pull` in your clone, then run `agy plugin install <path-to-the-clone>` again |
+
+Then **restart the host**: Claude Code, Codex and Gemini CLI load the new version
+only in a new session.
+
+<details>
+<summary>Notes on updating</summary>
+
+**Installed from a local folder instead of GitHub?** `marketplace update` and
+`marketplace upgrade` refresh GitHub sources only. Run `git pull` in that folder,
+then the install or update command above. To switch to GitHub, remove the local
+marketplace and add `GunjanGrunge/SIA_package` again.
+
+**The dashboard is a separate plugin.** If you installed SIA before the
+dashboard existed, add it once with `/plugin install sia-dashboard@sia`, then
+update both plugins the same way.
+
+**Nothing to update?** Hosts compare version numbers, so an update arrives only
+when a release raises the version in the plugin manifests. Your project's
+`.sia/` state, rules and skills stay where they are.
 
 </details>
 
